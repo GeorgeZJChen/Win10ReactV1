@@ -1,0 +1,41 @@
+{
+  "name": "win10-react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prestart": "webpack",
+    "start": "node ./app/server.js",
+    "preserver": "webpack",
+    "server": "webpack-dev-server --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GeorgeZJChen/Win10ReactV1.git"
+  },
+  "author": "CHEN ZHUOJUN",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GeorgeZJChen/Win10ReactV1/issues"
+  },
+  "homepage": "https://github.com/GeorgeZJChen/Win10ReactV1#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^8.5.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.11",
+    "style-loader": "^0.21.0",
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.3",
+    "webpack-dev-server": "^3.1.4"
+  }
+}
