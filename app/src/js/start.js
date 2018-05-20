@@ -6,9 +6,10 @@ const class1 = 'class1'
 
 class Greeter extends Component{
   render() {
+    let date = new Date()
     return (
       <div className={styles.class1}>
-        Hello World!
+        {date.toString()}
       </div>
     );
   }

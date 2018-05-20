@@ -3,8 +3,7 @@ const app = express()
 const path = require('path')
 
 app.use(express.static(path.join(__dirname, 'public')));
-console.log(__dirname)
-console.log(path);
+
 app.get('/', (req, res) =>
   app.render('index')
 )

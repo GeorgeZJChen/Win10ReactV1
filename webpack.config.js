@@ -1,10 +1,13 @@
 const config = {
   mode: 'development',
   devtool: 'source-map',
-  entry: __dirname +'/app/src/js/main.js',
+  entry: {
+    login: __dirname +'/app/src/login.entry.js',
+    main: __dirname +'/app/src/main.entry.js'
+  },
   output: {
     path: __dirname +'/public',
-    filename: "bundle.js"
+    filename: "[name].bundle.js"
   },
   devServer: {
     contentBase: "./public",
@@ -34,7 +37,10 @@ const config = {
                         loader: "css-loader",
                         options: {
                             modules: true,
-                            localIdentName: '[name]_[local]_[hash:base64:5]'
+                            localIdentName: '[name]_[local]_[hash:base64:5]',
+                            sourceMap: true,
+                            camelCase: true,
+                            minimize: true
                         }
                     }
                 ]
