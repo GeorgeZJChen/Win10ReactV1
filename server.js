@@ -2,10 +2,11 @@ const express = require('express')
 const app = express()
 const path = require('path')
 
-app.use(express.static(path.join(__dirname, 'src')));
-
+app.use(express.static(path.join(__dirname, 'public')));
+console.log(__dirname)
+console.log(path);
 app.get('/', (req, res) =>
-  res.render('public/index')
+  app.render('index')
 )
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
