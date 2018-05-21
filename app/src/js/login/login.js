@@ -12,7 +12,7 @@ class Login extends Component{
     this.state = {
       pageReady: 0,
       opacity: 1,
-      imgURL: '/static/img/login_default_2.png',
+      imgURL: 'static/img/login_default_2.png',
       showImg: 0,
       usernameWidth: 0
     }
@@ -47,7 +47,7 @@ class Login extends Component{
     //shall get data from cookies or back end server
     axios({
       method: 'get',
-      url: '/static/data/user.json',
+      url: 'static/data/user.json',
       responseType: 'json'
     }).then((res)=>{
       try {
