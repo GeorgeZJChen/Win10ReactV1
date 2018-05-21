@@ -71,6 +71,36 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./app/src/css/gadgets/loader.css":
+/*!****************************************!*\
+  !*** ./app/src/css/gadgets/loader.css ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader??ref--5-1!./loader.css */ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/gadgets/loader.css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./app/src/css/login/login.css":
 /*!*************************************!*\
   !*** ./app/src/css/login/login.css ***!
@@ -101,6 +131,111 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./app/src/css/system.css":
+/*!********************************!*\
+  !*** ./app/src/css/system.css ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--5-1!./system.css */ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/system.css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./app/src/js/components/loader.js":
+/*!*****************************************!*\
+  !*** ./app/src/js/components/loader.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _loader = __webpack_require__(/*! ../../css/gadgets/loader.css */ "./app/src/css/gadgets/loader.css");
+
+var _loader2 = _interopRequireDefault(_loader);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Loader = function (_Component) {
+  _inherits(Loader, _Component);
+
+  function Loader(props) {
+    _classCallCheck(this, Loader);
+
+    var _this = _possibleConstructorReturn(this, (Loader.__proto__ || Object.getPrototypeOf(Loader)).call(this, props));
+
+    _this.class2 = '';
+    if (props.size == 'small') {
+      _this.class2 = _loader2.default.w30;
+    } else if (props.size == 'medium') {
+      _this.class2 = _loader2.default.w40;
+    }
+    return _this;
+  }
+
+  _createClass(Loader, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: _loader2.default.loader + ' ' + this.class2 },
+        _react2.default.createElement('div', { className: _loader2.default.loaderCircle }),
+        _react2.default.createElement('div', { className: _loader2.default.loaderCircle }),
+        _react2.default.createElement('div', { className: _loader2.default.loaderCircle }),
+        _react2.default.createElement('div', { className: _loader2.default.loaderCircle }),
+        _react2.default.createElement('div', { className: _loader2.default.loaderCircle })
+      );
+    }
+  }]);
+
+  return Loader;
+}(_react.Component);
+
+exports.default = Loader;
+
+/***/ }),
+
 /***/ "./app/src/js/login/login.js":
 /*!***********************************!*\
   !*** ./app/src/js/login/login.js ***!
@@ -125,9 +260,19 @@ var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/i
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
+var _axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _loader = __webpack_require__(/*! ../components/loader.js */ "./app/src/js/components/loader.js");
+
+var _loader2 = _interopRequireDefault(_loader);
+
 var _login = __webpack_require__(/*! ../../css/login/login.css */ "./app/src/css/login/login.css");
 
 var _login2 = _interopRequireDefault(_login);
+
+__webpack_require__(/*! ../../css/system.css */ "./app/src/css/system.css");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -147,7 +292,15 @@ var Login = function (_Component) {
 
     _this.parentId = props.parentId;
     _this.state = {
-      transitionDelayFlag: 0
+      pageReady: 0,
+      opacity: 1,
+      imgURL: '/static/img/login_default_2.png',
+      showImg: 0,
+      usernameWidth: 0
+    };
+    _this.userInfo = {
+      username: '',
+      portraitURL: null
     };
     return _this;
   }
@@ -159,53 +312,157 @@ var Login = function (_Component) {
 
       setTimeout(function () {
         _this2.setState({
-          transitionDelayFlag: 1
+          pageReady: 1
         });
-      }, 150);
+      }, 2000);
+      this.dateIntvId = setInterval(function () {
+        var date = new Date();
+        var dateStr = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getDay()] + ', ' + ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()] + ', ' + date.getDate();
+        _this2.setState({
+          date: dateStr,
+          time: (date.getHours() > 9 ? date.getHours() : '0' + date.getHours()) + ':' + (date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes())
+        });
+      }, 2000);
+      this.loadUserInformation();
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      console.log('unmount');
+      clearInterval(this.dateIntvId);
+    }
+  }, {
+    key: 'loadUserInformation',
+    value: function loadUserInformation() {
+      var _this3 = this;
+
+      //shall get data from cookies or back end server
+      (0, _axios2.default)({
+        method: 'get',
+        url: '/static/data/user.json',
+        responseType: 'json'
+      }).then(function (res) {
+        try {
+          _this3.userInfo = res.data;
+          _this3.refs.username.innerHTML = res.data.username;
+          _this3.refs.greetings.style.maxWidth = _this3.refs.username.offsetWidth + 'px';
+        } catch (e) {
+          console.error('Data format error');
+        }
+      }).catch(function (err) {
+        console.warn(err);
+      });
     }
   }, {
     key: 'toLogin',
     value: function toLogin() {
-      var _this3 = this;
+      this.setState({
+        removeDateCover: 1
+      });
+    }
+  }, {
+    key: 'login',
+    value: function login() {
+      var _this4 = this;
 
+      this.refs.greetings.innerHTML = 'Welcome!';
+      this.refs.greetings.style.fontSize = '24px';
+      this.refs.btnLogin.style.position = "relative";
+      this.refs.btnLogin.style.height = '24px';
+      _reactDom2.default.render(_react2.default.createElement(_loader2.default, { size: 'medium' }), this.refs.btnLogin);
       setTimeout(function () {
-        // this.setState = {remove: true}
-        _reactDom2.default.unmountComponentAtNode(document.getElementById(_this3.parentId));
-      }, 200);
+        _this4.setState({
+          opacity: 0
+        });
+        setTimeout(function () {
+          _reactDom2.default.unmountComponentAtNode(document.getElementById(_this4.parentId));
+        }, 500);
+      }, 1500);
+    }
+  }, {
+    key: 'imgReady',
+    value: function imgReady() {
+      this.setState({
+        showImg: 1
+      });
+    }
+  }, {
+    key: 'getPortrait',
+    value: function getPortrait() {
+      if (this.userInfo.portraitURL) {
+        return _react2.default.createElement('img', { style: { width: '100%', height: '100%' }, src: this.userInfo.portraitURL });
+      }
+      return _react2.default.createElement(
+        'div',
+        { className: _login2.default.portraitDefault },
+        _react2.default.createElement('div', { className: _login2.default.portraitDefaultB })
+      );
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this4 = this;
+      var _this5 = this;
 
       return _react2.default.createElement(
         'div',
-        { className: [_login2.default.container, this.state.transitionDelayFlag ? _login2.default.transition : ''].join(' '), id: 'login_container' },
+        { className: _login2.default.container + ' ' + _login2.default.fullScreen + ' ' + (this.state.pageReady ? _login2.default.transition : ''), style: { opacity: this.state.opacity } },
+        _react2.default.createElement('img', { className: _login2.default.backgroundImg + ' ' + _login2.default.fullScreen, src: this.state.imgURL, onLoad: function onLoad() {
+            return _this5.imgReady();
+          } }),
+        _react2.default.createElement('div', { className: _login2.default.blocker + ' ' + _login2.default.fullScreen, style: { opacity: this.state.showImg && this.state.pageReady ? 0 : 1 } }),
         _react2.default.createElement(
           'div',
-          { className: _login2.default.greetings },
-          'Welcome'
+          { className: _login2.default.loginCover + ' ' + _login2.default.fullScreen, style: { opacity: this.state.removeDateCover ? 1 : 0 } },
+          _react2.default.createElement(
+            'div',
+            { className: _login2.default.loginCoverContainer },
+            _react2.default.createElement(
+              'div',
+              { className: _login2.default.portrait },
+              this.getPortrait()
+            ),
+            _react2.default.createElement('div', null),
+            _react2.default.createElement('div', { className: _login2.default.username, ref: 'username' }),
+            _react2.default.createElement('div', null),
+            _react2.default.createElement(
+              'div',
+              { className: _login2.default.greetings, ref: 'greetings' },
+              'Welcome! If you are to login, please click the button below.'
+            ),
+            _react2.default.createElement('div', null),
+            _react2.default.createElement(
+              'div',
+              { className: _login2.default.btnLogin, ref: 'btnLogin', onClick: function onClick() {
+                  return _this5.login();
+                } },
+              'Log in'
+            )
+          )
         ),
         _react2.default.createElement(
           'div',
-          { className: 'icon-loader', id: _login2.default.loader },
-          _react2.default.createElement('div', { className: 'icon-loader-circle' }),
-          _react2.default.createElement('div', { className: 'icon-loader-circle' }),
-          _react2.default.createElement('div', { className: 'icon-loader-circle' }),
-          _react2.default.createElement('div', { className: 'icon-loader-circle' }),
-          _react2.default.createElement('div', { className: 'icon-loader-circle' })
+          { className: _login2.default.dateCover + ' ' + _login2.default.fullScreen, onClick: function onClick() {
+              return _this5.toLogin();
+            },
+            style: { top: this.state.removeDateCover ? '-50%' : 0, opacity: this.state.removeDateCover ? 0 : 1, zIndex: this.state.removeDateCover ? 0 : 2 } },
+          _react2.default.createElement(
+            'div',
+            { className: _login2.default.date },
+            _react2.default.createElement(
+              'div',
+              { className: _login2.default.dateTime },
+              this.state.time
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: _login2.default.dateDate },
+              this.state.date
+            )
+          )
         ),
         _react2.default.createElement(
           'div',
-          { className: _login2.default.button, onClick: function onClick() {
-              return _this4.toLogin();
-            } },
-          'Log in'
+          { style: { visibility: this.state.showImg && this.state.pageReady ? 'hidden' : 'visible', marginTop: 50 } },
+          _react2.default.createElement(_loader2.default, null)
         )
       );
     }
@@ -240,7 +497,1703 @@ var _login2 = _interopRequireDefault(_login);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(0, _reactDom.render)(_react2.default.createElement(_login2.default, null), document.getElementById('win10_login'));
+setTimeout(function functionName() {
+  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
+}, 500);
+
+/***/ }),
+
+/***/ "./node_modules/axios/index.js":
+/*!*************************************!*\
+  !*** ./node_modules/axios/index.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! ./lib/axios */ "./node_modules/axios/lib/axios.js");
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/adapters/xhr.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/adapters/xhr.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var settle = __webpack_require__(/*! ./../core/settle */ "./node_modules/axios/lib/core/settle.js");
+var buildURL = __webpack_require__(/*! ./../helpers/buildURL */ "./node_modules/axios/lib/helpers/buildURL.js");
+var parseHeaders = __webpack_require__(/*! ./../helpers/parseHeaders */ "./node_modules/axios/lib/helpers/parseHeaders.js");
+var isURLSameOrigin = __webpack_require__(/*! ./../helpers/isURLSameOrigin */ "./node_modules/axios/lib/helpers/isURLSameOrigin.js");
+var createError = __webpack_require__(/*! ../core/createError */ "./node_modules/axios/lib/core/createError.js");
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(/*! ./../helpers/btoa */ "./node_modules/axios/lib/helpers/btoa.js");
+
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
+    }
+
+    var request = new XMLHttpRequest();
+    var loadEvent = 'onreadystatechange';
+    var xDomain = false;
+
+    // For IE 8/9 CORS support
+    // Only supports POST and GET calls and doesn't returns the response headers.
+    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
+    if ("development" !== 'test' &&
+        typeof window !== 'undefined' &&
+        window.XDomainRequest && !('withCredentials' in request) &&
+        !isURLSameOrigin(config.url)) {
+      request = new window.XDomainRequest();
+      loadEvent = 'onload';
+      xDomain = true;
+      request.onprogress = function handleProgress() {};
+      request.ontimeout = function handleTimeout() {};
+    }
+
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password || '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
+
+    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    // Listen for ready state
+    request[loadEvent] = function handleLoad() {
+      if (!request || (request.readyState !== 4 && !xDomain)) {
+        return;
+      }
+
+      // The request errored out and we didn't get a response, this will be
+      // handled by onerror instead
+      // With one exception: request that using file: protocol, most browsers
+      // will return status as 0 even though it's a successful request
+      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+        return;
+      }
+
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
+      var response = {
+        data: responseData,
+        // IE sends 1223 instead of 204 (https://github.com/axios/axios/issues/201)
+        status: request.status === 1223 ? 204 : request.status,
+        statusText: request.status === 1223 ? 'No Content' : request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+
+      settle(resolve, reject, response);
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config, null, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED',
+        request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      var cookies = __webpack_require__(/*! ./../helpers/cookies */ "./node_modules/axios/lib/helpers/cookies.js");
+
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
+          cookies.read(config.xsrfCookieName) :
+          undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (config.withCredentials) {
+      request.withCredentials = true;
+    }
+
+    // Add responseType to request if needed
+    if (config.responseType) {
+      try {
+        request.responseType = config.responseType;
+      } catch (e) {
+        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
+        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
+        if (config.responseType !== 'json') {
+          throw e;
+        }
+      }
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
+    }
+
+    if (config.cancelToken) {
+      // Handle cancellation
+      config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+          return;
+        }
+
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+      });
+    }
+
+    if (requestData === undefined) {
+      requestData = null;
+    }
+
+    // Send the request
+    request.send(requestData);
+  });
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/axios.js":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/axios.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./utils */ "./node_modules/axios/lib/utils.js");
+var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js");
+var Axios = __webpack_require__(/*! ./core/Axios */ "./node_modules/axios/lib/core/Axios.js");
+var defaults = __webpack_require__(/*! ./defaults */ "./node_modules/axios/lib/defaults.js");
+
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ * @return {Axios} A new instance of Axios
+ */
+function createInstance(defaultConfig) {
+  var context = new Axios(defaultConfig);
+  var instance = bind(Axios.prototype.request, context);
+
+  // Copy axios.prototype to instance
+  utils.extend(instance, Axios.prototype, context);
+
+  // Copy context to instance
+  utils.extend(instance, context);
+
+  return instance;
+}
+
+// Create the default instance to be exported
+var axios = createInstance(defaults);
+
+// Expose Axios class to allow class inheritance
+axios.Axios = Axios;
+
+// Factory for creating new instances
+axios.create = function create(instanceConfig) {
+  return createInstance(utils.merge(defaults, instanceConfig));
+};
+
+// Expose Cancel & CancelToken
+axios.Cancel = __webpack_require__(/*! ./cancel/Cancel */ "./node_modules/axios/lib/cancel/Cancel.js");
+axios.CancelToken = __webpack_require__(/*! ./cancel/CancelToken */ "./node_modules/axios/lib/cancel/CancelToken.js");
+axios.isCancel = __webpack_require__(/*! ./cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js");
+
+// Expose all/spread
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+axios.spread = __webpack_require__(/*! ./helpers/spread */ "./node_modules/axios/lib/helpers/spread.js");
+
+module.exports = axios;
+
+// Allow use of default import syntax in TypeScript
+module.exports.default = axios;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/Cancel.js":
+/*!*************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/Cancel.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * A `Cancel` is an object that is thrown when an operation is canceled.
+ *
+ * @class
+ * @param {string=} message The message.
+ */
+function Cancel(message) {
+  this.message = message;
+}
+
+Cancel.prototype.toString = function toString() {
+  return 'Cancel' + (this.message ? ': ' + this.message : '');
+};
+
+Cancel.prototype.__CANCEL__ = true;
+
+module.exports = Cancel;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/CancelToken.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/CancelToken.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Cancel = __webpack_require__(/*! ./Cancel */ "./node_modules/axios/lib/cancel/Cancel.js");
+
+/**
+ * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ *
+ * @class
+ * @param {Function} executor The executor function.
+ */
+function CancelToken(executor) {
+  if (typeof executor !== 'function') {
+    throw new TypeError('executor must be a function.');
+  }
+
+  var resolvePromise;
+  this.promise = new Promise(function promiseExecutor(resolve) {
+    resolvePromise = resolve;
+  });
+
+  var token = this;
+  executor(function cancel(message) {
+    if (token.reason) {
+      // Cancellation has already been requested
+      return;
+    }
+
+    token.reason = new Cancel(message);
+    resolvePromise(token.reason);
+  });
+}
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+CancelToken.prototype.throwIfRequested = function throwIfRequested() {
+  if (this.reason) {
+    throw this.reason;
+  }
+};
+
+/**
+ * Returns an object that contains a new `CancelToken` and a function that, when called,
+ * cancels the `CancelToken`.
+ */
+CancelToken.source = function source() {
+  var cancel;
+  var token = new CancelToken(function executor(c) {
+    cancel = c;
+  });
+  return {
+    token: token,
+    cancel: cancel
+  };
+};
+
+module.exports = CancelToken;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/isCancel.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/isCancel.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/Axios.js":
+/*!**********************************************!*\
+  !*** ./node_modules/axios/lib/core/Axios.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var defaults = __webpack_require__(/*! ./../defaults */ "./node_modules/axios/lib/defaults.js");
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var InterceptorManager = __webpack_require__(/*! ./InterceptorManager */ "./node_modules/axios/lib/core/InterceptorManager.js");
+var dispatchRequest = __webpack_require__(/*! ./dispatchRequest */ "./node_modules/axios/lib/core/dispatchRequest.js");
+
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} instanceConfig The default config for the instance
+ */
+function Axios(instanceConfig) {
+  this.defaults = instanceConfig;
+  this.interceptors = {
+    request: new InterceptorManager(),
+    response: new InterceptorManager()
+  };
+}
+
+/**
+ * Dispatch a request
+ *
+ * @param {Object} config The config specific for this request (merged with this.defaults)
+ */
+Axios.prototype.request = function request(config) {
+  /*eslint no-param-reassign:0*/
+  // Allow for axios('example/url'[, config]) a la fetch API
+  if (typeof config === 'string') {
+    config = utils.merge({
+      url: arguments[0]
+    }, arguments[1]);
+  }
+
+  config = utils.merge(defaults, {method: 'get'}, this.defaults, config);
+  config.method = config.method.toLowerCase();
+
+  // Hook up interceptors middleware
+  var chain = [dispatchRequest, undefined];
+  var promise = Promise.resolve(config);
+
+  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+    chain.unshift(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+    chain.push(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  while (chain.length) {
+    promise = promise.then(chain.shift(), chain.shift());
+  }
+
+  return promise;
+};
+
+// Provide aliases for supported request methods
+utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, config) {
+    return this.request(utils.merge(config || {}, {
+      method: method,
+      url: url
+    }));
+  };
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, data, config) {
+    return this.request(utils.merge(config || {}, {
+      method: method,
+      url: url,
+      data: data
+    }));
+  };
+});
+
+module.exports = Axios;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/InterceptorManager.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/core/InterceptorManager.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+function InterceptorManager() {
+  this.handlers = [];
+}
+
+/**
+ * Add a new interceptor to the stack
+ *
+ * @param {Function} fulfilled The function to handle `then` for a `Promise`
+ * @param {Function} rejected The function to handle `reject` for a `Promise`
+ *
+ * @return {Number} An ID used to remove interceptor later
+ */
+InterceptorManager.prototype.use = function use(fulfilled, rejected) {
+  this.handlers.push({
+    fulfilled: fulfilled,
+    rejected: rejected
+  });
+  return this.handlers.length - 1;
+};
+
+/**
+ * Remove an interceptor from the stack
+ *
+ * @param {Number} id The ID that was returned by `use`
+ */
+InterceptorManager.prototype.eject = function eject(id) {
+  if (this.handlers[id]) {
+    this.handlers[id] = null;
+  }
+};
+
+/**
+ * Iterate over all the registered interceptors
+ *
+ * This method is particularly useful for skipping over any
+ * interceptors that may have become `null` calling `eject`.
+ *
+ * @param {Function} fn The function to call for each interceptor
+ */
+InterceptorManager.prototype.forEach = function forEach(fn) {
+  utils.forEach(this.handlers, function forEachHandler(h) {
+    if (h !== null) {
+      fn(h);
+    }
+  });
+};
+
+module.exports = InterceptorManager;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/createError.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/core/createError.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var enhanceError = __webpack_require__(/*! ./enhanceError */ "./node_modules/axios/lib/core/enhanceError.js");
+
+/**
+ * Create an Error with the specified message, config, error code, request and response.
+ *
+ * @param {string} message The error message.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+module.exports = function createError(message, config, code, request, response) {
+  var error = new Error(message);
+  return enhanceError(error, config, code, request, response);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/dispatchRequest.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/core/dispatchRequest.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var transformData = __webpack_require__(/*! ./transformData */ "./node_modules/axios/lib/core/transformData.js");
+var isCancel = __webpack_require__(/*! ../cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js");
+var defaults = __webpack_require__(/*! ../defaults */ "./node_modules/axios/lib/defaults.js");
+var isAbsoluteURL = __webpack_require__(/*! ./../helpers/isAbsoluteURL */ "./node_modules/axios/lib/helpers/isAbsoluteURL.js");
+var combineURLs = __webpack_require__(/*! ./../helpers/combineURLs */ "./node_modules/axios/lib/helpers/combineURLs.js");
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+}
+
+/**
+ * Dispatch a request to the server using the configured adapter.
+ *
+ * @param {object} config The config that is to be used for the request
+ * @returns {Promise} The Promise to be fulfilled
+ */
+module.exports = function dispatchRequest(config) {
+  throwIfCancellationRequested(config);
+
+  // Support baseURL config
+  if (config.baseURL && !isAbsoluteURL(config.url)) {
+    config.url = combineURLs(config.baseURL, config.url);
+  }
+
+  // Ensure headers exist
+  config.headers = config.headers || {};
+
+  // Transform request data
+  config.data = transformData(
+    config.data,
+    config.headers,
+    config.transformRequest
+  );
+
+  // Flatten headers
+  config.headers = utils.merge(
+    config.headers.common || {},
+    config.headers[config.method] || {},
+    config.headers || {}
+  );
+
+  utils.forEach(
+    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+    function cleanHeaderConfig(method) {
+      delete config.headers[method];
+    }
+  );
+
+  var adapter = config.adapter || defaults.adapter;
+
+  return adapter(config).then(function onAdapterResolution(response) {
+    throwIfCancellationRequested(config);
+
+    // Transform response data
+    response.data = transformData(
+      response.data,
+      response.headers,
+      config.transformResponse
+    );
+
+    return response;
+  }, function onAdapterRejection(reason) {
+    if (!isCancel(reason)) {
+      throwIfCancellationRequested(config);
+
+      // Transform response data
+      if (reason && reason.response) {
+        reason.response.data = transformData(
+          reason.response.data,
+          reason.response.headers,
+          config.transformResponse
+        );
+      }
+    }
+
+    return Promise.reject(reason);
+  });
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/enhanceError.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/core/enhanceError.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Update an Error with the specified config, error code, and response.
+ *
+ * @param {Error} error The error to update.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The error.
+ */
+module.exports = function enhanceError(error, config, code, request, response) {
+  error.config = config;
+  if (code) {
+    error.code = code;
+  }
+  error.request = request;
+  error.response = response;
+  return error;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/settle.js":
+/*!***********************************************!*\
+  !*** ./node_modules/axios/lib/core/settle.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var createError = __webpack_require__(/*! ./createError */ "./node_modules/axios/lib/core/createError.js");
+
+/**
+ * Resolve or reject a Promise based on response status.
+ *
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
+ */
+module.exports = function settle(resolve, reject, response) {
+  var validateStatus = response.config.validateStatus;
+  // Note: status is not exposed by XDomainRequest
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
+  } else {
+    reject(createError(
+      'Request failed with status code ' + response.status,
+      response.config,
+      null,
+      response.request,
+      response
+    ));
+  }
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/transformData.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/transformData.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Object|String} data The data to be transformed
+ * @param {Array} headers The headers for the request or response
+ * @param {Array|Function} fns A single function or Array of functions
+ * @returns {*} The resulting transformed data
+ */
+module.exports = function transformData(data, headers, fns) {
+  /*eslint no-param-reassign:0*/
+  utils.forEach(fns, function transform(fn) {
+    data = fn(data, headers);
+  });
+
+  return data;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/defaults.js":
+/*!********************************************!*\
+  !*** ./node_modules/axios/lib/defaults.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var utils = __webpack_require__(/*! ./utils */ "./node_modules/axios/lib/utils.js");
+var normalizeHeaderName = __webpack_require__(/*! ./helpers/normalizeHeaderName */ "./node_modules/axios/lib/helpers/normalizeHeaderName.js");
+
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = __webpack_require__(/*! ./adapters/xhr */ "./node_modules/axios/lib/adapters/xhr.js");
+  } else if (typeof process !== 'undefined') {
+    // For node use HTTP adapter
+    adapter = __webpack_require__(/*! ./adapters/http */ "./node_modules/axios/lib/adapters/xhr.js");
+  }
+  return adapter;
+}
+
+var defaults = {
+  adapter: getDefaultAdapter(),
+
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Content-Type');
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+    if (utils.isObject(data)) {
+      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
+      return JSON.stringify(data);
+    }
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    /*eslint no-param-reassign:0*/
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (e) { /* Ignore */ }
+    }
+    return data;
+  }],
+
+  /**
+   * A timeout in milliseconds to abort a request. If set to 0 (default) a
+   * timeout is not created.
+   */
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+
+defaults.headers = {
+  common: {
+    'Accept': 'application/json, text/plain, */*'
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+module.exports = defaults;
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../process/browser.js */ "./node_modules/process/browser.js")))
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/bind.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/bind.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/btoa.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/btoa.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
+
+var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+function E() {
+  this.message = 'String contains an invalid character';
+}
+E.prototype = new Error;
+E.prototype.code = 5;
+E.prototype.name = 'InvalidCharacterError';
+
+function btoa(input) {
+  var str = String(input);
+  var output = '';
+  for (
+    // initialize result and counter
+    var block, charCode, idx = 0, map = chars;
+    // if the next str index does not exist:
+    //   change the mapping table to "="
+    //   check if d has no fractional digits
+    str.charAt(idx | 0) || (map = '=', idx % 1);
+    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+    output += map.charAt(63 & block >> 8 - idx % 1 * 8)
+  ) {
+    charCode = str.charCodeAt(idx += 3 / 4);
+    if (charCode > 0xFF) {
+      throw new E();
+    }
+    block = block << 8 | charCode;
+  }
+  return output;
+}
+
+module.exports = btoa;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/buildURL.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/buildURL.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+function encode(val) {
+  return encodeURIComponent(val).
+    replace(/%40/gi, '@').
+    replace(/%3A/gi, ':').
+    replace(/%24/g, '$').
+    replace(/%2C/gi, ',').
+    replace(/%20/g, '+').
+    replace(/%5B/gi, '[').
+    replace(/%5D/gi, ']');
+}
+
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @returns {string} The formatted url
+ */
+module.exports = function buildURL(url, params, paramsSerializer) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+
+  var serializedParams;
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params);
+  } else if (utils.isURLSearchParams(params)) {
+    serializedParams = params.toString();
+  } else {
+    var parts = [];
+
+    utils.forEach(params, function serialize(val, key) {
+      if (val === null || typeof val === 'undefined') {
+        return;
+      }
+
+      if (utils.isArray(val)) {
+        key = key + '[]';
+      } else {
+        val = [val];
+      }
+
+      utils.forEach(val, function parseValue(v) {
+        if (utils.isDate(v)) {
+          v = v.toISOString();
+        } else if (utils.isObject(v)) {
+          v = JSON.stringify(v);
+        }
+        parts.push(encode(key) + '=' + encode(v));
+      });
+    });
+
+    serializedParams = parts.join('&');
+  }
+
+  if (serializedParams) {
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/combineURLs.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/combineURLs.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ * @returns {string} The combined URL
+ */
+module.exports = function combineURLs(baseURL, relativeURL) {
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/cookies.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/cookies.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs support document.cookie
+  (function standardBrowserEnv() {
+    return {
+      write: function write(name, value, expires, path, domain, secure) {
+        var cookie = [];
+        cookie.push(name + '=' + encodeURIComponent(value));
+
+        if (utils.isNumber(expires)) {
+          cookie.push('expires=' + new Date(expires).toGMTString());
+        }
+
+        if (utils.isString(path)) {
+          cookie.push('path=' + path);
+        }
+
+        if (utils.isString(domain)) {
+          cookie.push('domain=' + domain);
+        }
+
+        if (secure === true) {
+          cookie.push('secure');
+        }
+
+        document.cookie = cookie.join('; ');
+      },
+
+      read: function read(name) {
+        var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+        return (match ? decodeURIComponent(match[3]) : null);
+      },
+
+      remove: function remove(name) {
+        this.write(name, '', Date.now() - 86400000);
+      }
+    };
+  })() :
+
+  // Non standard browser env (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return {
+      write: function write() {},
+      read: function read() { return null; },
+      remove: function remove() {}
+    };
+  })()
+);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isAbsoluteURL.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAbsoluteURL.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+module.exports = function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isURLSameOrigin.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isURLSameOrigin.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs have full support of the APIs needed to test
+  // whether the request URL is of the same origin as current location.
+  (function standardBrowserEnv() {
+    var msie = /(msie|trident)/i.test(navigator.userAgent);
+    var urlParsingNode = document.createElement('a');
+    var originURL;
+
+    /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+    function resolveURL(url) {
+      var href = url;
+
+      if (msie) {
+        // IE needs attribute set twice to normalize properties
+        urlParsingNode.setAttribute('href', href);
+        href = urlParsingNode.href;
+      }
+
+      urlParsingNode.setAttribute('href', href);
+
+      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+      return {
+        href: urlParsingNode.href,
+        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+        host: urlParsingNode.host,
+        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+        hostname: urlParsingNode.hostname,
+        port: urlParsingNode.port,
+        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+                  urlParsingNode.pathname :
+                  '/' + urlParsingNode.pathname
+      };
+    }
+
+    originURL = resolveURL(window.location.href);
+
+    /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+    return function isURLSameOrigin(requestURL) {
+      var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+      return (parsed.protocol === originURL.protocol &&
+            parsed.host === originURL.host);
+    };
+  })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return function isURLSameOrigin() {
+      return true;
+    };
+  })()
+);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/normalizeHeaderName.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/normalizeHeaderName.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = function normalizeHeaderName(headers, normalizedName) {
+  utils.forEach(headers, function processHeader(value, name) {
+    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+      headers[normalizedName] = value;
+      delete headers[name];
+    }
+  });
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/parseHeaders.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/parseHeaders.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+// Headers whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+var ignoreDuplicateOf = [
+  'age', 'authorization', 'content-length', 'content-type', 'etag',
+  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+  'referer', 'retry-after', 'user-agent'
+];
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} headers Headers needing to be parsed
+ * @returns {Object} Headers parsed into an object
+ */
+module.exports = function parseHeaders(headers) {
+  var parsed = {};
+  var key;
+  var val;
+  var i;
+
+  if (!headers) { return parsed; }
+
+  utils.forEach(headers.split('\n'), function parser(line) {
+    i = line.indexOf(':');
+    key = utils.trim(line.substr(0, i)).toLowerCase();
+    val = utils.trim(line.substr(i + 1));
+
+    if (key) {
+      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+        return;
+      }
+      if (key === 'set-cookie') {
+        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+      } else {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
+    }
+  });
+
+  return parsed;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/spread.js":
+/*!**************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/spread.js ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+module.exports = function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/utils.js":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/utils.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js");
+var isBuffer = __webpack_require__(/*! is-buffer */ "./node_modules/is-buffer/index.js");
+
+/*global toString:true*/
+
+// utils is a library of generic helper functions non-specific to axios
+
+var toString = Object.prototype.toString;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+function isArray(val) {
+  return toString.call(val) === '[object Array]';
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+function isArrayBuffer(val) {
+  return toString.call(val) === '[object ArrayBuffer]';
+}
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+function isFormData(val) {
+  return (typeof FormData !== 'undefined') && (val instanceof FormData);
+}
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  var result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+function isString(val) {
+  return typeof val === 'string';
+}
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+function isNumber(val) {
+  return typeof val === 'number';
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+function isObject(val) {
+  return val !== null && typeof val === 'object';
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+function isDate(val) {
+  return toString.call(val) === '[object Date]';
+}
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+function isFile(val) {
+  return toString.call(val) === '[object File]';
+}
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+function isBlob(val) {
+  return toString.call(val) === '[object Blob]';
+}
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+function isURLSearchParams(val) {
+  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+}
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+function trim(str) {
+  return str.replace(/^\s*/, '').replace(/\s*$/, '');
+}
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ */
+function isStandardBrowserEnv() {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    return false;
+  }
+  return (
+    typeof window !== 'undefined' &&
+    typeof document !== 'undefined'
+  );
+}
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object') {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  var result = {};
+  function assignValue(val, key) {
+    if (typeof result[key] === 'object' && typeof val === 'object') {
+      result[key] = merge(result[key], val);
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isBuffer: isBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/gadgets/loader.css":
+/*!****************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--5-1!./app/src/css/gadgets/loader.css ***!
+  \****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(true);
+// imports
+
+
+// module
+exports.push([module.i, ".loader_loader_1jlPj{position:absolute;top:50%;left:50%;transform:translateX(-50%) translateY(-50%);width:50px;height:50px;margin:auto}.loader_loader_1jlPj>.loader_loader-circle_1hj22{position:absolute;width:50px;height:50px;opacity:0;transform:rotate(225deg);animation-iteration-count:infinite;animation-name:loader_orbit_2ywHL;animation-duration:5.5s}.loader_loader_1jlPj>.loader_loader-circle_1hj22:after{content:\"\";position:absolute;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 9px hsla(0,0%,100%,.7)}.loader_loader_1jlPj.loader_w30_1vtg1,.loader_loader_1jlPj.loader_w30_1vtg1>.loader_loader-circle_1hj22{width:20px;height:20px}.loader_loader_1jlPj.loader_w30_1vtg1>.loader_loader-circle_1hj22:after{width:3px;height:3px}.loader_loader_1jlPj.loader_w40_uMSW_,.loader_loader_1jlPj.loader_w40_uMSW_>.loader_loader-circle_1hj22{width:35px;height:35px}.loader_loader_1jlPj.loader_w40_uMSW_>.loader_loader-circle_1hj22:after{width:5px;height:5px}.loader_loader_1jlPj>.loader_loader-circle_1hj22:nth-child(2){animation-delay:.24s}.loader_loader_1jlPj>.loader_loader-circle_1hj22:nth-child(3){animation-delay:.48s}.loader_loader_1jlPj>.loader_loader-circle_1hj22:nth-child(4){animation-delay:.72s}.loader_loader_1jlPj>.loader_loader-circle_1hj22:nth-child(5){animation-delay:.96s}@keyframes loader_orbit_2ywHL{0%{transform:rotate(225deg);opacity:1;animation-timing-function:ease-out}7%{transform:rotate(345deg);animation-timing-function:linear}30%{transform:rotate(455deg);animation-timing-function:ease-in-out}39%{transform:rotate(690deg);animation-timing-function:linear}70%{transform:rotate(815deg);opacity:1;animation-timing-function:ease-out}75%{transform:rotate(945deg);animation-timing-function:ease-out}76%{transform:rotate(945deg);opacity:0}to{transform:rotate(945deg);opacity:0}}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/gadgets/loader.css"],"names":[],"mappings":"AACA,qBACE,kBAAmB,AACnB,QAAS,AACT,SAAU,AACV,4CAA6C,AAC7C,WAAY,AACZ,YAAa,AACb,WAAa,CACd,AACD,iDACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,UAAW,AACX,yBAA0B,AAC1B,mCAAoC,AACpC,kCAAsB,AACtB,uBAAyB,CAC1B,AACD,uDACE,WAAY,AACZ,kBAAmB,AACnB,UAAW,AACX,WAAY,AACZ,kBAAmB,AACnB,gBAAiB,AACjB,qCAA4C,CAC7C,AACD,wGACE,WAAY,AACZ,WAAa,CACd,AACD,wEACE,UAAW,AACX,UAAY,CACb,AACD,wGACE,WAAY,AACZ,WAAa,CACd,AACD,wEACE,UAAW,AACX,UAAY,CACb,AACD,8DACE,oBAAuB,CACxB,AACD,8DACE,oBAAuB,CACxB,AACD,8DACE,oBAAuB,CACxB,AACD,8DACE,oBAAuB,CACxB,AACD,8BACE,GACE,yBAA0B,AAC1B,UAAW,AACX,kCAAoC,CACrC,AACD,GACE,yBAA0B,AAC1B,gCAAkC,CACnC,AACD,IACE,yBAA0B,AAC1B,qCAAuC,CACxC,AACD,IACE,yBAA0B,AAC1B,gCAAkC,CACnC,AACD,IACE,yBAA0B,AAC1B,UAAW,AACX,kCAAoC,CACrC,AACD,IACE,yBAA0B,AAC1B,kCAAoC,CACrC,AACD,IACE,yBAA0B,AAC1B,SAAW,CACZ,AACD,GACE,yBAA0B,AAC1B,SAAW,CACZ,CACF","file":"loader.css","sourcesContent":["/* loader is by Fernando de Almeida Faria */\r\n.loader{\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translateX(-50%) translateY(-50%);\r\n  width: 50px;\r\n  height: 50px;\r\n  margin: auto;\r\n}\r\n.loader>.loader-circle {\r\n  position: absolute;\r\n  width: 50px;\r\n  height: 50px;\r\n  opacity: 0;\r\n  transform: rotate(225deg);\r\n  animation-iteration-count: infinite;\r\n  animation-name: orbit;\r\n  animation-duration: 5.5s;\r\n}\r\n.loader>.loader-circle:after {\r\n  content: '';\r\n  position: absolute;\r\n  width: 6px;\r\n  height: 6px;\r\n  border-radius: 50%;\r\n  background: #fff;\r\n  box-shadow: 0 0 9px rgba(255, 255, 255, .7);\r\n}\r\n.loader.w30, .loader.w30>.loader-circle{\r\n  width: 20px;\r\n  height: 20px;\r\n}\r\n.loader.w30>.loader-circle:after{\r\n  width: 3px;\r\n  height: 3px;\r\n}\r\n.loader.w40, .loader.w40>.loader-circle{\r\n  width: 35px;\r\n  height: 35px;\r\n}\r\n.loader.w40>.loader-circle:after{\r\n  width: 5px;\r\n  height: 5px;\r\n}\r\n.loader>.loader-circle:nth-child(2) {\r\n  animation-delay: 240ms;\r\n}\r\n.loader>.loader-circle:nth-child(3) {\r\n  animation-delay: 480ms;\r\n}\r\n.loader>.loader-circle:nth-child(4) {\r\n  animation-delay: 720ms;\r\n}\r\n.loader>.loader-circle:nth-child(5) {\r\n  animation-delay: 960ms;\r\n}\r\n@keyframes orbit {\r\n  0% {\r\n    transform: rotate(225deg);\r\n    opacity: 1;\r\n    animation-timing-function: ease-out;\r\n  }\r\n  7% {\r\n    transform: rotate(345deg);\r\n    animation-timing-function: linear;\r\n  }\r\n  30% {\r\n    transform: rotate(455deg);\r\n    animation-timing-function: ease-in-out;\r\n  }\r\n  39% {\r\n    transform: rotate(690deg);\r\n    animation-timing-function: linear;\r\n  }\r\n  70% {\r\n    transform: rotate(815deg);\r\n    opacity: 1;\r\n    animation-timing-function: ease-out;\r\n  }\r\n  75% {\r\n    transform: rotate(945deg);\r\n    animation-timing-function: ease-out;\r\n  }\r\n  76% {\r\n    transform: rotate(945deg);\r\n    opacity: 0;\r\n  }\r\n  100% {\r\n    transform: rotate(945deg);\r\n    opacity: 0;\r\n  }\r\n}\r\n"],"sourceRoot":""}]);
+
+// exports
+exports.locals = {
+	"loader": "loader_loader_1jlPj",
+	"loader-circle": "loader_loader-circle_1hj22",
+	"loaderCircle": "loader_loader-circle_1hj22",
+	"orbit": "loader_orbit_2ywHL",
+	"w30": "loader_w30_1vtg1",
+	"w40": "loader_w40_uMSW_"
+};
 
 /***/ }),
 
@@ -256,17 +2209,59 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".login_container_1OBna{width:100%;height:100%;position:fixed;opacity:1;background-color:#0067b8}.login_transition_3U86N{transition:.15s ease-in}.login_container_1OBna.login_close_EC7ug{opacity:0}.login_greetings_2OEhe{position:absolute;max-width:350px;line-height:150%;color:#fff;text-align:center;font-size:30px;margin-top:-50px;top:50%;left:50%;transform:translate(-50%,-50%)}#login_loader_3Y44n{visibility:hidden;margin-top:50px}.login_button_3b2Rb{width:150px;height:40px;border:2px solid #fff;top:110px;text-align:center;font-size:23px;line-height:150%;position:absolute;box-sizing:border-box;top:50%;left:50%;transform:translate(-50%,-50%);margin-top:40px}.login_button_3b2Rb:hover{background-color:#fff;color:#0067b8}.login_button_3b2Rb:active{background-color:#bed9ee;border-color:#bed9ee;color:#0067b8}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/login/login.css"],"names":[],"mappings":"AAAA,uBACE,WAAY,AACZ,YAAa,AACb,eAAgB,AAChB,UAAW,AACX,wBAAmC,CACpC,AACD,wBACE,uBAA0B,CAC3B,AACD,yCACE,SAAW,CACZ,AACD,uBACE,kBAAmB,AACnB,gBAAiB,AACjB,iBAAkB,AAClB,WAAY,AACZ,kBAAmB,AACnB,eAAgB,AAChB,iBAAkB,AAClB,QAAS,AACT,SAAU,AACV,8BAAiC,CAClC,AACD,oBAEE,kBAAmB,AACnB,eAAiB,CAClB,AACD,oBACE,YAAa,AACb,YAAa,AACb,sBAAuB,AACvB,UAAW,AACX,kBAAmB,AACnB,eAAgB,AAChB,iBAAkB,AAClB,kBAAmB,AACnB,sBAAuB,AACvB,QAAS,AACT,SAAU,AACV,+BAAiC,AACjC,eAAiB,CAClB,AACD,0BACE,sBAAuB,AACvB,aAAwB,CACzB,AACD,2BACE,yBAA0B,AAC1B,qBAAsB,AACtB,aAAwB,CACzB","file":"login.css","sourcesContent":[".container{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: fixed;\r\n  opacity: 1;\r\n  background-color: rgb(0, 103, 184);\r\n}\r\n.transition{\r\n  transition: 0.15s ease-in;\r\n}\r\n.container.close{\r\n  opacity: 0;\r\n}\r\n.greetings{\r\n  position: absolute;\r\n  max-width: 350px;\r\n  line-height: 150%;\r\n  color: #fff;\r\n  text-align: center;\r\n  font-size: 30px;\r\n  margin-top: -50px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n#loader{\r\n  /* transition: 0.2s ease-in-out; */\r\n  visibility: hidden;\r\n  margin-top: 50px;\r\n}\r\n.button{\r\n  width: 150px;\r\n  height: 40px;\r\n  border: 2px solid #fff;\r\n  top: 110px;\r\n  text-align: center;\r\n  font-size: 23px;\r\n  line-height: 150%;\r\n  position: absolute;\r\n  box-sizing: border-box;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n  margin-top: 40px;\r\n}\r\n.button:hover{\r\n  background-color: #fff;\r\n  color: rgb(0, 103, 184);\r\n}\r\n.button:active{\r\n  background-color: #bed9ee;\r\n  border-color: #bed9ee;\r\n  color: rgb(0, 103, 184);\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".login_full-screen_2en_t{width:100%;height:100%;position:absolute}.login_container_1OBna{opacity:1;background-color:#0067b8;color:#fff}.login_transition_3U86N{transition:all .15s ease-in}.login_container_1OBna.login_close_EC7ug{opacity:0}.login_background-img_3f0i7{opacity:1;transition:all 1.5s ease-out}.login_blocker_1g377{background-color:#0067b8;transition:opacity 1s ease-out}.login_login-cover_2FOFz{transition:opacity .3s ease-out;z-index:1}.login_login-cover-container_2lfKU{position:absolute;max-width:450px;text-align:center;top:50%;left:50%;transform:translate(-50%,-50%)}.login_portrait_3BiRN{width:200px;height:200px;border-radius:50%;background-color:hsla(0,0%,68%,.7);overflow:hidden;display:inline-block;position:relative}.login_portrait-default_O6tAo{width:62px;height:62px;border:6px solid #fff;border-radius:50%;margin-top:-22px;box-sizing:border-box}.login_portrait-default-b_1LChd,.login_portrait-default_O6tAo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.login_portrait-default-b_1LChd{height:46px;width:92px;margin-top:49px;overflow:hidden}.login_portrait-default-b_1LChd:before{content:\"\";height:92px;width:92px;box-sizing:border-box;border:6px solid #fff;border-radius:50%;position:absolute;left:0}.login_username_3sni2{font-size:45px;text-align:center;display:inline-block;margin-top:10px;max-width:450px}.login_greetings_2OEhe{font-size:14px;display:inline-block;text-align:left;margin-top:25px}.login_btn-login_3_k2f{font-size:18px;display:inline-block;text-align:center;margin-top:20px}.login_btn-login_3_k2f:hover{color:#ccc}.login_btn-login_3_k2f:active{color:#a5a5a5}.login_date-cover_1r39F{transition:all .15s ease-in;z-index:2}.login_date_1mJIi{position:absolute;bottom:50px;left:20px}.login_date-time_HcCKB{font-size:90px}.login_date-date_C9Ewt{font-size:36px}.login_button_3b2Rb{width:150px;height:40px;border:2px solid #fff;top:110px;text-align:center;font-size:23px;line-height:150%;position:absolute;box-sizing:border-box;top:50%;left:50%;transform:translate(-50%,-50%);margin-top:40px}.login_button_3b2Rb:hover{background-color:#fff;color:#0067b8}.login_button_3b2Rb:active{background-color:#bed9ee;border-color:#bed9ee;color:#0067b8}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/login/login.css"],"names":[],"mappings":"AAAA,yBACE,WAAY,AACZ,YAAa,AACb,iBAAmB,CACpB,AACD,uBACE,UAAW,AACX,yBAAmC,AACnC,UAAY,CACb,AACD,wBACE,2BAA8B,CAC/B,AACD,yCACE,SAAW,CACZ,AACD,4BACE,UAAW,AACX,4BAA8B,CAC/B,AACD,qBACE,yBAAmC,AACnC,8BAAgC,CACjC,AACD,yBACE,gCAAkC,AAClC,SAAW,CACZ,AACD,mCACE,kBAAmB,AACnB,gBAAiB,AACjB,kBAAmB,AACnB,QAAS,AACT,SAAU,AACV,8BAAiC,CAClC,AACD,sBACE,YAAa,AACb,aAAc,AACd,kBAAmB,AACnB,mCAA2C,AAC3C,gBAAiB,AACjB,qBAAsB,AACtB,iBAAmB,CACpB,AACD,8BAKE,WAAY,AACZ,YAAa,AACb,sBAAuB,AACvB,kBAAmB,AACnB,iBAAkB,AAClB,qBAAuB,CACxB,AACD,8DAXE,kBAAmB,AACnB,SAAU,AACV,QAAS,AACT,8BAAiC,CAiBlC,AATD,gCAEE,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,eAAiB,CAIlB,AACD,uCACE,WAAY,AACZ,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,sBAAuB,AACvB,kBAAmB,AACnB,kBAAmB,AACnB,MAAU,CACX,AACD,sBACE,eAAgB,AAChB,kBAAmB,AACnB,qBAAsB,AACtB,gBAAiB,AACjB,eAAiB,CAClB,AACD,uBACE,eAAgB,AAChB,qBAAsB,AACtB,gBAAiB,AACjB,eAAiB,CAClB,AACD,uBACE,eAAgB,AAChB,qBAAsB,AACtB,kBAAmB,AACnB,eAAiB,CAClB,AACD,6BACE,UAAY,CACb,AACD,8BACE,aAAe,CAChB,AACD,wBACE,4BAA8B,AAC9B,SAAW,CACZ,AACD,kBACE,kBAAmB,AACnB,YAAa,AACb,SAAW,CACZ,AACD,uBACE,cAAgB,CACjB,AACD,uBACE,cAAgB,CACjB,AACD,oBACE,YAAa,AACb,YAAa,AACb,sBAAuB,AACvB,UAAW,AACX,kBAAmB,AACnB,eAAgB,AAChB,iBAAkB,AAClB,kBAAmB,AACnB,sBAAuB,AACvB,QAAS,AACT,SAAU,AACV,+BAAiC,AACjC,eAAiB,CAClB,AACD,0BACE,sBAAuB,AACvB,aAAwB,CACzB,AACD,2BACE,yBAA0B,AAC1B,qBAAsB,AACtB,aAAwB,CACzB","file":"login.css","sourcesContent":[".full-screen{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n}\r\n.container{\r\n  opacity: 1;\r\n  background-color: rgb(0, 103, 184);\r\n  color: #fff;\r\n}\r\n.transition{\r\n  transition: all 0.15s ease-in;\r\n}\r\n.container.close{\r\n  opacity: 0;\r\n}\r\n.background-img{\r\n  opacity: 1;\r\n  transition: all 1.5s ease-out;\r\n}\r\n.blocker{\r\n  background-color: rgb(0, 103, 184);\r\n  transition: opacity 1s ease-out;\r\n}\r\n.login-cover{\r\n  transition: opacity 0.3s ease-out;\r\n  z-index: 1;\r\n}\r\n.login-cover-container{\r\n  position: absolute;\r\n  max-width: 450px;\r\n  text-align: center;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n.portrait{\r\n  width: 200px;\r\n  height: 200px;\r\n  border-radius: 50%;\r\n  background-color: rgba(174, 174, 174, 0.7);\r\n  overflow: hidden;\r\n  display: inline-block;\r\n  position: relative;\r\n}\r\n.portrait-default{\r\n  position: absolute;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%, -50%);\r\n  width: 62px;\r\n  height: 62px;\r\n  border: 6px solid #fff;\r\n  border-radius: 50%;\r\n  margin-top: -22px;\r\n  box-sizing: border-box;\r\n}\r\n.portrait-default-b{\r\n  position: absolute;\r\n  height: 46px;\r\n  width: 92px;\r\n  margin-top: 49px;\r\n  overflow: hidden;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%,-50%);\r\n}\r\n.portrait-default-b::before{\r\n  content: \"\";\r\n  height: 92px;\r\n  width: 92px;\r\n  box-sizing: border-box;\r\n  border: 6px solid #fff;\r\n  border-radius: 50%;\r\n  position: absolute;\r\n  left: 0px;\r\n}\r\n.username{\r\n  font-size: 45px;\r\n  text-align: center;\r\n  display: inline-block;\r\n  margin-top: 10px;\r\n  max-width: 450px;\r\n}\r\n.greetings{\r\n  font-size: 14px;\r\n  display: inline-block;\r\n  text-align: left;\r\n  margin-top: 25px;\r\n}\r\n.btn-login{\r\n  font-size: 18px;\r\n  display: inline-block;\r\n  text-align: center;\r\n  margin-top: 20px;\r\n}\r\n.btn-login:hover{\r\n  color: #ccc;\r\n}\r\n.btn-login:active{\r\n  color: #a5a5a5;\r\n}\r\n.date-cover{\r\n  transition: all 0.15s ease-in;\r\n  z-index: 2;\r\n}\r\n.date{\r\n  position: absolute;\r\n  bottom: 50px;\r\n  left: 20px;\r\n}\r\n.date-time{\r\n  font-size: 90px;\r\n}\r\n.date-date{\r\n  font-size: 36px;\r\n}\r\n.button{\r\n  width: 150px;\r\n  height: 40px;\r\n  border: 2px solid #fff;\r\n  top: 110px;\r\n  text-align: center;\r\n  font-size: 23px;\r\n  line-height: 150%;\r\n  position: absolute;\r\n  box-sizing: border-box;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n  margin-top: 40px;\r\n}\r\n.button:hover{\r\n  background-color: #fff;\r\n  color: rgb(0, 103, 184);\r\n}\r\n.button:active{\r\n  background-color: #bed9ee;\r\n  border-color: #bed9ee;\r\n  color: rgb(0, 103, 184);\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
+	"full-screen": "login_full-screen_2en_t",
+	"fullScreen": "login_full-screen_2en_t",
 	"container": "login_container_1OBna",
 	"transition": "login_transition_3U86N",
 	"close": "login_close_EC7ug",
+	"background-img": "login_background-img_3f0i7",
+	"backgroundImg": "login_background-img_3f0i7",
+	"blocker": "login_blocker_1g377",
+	"login-cover": "login_login-cover_2FOFz",
+	"loginCover": "login_login-cover_2FOFz",
+	"login-cover-container": "login_login-cover-container_2lfKU",
+	"loginCoverContainer": "login_login-cover-container_2lfKU",
+	"portrait": "login_portrait_3BiRN",
+	"portrait-default": "login_portrait-default_O6tAo",
+	"portraitDefault": "login_portrait-default_O6tAo",
+	"portrait-default-b": "login_portrait-default-b_1LChd",
+	"portraitDefaultB": "login_portrait-default-b_1LChd",
+	"username": "login_username_3sni2",
 	"greetings": "login_greetings_2OEhe",
-	"loader": "login_loader_3Y44n",
+	"btn-login": "login_btn-login_3_k2f",
+	"btnLogin": "login_btn-login_3_k2f",
+	"date-cover": "login_date-cover_1r39F",
+	"dateCover": "login_date-cover_1r39F",
+	"date": "login_date_1mJIi",
+	"date-time": "login_date-time_HcCKB",
+	"dateTime": "login_date-time_HcCKB",
+	"date-date": "login_date-date_C9Ewt",
+	"dateDate": "login_date-date_C9Ewt",
 	"button": "login_button_3b2Rb"
 };
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/system.css":
+/*!********************************************************************!*\
+  !*** ./node_modules/css-loader??ref--5-1!./app/src/css/system.css ***!
+  \********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(true);
+// imports
+
+
+// module
+exports.push([module.i, ".colour-grey{background-color:#515c6b}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/system.css"],"names":[],"mappings":"AAAA,aACE,wBAA0B,CAC3B","file":"system.css","sourcesContent":[":global .colour-grey{\r\n  background-color: #515c6b;\r\n}\r\n"],"sourceRoot":""}]);
+
+// exports
+
 
 /***/ }),
 
@@ -1026,6 +3021,38 @@ module.exports = warning;
 
 /***/ }),
 
+/***/ "./node_modules/is-buffer/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/is-buffer/index.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/*!
+ * Determine if an object is a Buffer
+ *
+ * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+
+// The _isBuffer check is for Safari 5-7 support, because it's missing
+// Object.prototype.constructor. Remove this eventually
+module.exports = function (obj) {
+  return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)
+}
+
+function isBuffer (obj) {
+  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
+}
+
+// For Node v0.10 support. Remove this eventually.
+function isSlowBuffer (obj) {
+  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/object-assign/index.js":
 /*!*********************************************!*\
   !*** ./node_modules/object-assign/index.js ***!
@@ -1124,6 +3151,201 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 	return to;
 };
+
+
+/***/ }),
+
+/***/ "./node_modules/process/browser.js":
+/*!*****************************************!*\
+  !*** ./node_modules/process/browser.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
 
 
 /***/ }),
