@@ -294,7 +294,7 @@ var Login = function (_Component) {
     _this.state = {
       pageReady: 0,
       opacity: 1,
-      imgURL: '/static/img/login_default_2.png',
+      imgURL: 'static/img/login_default_2.png',
       showImg: 0,
       usernameWidth: 0
     };
@@ -338,7 +338,7 @@ var Login = function (_Component) {
       //shall get data from cookies or back end server
       (0, _axios2.default)({
         method: 'get',
-        url: '/static/data/user.json',
+        url: 'static/data/user.json',
         responseType: 'json'
       }).then(function (res) {
         try {
