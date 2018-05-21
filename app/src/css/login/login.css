@@ -1,32 +1,119 @@
-.container{
+.full-screen{
   width: 100%;
   height: 100%;
-  position: fixed;
+  position: absolute;
+}
+.container{
   opacity: 1;
   background-color: rgb(0, 103, 184);
+  color: #fff;
 }
 .transition{
-  transition: 0.15s ease-in;
+  transition: all 0.15s ease-in;
 }
 .container.close{
   opacity: 0;
 }
-.greetings{
+.background-img{
+  opacity: 1;
+  transition: all 1.5s ease-out;
+}
+.blocker{
+  background-color: rgb(0, 103, 184);
+  transition: opacity 1s ease-out;
+}
+.login-cover{
+  transition: opacity 0.3s ease-out;
+  z-index: 1;
+}
+.login-cover-container{
   position: absolute;
-  max-width: 350px;
-  line-height: 150%;
-  color: #fff;
+  max-width: 450px;
   text-align: center;
-  font-size: 30px;
-  margin-top: -50px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
-#loader{
-  /* transition: 0.2s ease-in-out; */
-  visibility: hidden;
-  margin-top: 50px;
+.portrait{
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-color: rgba(174, 174, 174, 0.7);
+  overflow: hidden;
+  display: inline-block;
+  position: relative;
+}
+.portrait-default{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 62px;
+  height: 62px;
+  border: 6px solid #fff;
+  border-radius: 50%;
+  margin-top: -22px;
+  box-sizing: border-box;
+}
+.portrait-default-b{
+  position: absolute;
+  height: 46px;
+  width: 92px;
+  margin-top: 49px;
+  overflow: hidden;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
+.portrait-default-b::before{
+  content: "";
+  height: 92px;
+  width: 92px;
+  box-sizing: border-box;
+  border: 6px solid #fff;
+  border-radius: 50%;
+  position: absolute;
+  left: 0px;
+}
+.username{
+  font-size: 45px;
+  text-align: center;
+  display: inline-block;
+  margin-top: 10px;
+  max-width: 450px;
+}
+.greetings{
+  font-size: 14px;
+  display: inline-block;
+  text-align: left;
+  margin-top: 25px;
+}
+.btn-login{
+  font-size: 18px;
+  display: inline-block;
+  text-align: center;
+  margin-top: 20px;
+}
+.btn-login:hover{
+  color: #ccc;
+}
+.btn-login:active{
+  color: #a5a5a5;
+}
+.date-cover{
+  transition: all 0.15s ease-in;
+  z-index: 2;
+}
+.date{
+  position: absolute;
+  bottom: 50px;
+  left: 20px;
+}
+.date-time{
+  font-size: 90px;
+}
+.date-date{
+  font-size: 36px;
 }
 .button{
   width: 150px;

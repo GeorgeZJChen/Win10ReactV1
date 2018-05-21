@@ -121,6 +121,10 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
 var _login = __webpack_require__(/*! ../../css/login/login.css */ "./app/src/css/login/login.css");
 
 var _login2 = _interopRequireDefault(_login);
@@ -136,26 +140,60 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Login = function (_Component) {
   _inherits(Login, _Component);
 
-  function Login() {
+  function Login(props) {
     _classCallCheck(this, Login);
 
-    return _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Login.__proto__ || Object.getPrototypeOf(Login)).call(this, props));
+
+    _this.parentId = props.parentId;
+    _this.state = {
+      transitionDelayFlag: 0
+    };
+    return _this;
   }
 
   _createClass(Login, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      setTimeout(function () {
+        _this2.setState({
+          transitionDelayFlag: 1
+        });
+      }, 150);
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      console.log('unmount');
+    }
+  }, {
+    key: 'toLogin',
+    value: function toLogin() {
+      var _this3 = this;
+
+      setTimeout(function () {
+        // this.setState = {remove: true}
+        _reactDom2.default.unmountComponentAtNode(document.getElementById(_this3.parentId));
+      }, 200);
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var _this4 = this;
+
       return _react2.default.createElement(
         'div',
-        { className: _login2.default.container + ' ' + _login2.default.containerClose, id: 'login_container' },
+        { className: [_login2.default.container, this.state.transitionDelayFlag ? _login2.default.transition : ''].join(' '), id: 'login_container' },
         _react2.default.createElement(
           'div',
-          { className: 'login-greetings', id: 'login_greetings' },
+          { className: _login2.default.greetings },
           'Welcome'
         ),
         _react2.default.createElement(
           'div',
-          { className: 'icon-loader', id: 'login_loader' },
+          { className: 'icon-loader', id: _login2.default.loader },
           _react2.default.createElement('div', { className: 'icon-loader-circle' }),
           _react2.default.createElement('div', { className: 'icon-loader-circle' }),
           _react2.default.createElement('div', { className: 'icon-loader-circle' }),
@@ -164,7 +202,9 @@ var Login = function (_Component) {
         ),
         _react2.default.createElement(
           'div',
-          { className: 'login-button', id: 'login_button' },
+          { className: _login2.default.button, onClick: function onClick() {
+              return _this4.toLogin();
+            } },
           'Log in'
         )
       );
@@ -216,19 +256,16 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".login_container_1OBna{width:100%;height:100%;position:fixed;opacity:1;transition:opacity .2s ease-in;background-color:#0067b8}.login_container_1OBna.login_container-close_1IGnz{opacity:0}.login_login-greetings_q_olo{position:absolute;max-width:350px;line-height:150%;color:#fff;text-align:center;font-size:30px;margin-top:-50px;top:50%;left:50%;transform:translate(-50%,-50%)}#login_login_loader_3BOmF{transition:.2s ease-in-out;visibility:hidden;margin-top:50px}.login_login-button_1I0WZ{width:150px;height:40px;border:2px solid #fff;top:110px;text-align:center;font-size:23px;line-height:150%;position:absolute;transition:.1s ease-in;box-sizing:border-box;top:50%;left:50%;transform:translate(-50%,-50%);margin-top:40px}.login_login-button_1I0WZ:hover{background-color:#fff;color:#0067b8}.login_login-button_1I0WZ:active{background-color:#bed9ee;border-color:#bed9ee;color:#0067b8}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/login/login.css"],"names":[],"mappings":"AAAA,uBACE,WAAY,AACZ,YAAa,AACb,eAAgB,AAChB,UAAW,AACX,+BAAiC,AACjC,wBAAmC,CACpC,AACD,mDACE,SAAW,CACZ,AACD,6BACE,kBAAmB,AACnB,gBAAiB,AACjB,iBAAkB,AAClB,WAAY,AACZ,kBAAmB,AACnB,eAAgB,AAChB,iBAAkB,AAClB,QAAS,AACT,SAAU,AACV,8BAAiC,CAClC,AACD,0BACE,2BAA6B,AAC7B,kBAAmB,AACnB,eAAiB,CAClB,AACD,0BACE,YAAa,AACb,YAAa,AACb,sBAAuB,AACvB,UAAW,AACX,kBAAmB,AACnB,eAAgB,AAChB,iBAAkB,AAClB,kBAAmB,AACnB,uBAAyB,AACzB,sBAAuB,AACvB,QAAS,AACT,SAAU,AACV,+BAAiC,AACjC,eAAiB,CAClB,AACD,gCACE,sBAAuB,AACvB,aAAwB,CACzB,AACD,iCACE,yBAA0B,AAC1B,qBAAsB,AACtB,aAAwB,CACzB","file":"login.css","sourcesContent":[".container{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: fixed;\r\n  opacity: 1;\r\n  transition: opacity 0.2s ease-in;\r\n  background-color: rgb(0, 103, 184);\r\n}\r\n.container.container-close{\r\n  opacity: 0;\r\n}\r\n.login-greetings{\r\n  position: absolute;\r\n  max-width: 350px;\r\n  line-height: 150%;\r\n  color: #fff;\r\n  text-align: center;\r\n  font-size: 30px;\r\n  margin-top: -50px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n#login_loader{\r\n  transition: 0.2s ease-in-out;\r\n  visibility: hidden;\r\n  margin-top: 50px;\r\n}\r\n.login-button{\r\n  width: 150px;\r\n  height: 40px;\r\n  border: 2px solid #fff;\r\n  top: 110px;\r\n  text-align: center;\r\n  font-size: 23px;\r\n  line-height: 150%;\r\n  position: absolute;\r\n  transition: 0.1s ease-in;\r\n  box-sizing: border-box;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n  margin-top: 40px;\r\n}\r\n.login-button:hover{\r\n  background-color: #fff;\r\n  color: rgb(0, 103, 184);\r\n}\r\n.login-button:active{\r\n  background-color: #bed9ee;\r\n  border-color: #bed9ee;\r\n  color: rgb(0, 103, 184);\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".login_container_1OBna{width:100%;height:100%;position:fixed;opacity:1;background-color:#0067b8}.login_transition_3U86N{transition:.15s ease-in}.login_container_1OBna.login_close_EC7ug{opacity:0}.login_greetings_2OEhe{position:absolute;max-width:350px;line-height:150%;color:#fff;text-align:center;font-size:30px;margin-top:-50px;top:50%;left:50%;transform:translate(-50%,-50%)}#login_loader_3Y44n{visibility:hidden;margin-top:50px}.login_button_3b2Rb{width:150px;height:40px;border:2px solid #fff;top:110px;text-align:center;font-size:23px;line-height:150%;position:absolute;box-sizing:border-box;top:50%;left:50%;transform:translate(-50%,-50%);margin-top:40px}.login_button_3b2Rb:hover{background-color:#fff;color:#0067b8}.login_button_3b2Rb:active{background-color:#bed9ee;border-color:#bed9ee;color:#0067b8}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/login/login.css"],"names":[],"mappings":"AAAA,uBACE,WAAY,AACZ,YAAa,AACb,eAAgB,AAChB,UAAW,AACX,wBAAmC,CACpC,AACD,wBACE,uBAA0B,CAC3B,AACD,yCACE,SAAW,CACZ,AACD,uBACE,kBAAmB,AACnB,gBAAiB,AACjB,iBAAkB,AAClB,WAAY,AACZ,kBAAmB,AACnB,eAAgB,AAChB,iBAAkB,AAClB,QAAS,AACT,SAAU,AACV,8BAAiC,CAClC,AACD,oBAEE,kBAAmB,AACnB,eAAiB,CAClB,AACD,oBACE,YAAa,AACb,YAAa,AACb,sBAAuB,AACvB,UAAW,AACX,kBAAmB,AACnB,eAAgB,AAChB,iBAAkB,AAClB,kBAAmB,AACnB,sBAAuB,AACvB,QAAS,AACT,SAAU,AACV,+BAAiC,AACjC,eAAiB,CAClB,AACD,0BACE,sBAAuB,AACvB,aAAwB,CACzB,AACD,2BACE,yBAA0B,AAC1B,qBAAsB,AACtB,aAAwB,CACzB","file":"login.css","sourcesContent":[".container{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: fixed;\r\n  opacity: 1;\r\n  background-color: rgb(0, 103, 184);\r\n}\r\n.transition{\r\n  transition: 0.15s ease-in;\r\n}\r\n.container.close{\r\n  opacity: 0;\r\n}\r\n.greetings{\r\n  position: absolute;\r\n  max-width: 350px;\r\n  line-height: 150%;\r\n  color: #fff;\r\n  text-align: center;\r\n  font-size: 30px;\r\n  margin-top: -50px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n#loader{\r\n  /* transition: 0.2s ease-in-out; */\r\n  visibility: hidden;\r\n  margin-top: 50px;\r\n}\r\n.button{\r\n  width: 150px;\r\n  height: 40px;\r\n  border: 2px solid #fff;\r\n  top: 110px;\r\n  text-align: center;\r\n  font-size: 23px;\r\n  line-height: 150%;\r\n  position: absolute;\r\n  box-sizing: border-box;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n  margin-top: 40px;\r\n}\r\n.button:hover{\r\n  background-color: #fff;\r\n  color: rgb(0, 103, 184);\r\n}\r\n.button:active{\r\n  background-color: #bed9ee;\r\n  border-color: #bed9ee;\r\n  color: rgb(0, 103, 184);\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
 	"container": "login_container_1OBna",
-	"container-close": "login_container-close_1IGnz",
-	"containerClose": "login_container-close_1IGnz",
-	"login-greetings": "login_login-greetings_q_olo",
-	"loginGreetings": "login_login-greetings_q_olo",
-	"login_loader": "login_login_loader_3BOmF",
-	"loginLoader": "login_login_loader_3BOmF",
-	"login-button": "login_login-button_1I0WZ",
-	"loginButton": "login_login-button_1I0WZ"
+	"transition": "login_transition_3U86N",
+	"close": "login_close_EC7ug",
+	"greetings": "login_greetings_2OEhe",
+	"loader": "login_loader_3Y44n",
+	"button": "login_button_3b2Rb"
 };
 
 /***/ }),
