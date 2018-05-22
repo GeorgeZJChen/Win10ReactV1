@@ -22,7 +22,9 @@
   "homepage": "https://github.com/GeorgeZJChen/Win10ReactV1#readme",
   "dependencies": {
     "axios": "^0.18.0",
+    "events": "^2.0.0",
     "express": "^4.16.3",
+    "npm": "^6.0.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2"
   },

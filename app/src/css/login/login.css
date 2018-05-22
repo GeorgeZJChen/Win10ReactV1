@@ -15,8 +15,9 @@
   opacity: 0;
 }
 .background-img{
+  min-width: 850px;
+  min-height: 604px;
   opacity: 1;
-  transition: all 1.5s ease-out;
 }
 .blocker{
   background-color: rgb(0, 103, 184);
@@ -93,6 +94,7 @@
   display: inline-block;
   text-align: center;
   margin-top: 20px;
+  cursor: pointer;
 }
 .btn-login:hover{
   color: #ccc;
@@ -115,27 +117,23 @@
 .date-date{
   font-size: 36px;
 }
-.button{
-  width: 150px;
-  height: 40px;
-  border: 2px solid #fff;
-  top: 110px;
-  text-align: center;
-  font-size: 23px;
-  line-height: 150%;
+.btn{
+  opacity: 0.7;
+  background-color: rgba(81, 92, 107, 0.4);
+  cursor: pointer;
+}
+.btn:hover{
+  opacity: 0.9;
+  background-color: rgba(81, 92, 107, 0.5);
+}
+.btn:active{
+  background-color: rgba(81, 92, 107, 0.6);
+}
+.lock{
+  opacity: 0.5;
   position: absolute;
-  box-sizing: border-box;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin-top: 40px;
-}
-.button:hover{
-  background-color: #fff;
-  color: rgb(0, 103, 184);
-}
-.button:active{
-  background-color: #bed9ee;
-  border-color: #bed9ee;
-  color: rgb(0, 103, 184);
+  left: 70px;
+  width: 55px;
+  height: 55px;
+  transform: translateY(-22%)scale(0.55);
 }

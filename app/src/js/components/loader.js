@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import css from '../../css/gadgets/loader.css'
+import css from '../../css/components/loader.css'
 
 class Loader extends Component{
   constructor(props){

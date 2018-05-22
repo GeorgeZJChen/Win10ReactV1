@@ -2,8 +2,10 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 import Loader from '../components/loader.js'
+import Events from '../components/event.js'
+import Desktop from '../desktop/desktop.js'
 import css from '../../css/login/login.css'
-import '../../css/system.css'
+import icon from '../../css/icon.css'
 
 class Login extends Component{
   constructor(props){
@@ -13,7 +15,7 @@ class Login extends Component{
       pageReady: 0,
       opacity: 1,
       imgURL: 'static/img/login_default_2.png',
-      showImg: 0,
+      imgReady: 0,
       usernameWidth: 0
     }
     this.userInfo = {
@@ -39,6 +41,9 @@ class Login extends Component{
       })
     }, 2000)
     this.loadUserInformation()
+    Events.once(Events.names.desktopReady, (message)=>{
+      this.desktopReady = 1
+    })
   }
   componentWillUnmount(){
     clearInterval(this.dateIntvId)
@@ -62,6 +67,7 @@ class Login extends Component{
     })
   }
   toLogin() {
+    if(!(this.state.imgReady&&this.state.pageReady)) return
     this.setState({
       removeDateCover : 1
     })
@@ -71,19 +77,29 @@ class Login extends Component{
     this.refs.greetings.style.fontSize = '24px'
     this.refs.btnLogin.style.position = "relative"
     this.refs.btnLogin.style.height = '24px'
+    this.refs.btnLogin.style.cursor = 'default'
     ReactDOM.render(<Loader size='medium'/>, this.refs.btnLogin)
-    setTimeout(()=>{
-      this.setState({
-        opacity: 0
-      })
-      setTimeout(()=>{
-        ReactDOM.unmountComponentAtNode(document.getElementById(this.parentId));
-      },500)
-    }, 1500)
+
+    ReactDOM.render(<Desktop/>, document.getElementById('win10_main'))
+
+    let tf = ()=>{
+      if(this.desktopReady){
+        this.setState({
+          opacity: 0
+        })
+        setTimeout(()=>{
+          ReactDOM.unmountComponentAtNode(document.getElementById(this.parentId))
+        }, 500)
+      }
+      else{
+        setTimeout(tf,100)
+      }
+    }
+    setTimeout(tf,1500)
   }
   imgReady(){
     this.setState({
-      showImg: 1
+      imgReady: 1
     })
   }
   getPortrait(){
@@ -98,10 +114,11 @@ class Login extends Component{
   }
   render() {
     return (
-      <div className={css.container+' '+css.fullScreen+' '+ (this.state.pageReady?css.transition:'')} style={{opacity: this.state.opacity}}>
+      <div className={css.container+' '+css.fullScreen+' '+ (this.state.pageReady?css.transition:'')} style={{opacity: this.state.opacity, zIndex:100}}>
         <img className={css.backgroundImg+' '+css.fullScreen} src={this.state.imgURL} onLoad={()=>this.imgReady()}/>
-        <div className={css.blocker+' '+css.fullScreen} style={{opacity:(this.state.showImg&&this.state.pageReady?0:1)}}></div>
-        <div className={css.loginCover+' '+css.fullScreen} style={{opacity:this.state.removeDateCover?1:0}}>
+        <div className={css.blocker+' '+css.fullScreen} style={{opacity:(this.state.imgReady&&this.state.pageReady?0:1)}}></div>
+        <div className={css.loginCover+' '+css.fullScreen} onDoubleClick={()=>this.setState({removeDateCover:0})}
+              style={{opacity:this.state.removeDateCover?1:0}}>
           <div className={css.loginCoverContainer}>
             <div className={css.portrait}>{this.getPortrait()}</div>
             <div></div>{/*empty divs are to make sure other elements occupy the hole inline while don't span the width*/}
@@ -111,15 +128,18 @@ class Login extends Component{
             <div></div>
             <div className={css.btnLogin} ref='btnLogin' onClick={()=>this.login()}>Log in</div>
           </div>
+          <div className={css.btn+' '+css.lock} onClick={()=>this.setState({removeDateCover:0})}>
+            <span className={icon.lock}><span className={icon.lockRing}></span></span>
+          </div>
         </div>
         <div className={css.dateCover+' '+css.fullScreen} onClick={()=>this.toLogin()}
-          style={{top: this.state.removeDateCover?'-50%':0, opacity: this.state.removeDateCover?0:1,zIndex:this.state.removeDateCover?0:2}}>
+          style={{top: (this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))?'-50%':0, opacity: (this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))?0:1,zIndex:this.state.removeDateCover?0:2}}>
           <div className={css.date}>
             <div className={css.dateTime}>{this.state.time}</div>
             <div className={css.dateDate}>{this.state.date}</div>
           </div>
         </div>
-        <div style={{visibility:(this.state.showImg&&this.state.pageReady?'hidden':'visible'), marginTop: 50}}>
+        <div style={{visibility:(this.state.imgReady&&this.state.pageReady?'hidden':'visible'), marginTop: 50}}>
           <Loader/>
         </div>
       </div>

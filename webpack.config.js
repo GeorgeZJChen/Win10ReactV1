@@ -2,8 +2,7 @@ const config = {
   mode: 'development',
   devtool: 'source-map',
   entry: {
-    login: __dirname +'/app/src/login.entry.js',
-    main: __dirname +'/app/src/main.entry.js'
+    main: __dirname +'/app/src/main.js',
   },
   output: {
     path: __dirname +'/public',
