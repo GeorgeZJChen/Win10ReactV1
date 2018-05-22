@@ -71,6 +71,36 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./app/src/css/components/loader.css":
+/*!*******************************************!*\
+  !*** ./app/src/css/components/loader.css ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader??ref--5-1!./loader.css */ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/components/loader.css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./app/src/css/desktop/desktop.css":
 /*!*****************************************!*\
   !*** ./app/src/css/desktop/desktop.css ***!
@@ -101,15 +131,15 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./app/src/css/gadgets/loader.css":
-/*!****************************************!*\
-  !*** ./app/src/css/gadgets/loader.css ***!
-  \****************************************/
+/***/ "./app/src/css/icon.css":
+/*!******************************!*\
+  !*** ./app/src/css/icon.css ***!
+  \******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../node_modules/css-loader??ref--5-1!./loader.css */ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/gadgets/loader.css");
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--5-1!./icon.css */ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/icon.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -123,7 +153,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -260,7 +290,7 @@ var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/i
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _loader = __webpack_require__(/*! ../../css/gadgets/loader.css */ "./app/src/css/gadgets/loader.css");
+var _loader = __webpack_require__(/*! ../../css/components/loader.css */ "./app/src/css/components/loader.css");
 
 var _loader2 = _interopRequireDefault(_loader);
 
@@ -351,6 +381,10 @@ var _desktop = __webpack_require__(/*! ../../css/desktop/desktop.css */ "./app/s
 
 var _desktop2 = _interopRequireDefault(_desktop);
 
+var _icon = __webpack_require__(/*! ../../css/icon.css */ "./app/src/css/icon.css");
+
+var _icon2 = _interopRequireDefault(_icon);
+
 __webpack_require__(/*! ../../css/system.css */ "./app/src/css/system.css");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -364,24 +398,37 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Desktop = function (_Component) {
   _inherits(Desktop, _Component);
 
-  function Desktop() {
+  function Desktop(props) {
     _classCallCheck(this, Desktop);
 
-    return _possibleConstructorReturn(this, (Desktop.__proto__ || Object.getPrototypeOf(Desktop)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Desktop.__proto__ || Object.getPrototypeOf(Desktop)).call(this, props));
+
+    _this.state = {
+      imgURL: 'static/img/desktop_default.jpg',
+      pageReady: 0,
+      imgReady: 0
+    };
+    return _this;
   }
 
   _createClass(Desktop, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      _event2.default.emit(_event2.default.names.desktopReady, 'Ready');
+      setTimeout(function () {
+        _event2.default.emit(_event2.default.names.desktopReady, 'Ready');
+      }, 1000);
     }
   }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       return _react2.default.createElement(
         'div',
-        null,
-        'desktop'
+        { className: _desktop2.default.desktop },
+        _react2.default.createElement('img', { className: _desktop2.default.backgroundImg, src: this.state.imgURL, onLoad: function onLoad() {
+            return _this2.setState({ imgReady: 1 });
+          } })
       );
     }
   }]);
@@ -437,6 +484,10 @@ var _login = __webpack_require__(/*! ../../css/login/login.css */ "./app/src/css
 
 var _login2 = _interopRequireDefault(_login);
 
+var _icon = __webpack_require__(/*! ../../css/icon.css */ "./app/src/css/icon.css");
+
+var _icon2 = _interopRequireDefault(_icon);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -487,10 +538,6 @@ var Login = function (_Component) {
         });
       }, 2000);
       this.loadUserInformation();
-      _event2.default.once(_event2.default.names.desktopReady, function (message) {
-        console.log(message);
-        console.log(_this2);
-      });
     }
   }, {
     key: 'componentWillUnmount',
@@ -541,14 +588,25 @@ var Login = function (_Component) {
 
       _reactDom2.default.render(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
 
-      setTimeout(function () {
-        _this4.setState({
-          opacity: 0
-        });
+      _event2.default.once(_event2.default.names.desktopReady, function (message) {
+        // this.desktopReady = 1
         setTimeout(function () {
-          _reactDom2.default.unmountComponentAtNode(document.getElementById(_this4.parentId));
-        }, 500);
-      }, 1500);
+          _this4.setState({
+            opacity: 0
+          });
+          setTimeout(function () {
+            _reactDom2.default.unmountComponentAtNode(document.getElementById(_this4.parentId));
+          }, 500);
+        }, 1000);
+      });
+      // let tf = ()=>{
+      //   if(this.desktopReady){
+      //   }
+      //   else{
+      //     setTimeout(tf,100)
+      //   }
+      // }
+      // setTimeout(tf,1500)
     }
   }, {
     key: 'imgReady',
@@ -583,7 +641,10 @@ var Login = function (_Component) {
         _react2.default.createElement('div', { className: _login2.default.blocker + ' ' + _login2.default.fullScreen, style: { opacity: this.state.imgReady && this.state.pageReady ? 0 : 1 } }),
         _react2.default.createElement(
           'div',
-          { className: _login2.default.loginCover + ' ' + _login2.default.fullScreen, style: { opacity: this.state.removeDateCover ? 1 : 0 } },
+          { className: _login2.default.loginCover + ' ' + _login2.default.fullScreen, onDoubleClick: function onDoubleClick() {
+              return _this5.setState({ removeDateCover: 0 });
+            },
+            style: { opacity: this.state.removeDateCover ? 1 : 0 } },
           _react2.default.createElement(
             'div',
             { className: _login2.default.loginCoverContainer },
@@ -607,6 +668,17 @@ var Login = function (_Component) {
                   return _this5.login();
                 } },
               'Log in'
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: _login2.default.btn + ' ' + _login2.default.lock, onClick: function onClick() {
+                return _this5.setState({ removeDateCover: 0 });
+              } },
+            _react2.default.createElement(
+              'span',
+              { className: _icon2.default.lock },
+              _react2.default.createElement('span', { className: _icon2.default.lockRing })
             )
           )
         ),
@@ -672,6 +744,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 setTimeout(function functionName() {
   (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
 }, 500);
+
+console.log('Copyright (c) 2018 Zhuojun Chen All Rights Reserved.');
 
 /***/ }),
 
@@ -2343,6 +2417,32 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/components/loader.css":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--5-1!./app/src/css/components/loader.css ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(true);
+// imports
+
+
+// module
+exports.push([module.i, ".loader_loader_3cDDH{position:absolute;top:50%;left:50%;transform:translateX(-50%) translateY(-50%);width:50px;height:50px;margin:auto}.loader_loader_3cDDH>.loader_loader-circle_3mueS{position:absolute;width:50px;height:50px;opacity:0;transform:rotate(225deg);animation-iteration-count:infinite;animation-name:loader_orbit_3vPQA;animation-duration:5.5s}.loader_loader_3cDDH>.loader_loader-circle_3mueS:after{content:\"\";position:absolute;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 9px hsla(0,0%,100%,.7)}.loader_loader_3cDDH.loader_w30_2juUc,.loader_loader_3cDDH.loader_w30_2juUc>.loader_loader-circle_3mueS{width:20px;height:20px}.loader_loader_3cDDH.loader_w30_2juUc>.loader_loader-circle_3mueS:after{width:3px;height:3px}.loader_loader_3cDDH.loader_w40_1_tYN,.loader_loader_3cDDH.loader_w40_1_tYN>.loader_loader-circle_3mueS{width:35px;height:35px}.loader_loader_3cDDH.loader_w40_1_tYN>.loader_loader-circle_3mueS:after{width:5px;height:5px}.loader_loader_3cDDH>.loader_loader-circle_3mueS:nth-child(2){animation-delay:.24s}.loader_loader_3cDDH>.loader_loader-circle_3mueS:nth-child(3){animation-delay:.48s}.loader_loader_3cDDH>.loader_loader-circle_3mueS:nth-child(4){animation-delay:.72s}.loader_loader_3cDDH>.loader_loader-circle_3mueS:nth-child(5){animation-delay:.96s}@keyframes loader_orbit_3vPQA{0%{transform:rotate(225deg);opacity:1;animation-timing-function:ease-out}7%{transform:rotate(345deg);animation-timing-function:linear}30%{transform:rotate(455deg);animation-timing-function:ease-in-out}39%{transform:rotate(690deg);animation-timing-function:linear}70%{transform:rotate(815deg);opacity:1;animation-timing-function:ease-out}75%{transform:rotate(945deg);animation-timing-function:ease-out}76%{transform:rotate(945deg);opacity:0}to{transform:rotate(945deg);opacity:0}}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/components/loader.css"],"names":[],"mappings":"AACA,qBACE,kBAAmB,AACnB,QAAS,AACT,SAAU,AACV,4CAA6C,AAC7C,WAAY,AACZ,YAAa,AACb,WAAa,CACd,AACD,iDACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,UAAW,AACX,yBAA0B,AAC1B,mCAAoC,AACpC,kCAAsB,AACtB,uBAAyB,CAC1B,AACD,uDACE,WAAY,AACZ,kBAAmB,AACnB,UAAW,AACX,WAAY,AACZ,kBAAmB,AACnB,gBAAiB,AACjB,qCAA4C,CAC7C,AACD,wGACE,WAAY,AACZ,WAAa,CACd,AACD,wEACE,UAAW,AACX,UAAY,CACb,AACD,wGACE,WAAY,AACZ,WAAa,CACd,AACD,wEACE,UAAW,AACX,UAAY,CACb,AACD,8DACE,oBAAuB,CACxB,AACD,8DACE,oBAAuB,CACxB,AACD,8DACE,oBAAuB,CACxB,AACD,8DACE,oBAAuB,CACxB,AACD,8BACE,GACE,yBAA0B,AAC1B,UAAW,AACX,kCAAoC,CACrC,AACD,GACE,yBAA0B,AAC1B,gCAAkC,CACnC,AACD,IACE,yBAA0B,AAC1B,qCAAuC,CACxC,AACD,IACE,yBAA0B,AAC1B,gCAAkC,CACnC,AACD,IACE,yBAA0B,AAC1B,UAAW,AACX,kCAAoC,CACrC,AACD,IACE,yBAA0B,AAC1B,kCAAoC,CACrC,AACD,IACE,yBAA0B,AAC1B,SAAW,CACZ,AACD,GACE,yBAA0B,AAC1B,SAAW,CACZ,CACF","file":"loader.css","sourcesContent":["/* loader is by Fernando de Almeida Faria */\r\n.loader{\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translateX(-50%) translateY(-50%);\r\n  width: 50px;\r\n  height: 50px;\r\n  margin: auto;\r\n}\r\n.loader>.loader-circle {\r\n  position: absolute;\r\n  width: 50px;\r\n  height: 50px;\r\n  opacity: 0;\r\n  transform: rotate(225deg);\r\n  animation-iteration-count: infinite;\r\n  animation-name: orbit;\r\n  animation-duration: 5.5s;\r\n}\r\n.loader>.loader-circle:after {\r\n  content: '';\r\n  position: absolute;\r\n  width: 6px;\r\n  height: 6px;\r\n  border-radius: 50%;\r\n  background: #fff;\r\n  box-shadow: 0 0 9px rgba(255, 255, 255, .7);\r\n}\r\n.loader.w30, .loader.w30>.loader-circle{\r\n  width: 20px;\r\n  height: 20px;\r\n}\r\n.loader.w30>.loader-circle:after{\r\n  width: 3px;\r\n  height: 3px;\r\n}\r\n.loader.w40, .loader.w40>.loader-circle{\r\n  width: 35px;\r\n  height: 35px;\r\n}\r\n.loader.w40>.loader-circle:after{\r\n  width: 5px;\r\n  height: 5px;\r\n}\r\n.loader>.loader-circle:nth-child(2) {\r\n  animation-delay: 240ms;\r\n}\r\n.loader>.loader-circle:nth-child(3) {\r\n  animation-delay: 480ms;\r\n}\r\n.loader>.loader-circle:nth-child(4) {\r\n  animation-delay: 720ms;\r\n}\r\n.loader>.loader-circle:nth-child(5) {\r\n  animation-delay: 960ms;\r\n}\r\n@keyframes orbit {\r\n  0% {\r\n    transform: rotate(225deg);\r\n    opacity: 1;\r\n    animation-timing-function: ease-out;\r\n  }\r\n  7% {\r\n    transform: rotate(345deg);\r\n    animation-timing-function: linear;\r\n  }\r\n  30% {\r\n    transform: rotate(455deg);\r\n    animation-timing-function: ease-in-out;\r\n  }\r\n  39% {\r\n    transform: rotate(690deg);\r\n    animation-timing-function: linear;\r\n  }\r\n  70% {\r\n    transform: rotate(815deg);\r\n    opacity: 1;\r\n    animation-timing-function: ease-out;\r\n  }\r\n  75% {\r\n    transform: rotate(945deg);\r\n    animation-timing-function: ease-out;\r\n  }\r\n  76% {\r\n    transform: rotate(945deg);\r\n    opacity: 0;\r\n  }\r\n  100% {\r\n    transform: rotate(945deg);\r\n    opacity: 0;\r\n  }\r\n}\r\n"],"sourceRoot":""}]);
+
+// exports
+exports.locals = {
+	"loader": "loader_loader_3cDDH",
+	"loader-circle": "loader_loader-circle_3mueS",
+	"loaderCircle": "loader_loader-circle_3mueS",
+	"orbit": "loader_orbit_3vPQA",
+	"w30": "loader_w30_2juUc",
+	"w40": "loader_w40_1_tYN"
+};
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/desktop/desktop.css":
 /*!*****************************************************************************!*\
   !*** ./node_modules/css-loader??ref--5-1!./app/src/css/desktop/desktop.css ***!
@@ -2355,35 +2455,35 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "", "", {"version":3,"sources":[],"names":[],"mappings":"","file":"desktop.css","sourceRoot":""}]);
+exports.push([module.i, ".desktop_background-img_1JnJ-{position:absolute;height:100%;width:100%;min-width:850px;min-height:604px;opacity:1;z-index:-1000}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop.css"],"names":[],"mappings":"AACA,8BACE,kBAAmB,AACnB,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,iBAAkB,AAClB,UAAW,AACX,aAAe,CAChB","file":"desktop.css","sourcesContent":["\r\n.background-img{\r\n  position: absolute;\r\n  height: 100%;\r\n  width: 100%;\r\n  min-width: 850px;\r\n  min-height: 604px;\r\n  opacity: 1;\r\n  z-index: -1000;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
-
+exports.locals = {
+	"background-img": "desktop_background-img_1JnJ-",
+	"backgroundImg": "desktop_background-img_1JnJ-"
+};
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/gadgets/loader.css":
-/*!****************************************************************************!*\
-  !*** ./node_modules/css-loader??ref--5-1!./app/src/css/gadgets/loader.css ***!
-  \****************************************************************************/
+/***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/icon.css":
+/*!******************************************************************!*\
+  !*** ./node_modules/css-loader??ref--5-1!./app/src/css/icon.css ***!
+  \******************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(true);
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(true);
 // imports
 
 
 // module
-exports.push([module.i, ".loader_loader_1jlPj{position:absolute;top:50%;left:50%;transform:translateX(-50%) translateY(-50%);width:50px;height:50px;margin:auto}.loader_loader_1jlPj>.loader_loader-circle_1hj22{position:absolute;width:50px;height:50px;opacity:0;transform:rotate(225deg);animation-iteration-count:infinite;animation-name:loader_orbit_2ywHL;animation-duration:5.5s}.loader_loader_1jlPj>.loader_loader-circle_1hj22:after{content:\"\";position:absolute;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 9px hsla(0,0%,100%,.7)}.loader_loader_1jlPj.loader_w30_1vtg1,.loader_loader_1jlPj.loader_w30_1vtg1>.loader_loader-circle_1hj22{width:20px;height:20px}.loader_loader_1jlPj.loader_w30_1vtg1>.loader_loader-circle_1hj22:after{width:3px;height:3px}.loader_loader_1jlPj.loader_w40_uMSW_,.loader_loader_1jlPj.loader_w40_uMSW_>.loader_loader-circle_1hj22{width:35px;height:35px}.loader_loader_1jlPj.loader_w40_uMSW_>.loader_loader-circle_1hj22:after{width:5px;height:5px}.loader_loader_1jlPj>.loader_loader-circle_1hj22:nth-child(2){animation-delay:.24s}.loader_loader_1jlPj>.loader_loader-circle_1hj22:nth-child(3){animation-delay:.48s}.loader_loader_1jlPj>.loader_loader-circle_1hj22:nth-child(4){animation-delay:.72s}.loader_loader_1jlPj>.loader_loader-circle_1hj22:nth-child(5){animation-delay:.96s}@keyframes loader_orbit_2ywHL{0%{transform:rotate(225deg);opacity:1;animation-timing-function:ease-out}7%{transform:rotate(345deg);animation-timing-function:linear}30%{transform:rotate(455deg);animation-timing-function:ease-in-out}39%{transform:rotate(690deg);animation-timing-function:linear}70%{transform:rotate(815deg);opacity:1;animation-timing-function:ease-out}75%{transform:rotate(945deg);animation-timing-function:ease-out}76%{transform:rotate(945deg);opacity:0}to{transform:rotate(945deg);opacity:0}}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/gadgets/loader.css"],"names":[],"mappings":"AACA,qBACE,kBAAmB,AACnB,QAAS,AACT,SAAU,AACV,4CAA6C,AAC7C,WAAY,AACZ,YAAa,AACb,WAAa,CACd,AACD,iDACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,UAAW,AACX,yBAA0B,AAC1B,mCAAoC,AACpC,kCAAsB,AACtB,uBAAyB,CAC1B,AACD,uDACE,WAAY,AACZ,kBAAmB,AACnB,UAAW,AACX,WAAY,AACZ,kBAAmB,AACnB,gBAAiB,AACjB,qCAA4C,CAC7C,AACD,wGACE,WAAY,AACZ,WAAa,CACd,AACD,wEACE,UAAW,AACX,UAAY,CACb,AACD,wGACE,WAAY,AACZ,WAAa,CACd,AACD,wEACE,UAAW,AACX,UAAY,CACb,AACD,8DACE,oBAAuB,CACxB,AACD,8DACE,oBAAuB,CACxB,AACD,8DACE,oBAAuB,CACxB,AACD,8DACE,oBAAuB,CACxB,AACD,8BACE,GACE,yBAA0B,AAC1B,UAAW,AACX,kCAAoC,CACrC,AACD,GACE,yBAA0B,AAC1B,gCAAkC,CACnC,AACD,IACE,yBAA0B,AAC1B,qCAAuC,CACxC,AACD,IACE,yBAA0B,AAC1B,gCAAkC,CACnC,AACD,IACE,yBAA0B,AAC1B,UAAW,AACX,kCAAoC,CACrC,AACD,IACE,yBAA0B,AAC1B,kCAAoC,CACrC,AACD,IACE,yBAA0B,AAC1B,SAAW,CACZ,AACD,GACE,yBAA0B,AAC1B,SAAW,CACZ,CACF","file":"loader.css","sourcesContent":["/* loader is by Fernando de Almeida Faria */\r\n.loader{\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translateX(-50%) translateY(-50%);\r\n  width: 50px;\r\n  height: 50px;\r\n  margin: auto;\r\n}\r\n.loader>.loader-circle {\r\n  position: absolute;\r\n  width: 50px;\r\n  height: 50px;\r\n  opacity: 0;\r\n  transform: rotate(225deg);\r\n  animation-iteration-count: infinite;\r\n  animation-name: orbit;\r\n  animation-duration: 5.5s;\r\n}\r\n.loader>.loader-circle:after {\r\n  content: '';\r\n  position: absolute;\r\n  width: 6px;\r\n  height: 6px;\r\n  border-radius: 50%;\r\n  background: #fff;\r\n  box-shadow: 0 0 9px rgba(255, 255, 255, .7);\r\n}\r\n.loader.w30, .loader.w30>.loader-circle{\r\n  width: 20px;\r\n  height: 20px;\r\n}\r\n.loader.w30>.loader-circle:after{\r\n  width: 3px;\r\n  height: 3px;\r\n}\r\n.loader.w40, .loader.w40>.loader-circle{\r\n  width: 35px;\r\n  height: 35px;\r\n}\r\n.loader.w40>.loader-circle:after{\r\n  width: 5px;\r\n  height: 5px;\r\n}\r\n.loader>.loader-circle:nth-child(2) {\r\n  animation-delay: 240ms;\r\n}\r\n.loader>.loader-circle:nth-child(3) {\r\n  animation-delay: 480ms;\r\n}\r\n.loader>.loader-circle:nth-child(4) {\r\n  animation-delay: 720ms;\r\n}\r\n.loader>.loader-circle:nth-child(5) {\r\n  animation-delay: 960ms;\r\n}\r\n@keyframes orbit {\r\n  0% {\r\n    transform: rotate(225deg);\r\n    opacity: 1;\r\n    animation-timing-function: ease-out;\r\n  }\r\n  7% {\r\n    transform: rotate(345deg);\r\n    animation-timing-function: linear;\r\n  }\r\n  30% {\r\n    transform: rotate(455deg);\r\n    animation-timing-function: ease-in-out;\r\n  }\r\n  39% {\r\n    transform: rotate(690deg);\r\n    animation-timing-function: linear;\r\n  }\r\n  70% {\r\n    transform: rotate(815deg);\r\n    opacity: 1;\r\n    animation-timing-function: ease-out;\r\n  }\r\n  75% {\r\n    transform: rotate(945deg);\r\n    animation-timing-function: ease-out;\r\n  }\r\n  76% {\r\n    transform: rotate(945deg);\r\n    opacity: 0;\r\n  }\r\n  100% {\r\n    transform: rotate(945deg);\r\n    opacity: 0;\r\n  }\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".icon_lock_22cxk{position:absolute;display:block;width:35px;height:35px;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;text-align:center}.icon_lock_22cxk:after{content:\"\";display:inline-block;width:23px;height:15px;border:2px solid}.icon_lock-ring_222Rx{display:block;overflow:hidden;height:12px;margin-top:2px;text-align:center}.icon_lock-ring_222Rx:after{content:\"\";display:inline-block;width:14px;height:19px;border:2px solid;border-radius:50%}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/icon.css"],"names":[],"mappings":"AAAA,iBAAM,kBAAmB,cAAe,WAAY,YAAa,SAAU,QAAS,+BAAiC,WAAY,iBAAmB,CAAC,AACrJ,uBAAY,WAAY,qBAAsB,WAAY,YAAa,gBAAkB,CAAC,AAC1F,sBAAW,cAAe,gBAAiB,YAAa,eAAgB,iBAAmB,CAAC,AAC5F,4BAAiB,WAAY,qBAAsB,WAAY,YAAa,iBAAkB,iBAAmB,CAAC","file":"icon.css","sourcesContent":[".lock{position: absolute;display: block;width: 35px;height: 35px;left: 50%;top: 50%;transform: translate(-50%, -50%);color: #fff;text-align: center;}\r\n.lock:after{content: '';display: inline-block;width: 23px;height: 15px;border: 2px solid;}\r\n.lock-ring{display: block;overflow: hidden;height: 12px;margin-top: 2px;text-align: center;}\r\n.lock-ring:after{content: '';display: inline-block;width: 14px;height: 19px;border: 2px solid;border-radius: 50%;}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
-	"loader": "loader_loader_1jlPj",
-	"loader-circle": "loader_loader-circle_1hj22",
-	"loaderCircle": "loader_loader-circle_1hj22",
-	"orbit": "loader_orbit_2ywHL",
-	"w30": "loader_w30_1vtg1",
-	"w40": "loader_w40_uMSW_"
+	"lock": "icon_lock_22cxk",
+	"lock-ring": "icon_lock-ring_222Rx",
+	"lockRing": "icon_lock-ring_222Rx"
 };
 
 /***/ }),
@@ -2400,7 +2500,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".login_full-screen_2en_t{width:100%;height:100%;position:absolute}.login_container_1OBna{opacity:1;background-color:#0067b8;color:#fff}.login_transition_3U86N{transition:all .15s ease-in}.login_container_1OBna.login_close_EC7ug{opacity:0}.login_background-img_3f0i7{min-width:850px;min-height:604px;opacity:1;transition:all 1.5s ease-out}.login_blocker_1g377{background-color:#0067b8;transition:opacity 1s ease-out}.login_login-cover_2FOFz{transition:opacity .3s ease-out;z-index:1}.login_login-cover-container_2lfKU{position:absolute;max-width:450px;text-align:center;top:50%;left:50%;transform:translate(-50%,-50%)}.login_portrait_3BiRN{width:200px;height:200px;border-radius:50%;background-color:hsla(0,0%,68%,.7);overflow:hidden;display:inline-block;position:relative}.login_portrait-default_O6tAo{width:62px;height:62px;border:6px solid #fff;border-radius:50%;margin-top:-22px;box-sizing:border-box}.login_portrait-default-b_1LChd,.login_portrait-default_O6tAo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.login_portrait-default-b_1LChd{height:46px;width:92px;margin-top:49px;overflow:hidden}.login_portrait-default-b_1LChd:before{content:\"\";height:92px;width:92px;box-sizing:border-box;border:6px solid #fff;border-radius:50%;position:absolute;left:0}.login_username_3sni2{font-size:45px;text-align:center;display:inline-block;margin-top:10px;max-width:450px}.login_greetings_2OEhe{font-size:14px;display:inline-block;text-align:left;margin-top:25px}.login_btn-login_3_k2f{font-size:18px;display:inline-block;text-align:center;margin-top:20px;cursor:pointer}.login_btn-login_3_k2f:hover{color:#ccc}.login_btn-login_3_k2f:active{color:#a5a5a5}.login_date-cover_1r39F{transition:all .15s ease-in;z-index:2}.login_date_1mJIi{position:absolute;bottom:50px;left:20px}.login_date-time_HcCKB{font-size:90px}.login_date-date_C9Ewt{font-size:36px}.login_button_3b2Rb{width:150px;height:40px;border:2px solid #fff;top:110px;text-align:center;font-size:23px;line-height:150%;position:absolute;box-sizing:border-box;top:50%;left:50%;transform:translate(-50%,-50%);margin-top:40px}.login_button_3b2Rb:hover{background-color:#fff;color:#0067b8}.login_button_3b2Rb:active{background-color:#bed9ee;border-color:#bed9ee;color:#0067b8}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/login/login.css"],"names":[],"mappings":"AAAA,yBACE,WAAY,AACZ,YAAa,AACb,iBAAmB,CACpB,AACD,uBACE,UAAW,AACX,yBAAmC,AACnC,UAAY,CACb,AACD,wBACE,2BAA8B,CAC/B,AACD,yCACE,SAAW,CACZ,AACD,4BACE,gBAAiB,AACjB,iBAAkB,AAClB,UAAW,AACX,4BAA8B,CAC/B,AACD,qBACE,yBAAmC,AACnC,8BAAgC,CACjC,AACD,yBACE,gCAAkC,AAClC,SAAW,CACZ,AACD,mCACE,kBAAmB,AACnB,gBAAiB,AACjB,kBAAmB,AACnB,QAAS,AACT,SAAU,AACV,8BAAiC,CAClC,AACD,sBACE,YAAa,AACb,aAAc,AACd,kBAAmB,AACnB,mCAA2C,AAC3C,gBAAiB,AACjB,qBAAsB,AACtB,iBAAmB,CACpB,AACD,8BAKE,WAAY,AACZ,YAAa,AACb,sBAAuB,AACvB,kBAAmB,AACnB,iBAAkB,AAClB,qBAAuB,CACxB,AACD,8DAXE,kBAAmB,AACnB,SAAU,AACV,QAAS,AACT,8BAAiC,CAiBlC,AATD,gCAEE,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,eAAiB,CAIlB,AACD,uCACE,WAAY,AACZ,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,sBAAuB,AACvB,kBAAmB,AACnB,kBAAmB,AACnB,MAAU,CACX,AACD,sBACE,eAAgB,AAChB,kBAAmB,AACnB,qBAAsB,AACtB,gBAAiB,AACjB,eAAiB,CAClB,AACD,uBACE,eAAgB,AAChB,qBAAsB,AACtB,gBAAiB,AACjB,eAAiB,CAClB,AACD,uBACE,eAAgB,AAChB,qBAAsB,AACtB,kBAAmB,AACnB,gBAAiB,AACjB,cAAgB,CACjB,AACD,6BACE,UAAY,CACb,AACD,8BACE,aAAe,CAChB,AACD,wBACE,4BAA8B,AAC9B,SAAW,CACZ,AACD,kBACE,kBAAmB,AACnB,YAAa,AACb,SAAW,CACZ,AACD,uBACE,cAAgB,CACjB,AACD,uBACE,cAAgB,CACjB,AACD,oBACE,YAAa,AACb,YAAa,AACb,sBAAuB,AACvB,UAAW,AACX,kBAAmB,AACnB,eAAgB,AAChB,iBAAkB,AAClB,kBAAmB,AACnB,sBAAuB,AACvB,QAAS,AACT,SAAU,AACV,+BAAiC,AACjC,eAAiB,CAClB,AACD,0BACE,sBAAuB,AACvB,aAAwB,CACzB,AACD,2BACE,yBAA0B,AAC1B,qBAAsB,AACtB,aAAwB,CACzB","file":"login.css","sourcesContent":[".full-screen{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n}\r\n.container{\r\n  opacity: 1;\r\n  background-color: rgb(0, 103, 184);\r\n  color: #fff;\r\n}\r\n.transition{\r\n  transition: all 0.15s ease-in;\r\n}\r\n.container.close{\r\n  opacity: 0;\r\n}\r\n.background-img{\r\n  min-width: 850px;\r\n  min-height: 604px;\r\n  opacity: 1;\r\n  transition: all 1.5s ease-out;\r\n}\r\n.blocker{\r\n  background-color: rgb(0, 103, 184);\r\n  transition: opacity 1s ease-out;\r\n}\r\n.login-cover{\r\n  transition: opacity 0.3s ease-out;\r\n  z-index: 1;\r\n}\r\n.login-cover-container{\r\n  position: absolute;\r\n  max-width: 450px;\r\n  text-align: center;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n.portrait{\r\n  width: 200px;\r\n  height: 200px;\r\n  border-radius: 50%;\r\n  background-color: rgba(174, 174, 174, 0.7);\r\n  overflow: hidden;\r\n  display: inline-block;\r\n  position: relative;\r\n}\r\n.portrait-default{\r\n  position: absolute;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%, -50%);\r\n  width: 62px;\r\n  height: 62px;\r\n  border: 6px solid #fff;\r\n  border-radius: 50%;\r\n  margin-top: -22px;\r\n  box-sizing: border-box;\r\n}\r\n.portrait-default-b{\r\n  position: absolute;\r\n  height: 46px;\r\n  width: 92px;\r\n  margin-top: 49px;\r\n  overflow: hidden;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%,-50%);\r\n}\r\n.portrait-default-b::before{\r\n  content: \"\";\r\n  height: 92px;\r\n  width: 92px;\r\n  box-sizing: border-box;\r\n  border: 6px solid #fff;\r\n  border-radius: 50%;\r\n  position: absolute;\r\n  left: 0px;\r\n}\r\n.username{\r\n  font-size: 45px;\r\n  text-align: center;\r\n  display: inline-block;\r\n  margin-top: 10px;\r\n  max-width: 450px;\r\n}\r\n.greetings{\r\n  font-size: 14px;\r\n  display: inline-block;\r\n  text-align: left;\r\n  margin-top: 25px;\r\n}\r\n.btn-login{\r\n  font-size: 18px;\r\n  display: inline-block;\r\n  text-align: center;\r\n  margin-top: 20px;\r\n  cursor: pointer;\r\n}\r\n.btn-login:hover{\r\n  color: #ccc;\r\n}\r\n.btn-login:active{\r\n  color: #a5a5a5;\r\n}\r\n.date-cover{\r\n  transition: all 0.15s ease-in;\r\n  z-index: 2;\r\n}\r\n.date{\r\n  position: absolute;\r\n  bottom: 50px;\r\n  left: 20px;\r\n}\r\n.date-time{\r\n  font-size: 90px;\r\n}\r\n.date-date{\r\n  font-size: 36px;\r\n}\r\n.button{\r\n  width: 150px;\r\n  height: 40px;\r\n  border: 2px solid #fff;\r\n  top: 110px;\r\n  text-align: center;\r\n  font-size: 23px;\r\n  line-height: 150%;\r\n  position: absolute;\r\n  box-sizing: border-box;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n  margin-top: 40px;\r\n}\r\n.button:hover{\r\n  background-color: #fff;\r\n  color: rgb(0, 103, 184);\r\n}\r\n.button:active{\r\n  background-color: #bed9ee;\r\n  border-color: #bed9ee;\r\n  color: rgb(0, 103, 184);\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".login_full-screen_2en_t{width:100%;height:100%;position:absolute}.login_container_1OBna{opacity:1;background-color:#0067b8;color:#fff;z-index:99999990}.login_transition_3U86N{transition:all .15s ease-in}.login_container_1OBna.login_close_EC7ug{opacity:0}.login_background-img_3f0i7{min-width:850px;min-height:604px;opacity:1}.login_blocker_1g377{background-color:#0067b8;transition:opacity 1s ease-out}.login_login-cover_2FOFz{transition:opacity .3s ease-out;z-index:1}.login_login-cover-container_2lfKU{position:absolute;max-width:450px;text-align:center;top:50%;left:50%;transform:translate(-50%,-50%)}.login_portrait_3BiRN{width:200px;height:200px;border-radius:50%;background-color:hsla(0,0%,68%,.7);overflow:hidden;display:inline-block;position:relative}.login_portrait-default_O6tAo{width:62px;height:62px;border:6px solid #fff;border-radius:50%;margin-top:-22px;box-sizing:border-box}.login_portrait-default-b_1LChd,.login_portrait-default_O6tAo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.login_portrait-default-b_1LChd{height:46px;width:92px;margin-top:49px;overflow:hidden}.login_portrait-default-b_1LChd:before{content:\"\";height:92px;width:92px;box-sizing:border-box;border:6px solid #fff;border-radius:50%;position:absolute;left:0}.login_username_3sni2{font-size:45px;text-align:center;display:inline-block;margin-top:10px;max-width:450px}.login_greetings_2OEhe{font-size:14px;display:inline-block;text-align:left;margin-top:25px}.login_btn-login_3_k2f{font-size:18px;display:inline-block;text-align:center;margin-top:20px;cursor:pointer}.login_btn-login_3_k2f:hover{color:#ccc}.login_btn-login_3_k2f:active{color:#a5a5a5}.login_date-cover_1r39F{transition:all .15s ease-in;z-index:2}.login_date_1mJIi{position:absolute;bottom:50px;left:20px}.login_date-time_HcCKB{font-size:90px}.login_date-date_C9Ewt{font-size:36px}.login_btn_2cC-o{opacity:.7;background-color:rgba(81,92,107,.4);cursor:pointer}.login_btn_2cC-o:hover{opacity:.9;background-color:rgba(81,92,107,.5)}.login_btn_2cC-o:active{background-color:rgba(81,92,107,.6)}.login_lock_2CIJD{opacity:.5;position:absolute;left:70px;width:55px;height:55px;transform:translateY(-22%)scale(.55)}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/login/login.css"],"names":[],"mappings":"AAAA,yBACE,WAAY,AACZ,YAAa,AACb,iBAAmB,CACpB,AACD,uBACE,UAAW,AACX,yBAAmC,AACnC,WAAY,AACZ,gBAAkB,CACnB,AACD,wBACE,2BAA8B,CAC/B,AACD,yCACE,SAAW,CACZ,AACD,4BACE,gBAAiB,AACjB,iBAAkB,AAClB,SAAW,CACZ,AACD,qBACE,yBAAmC,AACnC,8BAAgC,CACjC,AACD,yBACE,gCAAkC,AAClC,SAAW,CACZ,AACD,mCACE,kBAAmB,AACnB,gBAAiB,AACjB,kBAAmB,AACnB,QAAS,AACT,SAAU,AACV,8BAAiC,CAClC,AACD,sBACE,YAAa,AACb,aAAc,AACd,kBAAmB,AACnB,mCAA2C,AAC3C,gBAAiB,AACjB,qBAAsB,AACtB,iBAAmB,CACpB,AACD,8BAKE,WAAY,AACZ,YAAa,AACb,sBAAuB,AACvB,kBAAmB,AACnB,iBAAkB,AAClB,qBAAuB,CACxB,AACD,8DAXE,kBAAmB,AACnB,SAAU,AACV,QAAS,AACT,8BAAiC,CAiBlC,AATD,gCAEE,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,eAAiB,CAIlB,AACD,uCACE,WAAY,AACZ,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,sBAAuB,AACvB,kBAAmB,AACnB,kBAAmB,AACnB,MAAU,CACX,AACD,sBACE,eAAgB,AAChB,kBAAmB,AACnB,qBAAsB,AACtB,gBAAiB,AACjB,eAAiB,CAClB,AACD,uBACE,eAAgB,AAChB,qBAAsB,AACtB,gBAAiB,AACjB,eAAiB,CAClB,AACD,uBACE,eAAgB,AAChB,qBAAsB,AACtB,kBAAmB,AACnB,gBAAiB,AACjB,cAAgB,CACjB,AACD,6BACE,UAAY,CACb,AACD,8BACE,aAAe,CAChB,AACD,wBACE,4BAA8B,AAC9B,SAAW,CACZ,AACD,kBACE,kBAAmB,AACnB,YAAa,AACb,SAAW,CACZ,AACD,uBACE,cAAgB,CACjB,AACD,uBACE,cAAgB,CACjB,AACD,iBACE,WAAa,AACb,oCAAyC,AACzC,cAAgB,CACjB,AACD,uBACE,WAAa,AACb,mCAAyC,CAC1C,AACD,wBACE,mCAAyC,CAC1C,AACD,kBACE,WAAa,AACb,kBAAmB,AACnB,UAAW,AACX,WAAY,AACZ,YAAa,AACb,oCAAuC,CACxC","file":"login.css","sourcesContent":[".full-screen{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n}\r\n.container{\r\n  opacity: 1;\r\n  background-color: rgb(0, 103, 184);\r\n  color: #fff;\r\n  z-index: 99999990;\r\n}\r\n.transition{\r\n  transition: all 0.15s ease-in;\r\n}\r\n.container.close{\r\n  opacity: 0;\r\n}\r\n.background-img{\r\n  min-width: 850px;\r\n  min-height: 604px;\r\n  opacity: 1;\r\n}\r\n.blocker{\r\n  background-color: rgb(0, 103, 184);\r\n  transition: opacity 1s ease-out;\r\n}\r\n.login-cover{\r\n  transition: opacity 0.3s ease-out;\r\n  z-index: 1;\r\n}\r\n.login-cover-container{\r\n  position: absolute;\r\n  max-width: 450px;\r\n  text-align: center;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n.portrait{\r\n  width: 200px;\r\n  height: 200px;\r\n  border-radius: 50%;\r\n  background-color: rgba(174, 174, 174, 0.7);\r\n  overflow: hidden;\r\n  display: inline-block;\r\n  position: relative;\r\n}\r\n.portrait-default{\r\n  position: absolute;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%, -50%);\r\n  width: 62px;\r\n  height: 62px;\r\n  border: 6px solid #fff;\r\n  border-radius: 50%;\r\n  margin-top: -22px;\r\n  box-sizing: border-box;\r\n}\r\n.portrait-default-b{\r\n  position: absolute;\r\n  height: 46px;\r\n  width: 92px;\r\n  margin-top: 49px;\r\n  overflow: hidden;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%,-50%);\r\n}\r\n.portrait-default-b::before{\r\n  content: \"\";\r\n  height: 92px;\r\n  width: 92px;\r\n  box-sizing: border-box;\r\n  border: 6px solid #fff;\r\n  border-radius: 50%;\r\n  position: absolute;\r\n  left: 0px;\r\n}\r\n.username{\r\n  font-size: 45px;\r\n  text-align: center;\r\n  display: inline-block;\r\n  margin-top: 10px;\r\n  max-width: 450px;\r\n}\r\n.greetings{\r\n  font-size: 14px;\r\n  display: inline-block;\r\n  text-align: left;\r\n  margin-top: 25px;\r\n}\r\n.btn-login{\r\n  font-size: 18px;\r\n  display: inline-block;\r\n  text-align: center;\r\n  margin-top: 20px;\r\n  cursor: pointer;\r\n}\r\n.btn-login:hover{\r\n  color: #ccc;\r\n}\r\n.btn-login:active{\r\n  color: #a5a5a5;\r\n}\r\n.date-cover{\r\n  transition: all 0.15s ease-in;\r\n  z-index: 2;\r\n}\r\n.date{\r\n  position: absolute;\r\n  bottom: 50px;\r\n  left: 20px;\r\n}\r\n.date-time{\r\n  font-size: 90px;\r\n}\r\n.date-date{\r\n  font-size: 36px;\r\n}\r\n.btn{\r\n  opacity: 0.7;\r\n  background-color: rgba(81, 92, 107, 0.4);\r\n  cursor: pointer;\r\n}\r\n.btn:hover{\r\n  opacity: 0.9;\r\n  background-color: rgba(81, 92, 107, 0.5);\r\n}\r\n.btn:active{\r\n  background-color: rgba(81, 92, 107, 0.6);\r\n}\r\n.lock{\r\n  opacity: 0.5;\r\n  position: absolute;\r\n  left: 70px;\r\n  width: 55px;\r\n  height: 55px;\r\n  transform: translateY(-22%)scale(0.55);\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -2432,7 +2532,8 @@ exports.locals = {
 	"dateTime": "login_date-time_HcCKB",
 	"date-date": "login_date-date_C9Ewt",
 	"dateDate": "login_date-date_C9Ewt",
-	"button": "login_button_3b2Rb"
+	"btn": "login_btn_2cC-o",
+	"lock": "login_lock_2CIJD"
 };
 
 /***/ }),

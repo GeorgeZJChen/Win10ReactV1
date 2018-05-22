@@ -41,9 +41,6 @@ class Login extends Component{
       })
     }, 2000)
     this.loadUserInformation()
-    Events.once(Events.names.desktopReady, (message)=>{
-      this.desktopReady = 1
-    })
   }
   componentWillUnmount(){
     clearInterval(this.dateIntvId)
@@ -82,20 +79,16 @@ class Login extends Component{
 
     ReactDOM.render(<Desktop/>, document.getElementById('win10_main'))
 
-    let tf = ()=>{
-      if(this.desktopReady){
+    Events.once(Events.names.desktopReady, (message)=>{
+      setTimeout(()=>{
         this.setState({
           opacity: 0
         })
         setTimeout(()=>{
           ReactDOM.unmountComponentAtNode(document.getElementById(this.parentId))
         }, 500)
-      }
-      else{
-        setTimeout(tf,100)
-      }
-    }
-    setTimeout(tf,1500)
+      }, 1000)
+    })
   }
   imgReady(){
     this.setState({
@@ -114,7 +107,7 @@ class Login extends Component{
   }
   render() {
     return (
-      <div className={css.container+' '+css.fullScreen+' '+ (this.state.pageReady?css.transition:'')} style={{opacity: this.state.opacity, zIndex:100}}>
+      <div className={css.container+' '+css.fullScreen+' '+ (this.state.pageReady?css.transition:'')} style={{opacity: this.state.opacity}}>
         <img className={css.backgroundImg+' '+css.fullScreen} src={this.state.imgURL} onLoad={()=>this.imgReady()}/>
         <div className={css.blocker+' '+css.fullScreen} style={{opacity:(this.state.imgReady&&this.state.pageReady?0:1)}}></div>
         <div className={css.loginCover+' '+css.fullScreen} onDoubleClick={()=>this.setState({removeDateCover:0})}
