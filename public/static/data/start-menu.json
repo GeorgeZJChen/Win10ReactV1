@@ -1,0 +1,10 @@
+{
+  "username": "George Chen",
+  "appList": [
+    {
+      "name": "Eclipse Neon",
+      "icon": {"type":0, "text":"<span class='icon-eclipse'><span class='icon-eclipse-sub'></span></span></span>"},
+      "menu": {"title":"", "list":[]}
+    },
+  ]
+}

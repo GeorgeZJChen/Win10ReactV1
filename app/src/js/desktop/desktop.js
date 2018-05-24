@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom'
 import axios from 'axios'
 import Loader from '../components/loader.js'
 import Events from '../components/event.js'
+import Taskbar from './taskbar.js'
+import StartMenu from './start-menu.js'
 import css from '../../css/desktop/desktop.css'
-import icon from '../../css/icon.css'
+import icon from '../../css/components/icon.css'
 import '../../css/system.css'
 
 class Desktop extends Component{
@@ -21,14 +23,16 @@ class Desktop extends Component{
   componentDidMount() {
     setTimeout(()=>{
       Events.emit(Events.names.desktopReady, 'Ready')
-    }, 1000)
+    }, 10)
   }
 
   render(){
     return (
       <div className={css.desktop}>
         <img className={css.backgroundImg} src={this.state.imgURL} onLoad={()=>this.setState({imgReady:1})}/>
-
+        <input id='start_menu_switch' type='checkbox'/>
+        <StartMenu/>
+        <Taskbar/>
       </div>
     )
   }

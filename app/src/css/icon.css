@@ -1,4 +1,0 @@
-.lock{position: absolute;display: block;width: 35px;height: 35px;left: 50%;top: 50%;transform: translate(-50%, -50%);color: #fff;text-align: center;}
-.lock:after{content: '';display: inline-block;width: 23px;height: 15px;border: 2px solid;}
-.lock-ring{display: block;overflow: hidden;height: 12px;margin-top: 2px;text-align: center;}
-.lock-ring:after{content: '';display: inline-block;width: 14px;height: 19px;border: 2px solid;border-radius: 50%;}

@@ -5,7 +5,7 @@ import Loader from '../components/loader.js'
 import Events from '../components/event.js'
 import Desktop from '../desktop/desktop.js'
 import css from '../../css/login/login.css'
-import icon from '../../css/icon.css'
+import icon from '../../css/components/icon.css'
 
 class Login extends Component{
   constructor(props){
@@ -14,7 +14,7 @@ class Login extends Component{
     this.state = {
       pageReady: 0,
       opacity: 1,
-      imgURL: 'static/img/login_default_2.png',
+      imgURL: 'static/img/login_default.jpg',
       imgReady: 0,
       usernameWidth: 0
     }
@@ -39,7 +39,7 @@ class Login extends Component{
         date: dateStr,
         time: (date.getHours()>9?date.getHours():'0'+date.getHours())+':'+(date.getMinutes()>9?date.getMinutes():'0'+date.getMinutes())
       })
-    }, 2000)
+    }, 10)
     this.loadUserInformation()
   }
   componentWillUnmount(){

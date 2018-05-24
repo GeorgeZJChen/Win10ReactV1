@@ -1,4 +1,13 @@
-
+:global #start_menu_switch {
+  position: fixed;
+  z-index: 9999999;
+  bottom: 0;
+  width: 46px;
+  height: 40px;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
 .background-img{
   position: absolute;
   height: 100%;

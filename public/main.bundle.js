@@ -71,6 +71,36 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./app/src/css/components/icon.css":
+/*!*****************************************!*\
+  !*** ./app/src/css/components/icon.css ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader??ref--5-1!./icon.css */ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/components/icon.css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./app/src/css/components/loader.css":
 /*!*******************************************!*\
   !*** ./app/src/css/components/loader.css ***!
@@ -131,15 +161,15 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./app/src/css/icon.css":
-/*!******************************!*\
-  !*** ./app/src/css/icon.css ***!
-  \******************************/
+/***/ "./app/src/css/desktop/start-menu.css":
+/*!********************************************!*\
+  !*** ./app/src/css/desktop/start-menu.css ***!
+  \********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--5-1!./icon.css */ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/icon.css");
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader??ref--5-1!./start-menu.css */ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/desktop/start-menu.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -153,7 +183,37 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./app/src/css/desktop/taskbar.css":
+/*!*****************************************!*\
+  !*** ./app/src/css/desktop/taskbar.css ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader??ref--5-1!./taskbar.css */ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/desktop/taskbar.css");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -263,6 +323,103 @@ myEvents.names = {
 };
 
 exports.default = myEvents;
+
+/***/ }),
+
+/***/ "./app/src/js/components/icon.js":
+/*!***************************************!*\
+  !*** ./app/src/js/components/icon.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _icon = __webpack_require__(/*! ../../css/components/icon.css */ "./app/src/css/components/icon.css");
+
+var _icon2 = _interopRequireDefault(_icon);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var innerHTML = {
+  "lock": _react2.default.createElement('span', { className: _icon2.default.lockRing }),
+  "angle": ""
+};
+
+var Icon = function (_Component) {
+  _inherits(Icon, _Component);
+
+  function Icon(props) {
+    _classCallCheck(this, Icon);
+
+    var _this = _possibleConstructorReturn(this, (Icon.__proto__ || Object.getPrototypeOf(Icon)).call(this, props));
+
+    _this.state = {
+      className: props.className
+    };
+    return _this;
+  }
+
+  _createClass(Icon, [{
+    key: 'getHtml',
+    value: function getHtml() {
+      var classes = this.state.className.split(/\s+/);
+      var full_name = '';
+      var first_name = '';
+      for (var i = 0; i < classes.length; i++) {
+        var temp = classes[i];
+        if (temp.indexOf('-') != -1) {
+          var temp_arr = temp.split('-');
+          // for (let j = 0; j < temp_arr.length; j++) {
+          //   if(j!=0){
+          //     temp_arr[j] = temp_arr[j][0].toUpperCase() + temp_arr[j].slice(1)
+          //   }
+          // }
+          temp = temp_arr.join('');
+        }
+        if (i == 0) {
+          first_name = temp;
+        }
+        full_name += _icon2.default[classes[i]] + ' ';
+      }
+      return _react2.default.createElement(
+        'span',
+        { className: full_name },
+        innerHTML[classes[0]]
+      );
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return this.getHtml();
+    }
+  }]);
+
+  return Icon;
+}(_react.Component);
+
+exports.default = Icon;
 
 /***/ }),
 
@@ -377,11 +534,19 @@ var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/com
 
 var _event2 = _interopRequireDefault(_event);
 
+var _taskbar = __webpack_require__(/*! ./taskbar.js */ "./app/src/js/desktop/taskbar.js");
+
+var _taskbar2 = _interopRequireDefault(_taskbar);
+
+var _startMenu = __webpack_require__(/*! ./start-menu.js */ "./app/src/js/desktop/start-menu.js");
+
+var _startMenu2 = _interopRequireDefault(_startMenu);
+
 var _desktop = __webpack_require__(/*! ../../css/desktop/desktop.css */ "./app/src/css/desktop/desktop.css");
 
 var _desktop2 = _interopRequireDefault(_desktop);
 
-var _icon = __webpack_require__(/*! ../../css/icon.css */ "./app/src/css/icon.css");
+var _icon = __webpack_require__(/*! ../../css/components/icon.css */ "./app/src/css/components/icon.css");
 
 var _icon2 = _interopRequireDefault(_icon);
 
@@ -416,7 +581,7 @@ var Desktop = function (_Component) {
     value: function componentDidMount() {
       setTimeout(function () {
         _event2.default.emit(_event2.default.names.desktopReady, 'Ready');
-      }, 1000);
+      }, 10);
     }
   }, {
     key: 'render',
@@ -428,7 +593,10 @@ var Desktop = function (_Component) {
         { className: _desktop2.default.desktop },
         _react2.default.createElement('img', { className: _desktop2.default.backgroundImg, src: this.state.imgURL, onLoad: function onLoad() {
             return _this2.setState({ imgReady: 1 });
-          } })
+          } }),
+        _react2.default.createElement('input', { id: 'start_menu_switch', type: 'checkbox' }),
+        _react2.default.createElement(_startMenu2.default, null),
+        _react2.default.createElement(_taskbar2.default, null)
       );
     }
   }]);
@@ -437,6 +605,219 @@ var Desktop = function (_Component) {
 }(_react.Component);
 
 exports.default = Desktop;
+
+/***/ }),
+
+/***/ "./app/src/js/desktop/start-menu.js":
+/*!******************************************!*\
+  !*** ./app/src/js/desktop/start-menu.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _startMenu = __webpack_require__(/*! ../../css/desktop/start-menu.css */ "./app/src/css/desktop/start-menu.css");
+
+var _startMenu2 = _interopRequireDefault(_startMenu);
+
+var _icon = __webpack_require__(/*! ../../css//components/icon.css */ "./app/src/css/components/icon.css");
+
+var _icon2 = _interopRequireDefault(_icon);
+
+__webpack_require__(/*! ../../css/system.css */ "./app/src/css/system.css");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var StartMenu = function (_Component) {
+  _inherits(StartMenu, _Component);
+
+  function StartMenu() {
+    _classCallCheck(this, StartMenu);
+
+    return _possibleConstructorReturn(this, (StartMenu.__proto__ || Object.getPrototypeOf(StartMenu)).apply(this, arguments));
+  }
+
+  _createClass(StartMenu, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement('div', { className: _startMenu2.default.startMenu });
+    }
+  }]);
+
+  return StartMenu;
+}(_react.Component);
+
+exports.default = StartMenu;
+
+/***/ }),
+
+/***/ "./app/src/js/desktop/taskbar.js":
+/*!***************************************!*\
+  !*** ./app/src/js/desktop/taskbar.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _taskbar = __webpack_require__(/*! ../../css/desktop/taskbar.css */ "./app/src/css/desktop/taskbar.css");
+
+var _taskbar2 = _interopRequireDefault(_taskbar);
+
+var _icon = __webpack_require__(/*! ../../css/components/icon.css */ "./app/src/css/components/icon.css");
+
+var _icon2 = _interopRequireDefault(_icon);
+
+var _icon3 = __webpack_require__(/*! ../components/icon.js */ "./app/src/js/components/icon.js");
+
+var _icon4 = _interopRequireDefault(_icon3);
+
+__webpack_require__(/*! ../../css/system.css */ "./app/src/css/system.css");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Taskbar = function (_Component) {
+  _inherits(Taskbar, _Component);
+
+  function Taskbar(props) {
+    _classCallCheck(this, Taskbar);
+
+    var _this = _possibleConstructorReturn(this, (Taskbar.__proto__ || Object.getPrototypeOf(Taskbar)).call(this, props));
+
+    _this.state = {
+      test: 1
+    };
+    return _this;
+  }
+
+  _createClass(Taskbar, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {}
+  }, {
+    key: 'renderTasks',
+    value: function renderTasks() {
+      return _react2.default.createElement(
+        'div',
+        { className: _taskbar2.default.tbTasks },
+        _react2.default.createElement(
+          'div',
+          { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask },
+          _react2.default.createElement(
+            'span',
+            { className: _taskbar2.default.iconCt },
+            _react2.default.createElement('span', { className: _icon2.default.resourceManager })
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask },
+          _react2.default.createElement(
+            'span',
+            { className: _taskbar2.default.iconCt },
+            _react2.default.createElement('span', { className: _icon2.default.unknown })
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask },
+          _react2.default.createElement(_icon4.default, { className: 'angle sm left a-b-cc rewf-acs' })
+        )
+      );
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: _taskbar2.default.taskbar },
+        _react2.default.createElement(
+          'div',
+          { className: _taskbar2.default.tbLeft },
+          _react2.default.createElement(
+            'div',
+            { className: _taskbar2.default.tbSys },
+            _react2.default.createElement(
+              'div',
+              { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemMenu },
+              _react2.default.createElement('span', { className: _icon2.default.startMenu + ' ' + _taskbar2.default.iconStartMenu })
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemCortana },
+              _react2.default.createElement('span', { className: _icon2.default.cortana })
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { style: { display: 'flex', flex: 1, position: 'relative' } },
+            _react2.default.createElement('input', { type: 'checkbox', className: _taskbar2.default.item + ' ' + _taskbar2.default.taskSwitch, defaultChecked: true }),
+            _react2.default.createElement(
+              'div',
+              { className: _taskbar2.default.item + ' ' + _taskbar2.default.switchResponser },
+              _react2.default.createElement('span', { className: _icon2.default.angle + ' ' + _icon2.default.up, style: { top: '50%', left: 10 } })
+            ),
+            this.renderTasks()
+          )
+        )
+      );
+    }
+  }]);
+
+  return Taskbar;
+}(_react.Component);
+
+exports.default = Taskbar;
 
 /***/ }),
 
@@ -484,7 +865,7 @@ var _login = __webpack_require__(/*! ../../css/login/login.css */ "./app/src/css
 
 var _login2 = _interopRequireDefault(_login);
 
-var _icon = __webpack_require__(/*! ../../css/icon.css */ "./app/src/css/icon.css");
+var _icon = __webpack_require__(/*! ../../css/components/icon.css */ "./app/src/css/components/icon.css");
 
 var _icon2 = _interopRequireDefault(_icon);
 
@@ -508,7 +889,7 @@ var Login = function (_Component) {
     _this.state = {
       pageReady: 0,
       opacity: 1,
-      imgURL: 'static/img/login_default_2.png',
+      imgURL: 'static/img/login_default.jpg',
       imgReady: 0,
       usernameWidth: 0
     };
@@ -536,7 +917,7 @@ var Login = function (_Component) {
           date: dateStr,
           time: (date.getHours() > 9 ? date.getHours() : '0' + date.getHours()) + ':' + (date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes())
         });
-      }, 2000);
+      }, 10);
       this.loadUserInformation();
     }
   }, {
@@ -589,7 +970,6 @@ var Login = function (_Component) {
       _reactDom2.default.render(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
 
       _event2.default.once(_event2.default.names.desktopReady, function (message) {
-        // this.desktopReady = 1
         setTimeout(function () {
           _this4.setState({
             opacity: 0
@@ -599,14 +979,6 @@ var Login = function (_Component) {
           }, 500);
         }, 1000);
       });
-      // let tf = ()=>{
-      //   if(this.desktopReady){
-      //   }
-      //   else{
-      //     setTimeout(tf,100)
-      //   }
-      // }
-      // setTimeout(tf,1500)
     }
   }, {
     key: 'imgReady',
@@ -739,11 +1111,19 @@ var _login = __webpack_require__(/*! ./js/login/login.js */ "./app/src/js/login/
 
 var _login2 = _interopRequireDefault(_login);
 
+var _desktop = __webpack_require__(/*! ./js/desktop/desktop.js */ "./app/src/js/desktop/desktop.js");
+
+var _desktop2 = _interopRequireDefault(_desktop);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-setTimeout(function functionName() {
-  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
-}, 500);
+(0, _reactDom.render)(_react2.default.createElement('div', null), document.getElementById('win10_login'));
+// setTimeout(function functionName() {
+//   render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
+// }, 500)
+
+
+(0, _reactDom.render)(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
 
 console.log('Copyright (c) 2018 Zhuojun Chen All Rights Reserved.');
 
@@ -2417,6 +2797,44 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/components/icon.css":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--5-1!./app/src/css/components/icon.css ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(true);
+// imports
+
+
+// module
+exports.push([module.i, ".icon_lock_1pP6V{position:relative;display:block;width:35px;height:35px;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;text-align:center}.icon_lock_1pP6V:after{content:\"\";display:inline-block;width:23px;height:15px;border:2px solid}.icon_lock-ring_1YISr{display:block;overflow:hidden;height:12px;margin-top:2px;text-align:center}.icon_lock-ring_1YISr:after{content:\"\";display:inline-block;width:14px;height:19px;border:2px solid;border-radius:50%}.icon_start-menu_1iiCL{width:46px;height:15px;display:block;position:relative;top:12px;perspective:3px}.icon_start-menu_1iiCL:before{content:\"\";transform:translate(56%) rotateY(176.7deg) scaleX(.34);height:7px;width:25px;color:#fff;background:#fff;display:block;position:relative;box-shadow:27px 0 0 0,0 8px 0,27px 8px 0}.icon_start-menu_1iiCL.icon_black_tnyFz:before{color:#000;background:#000}.icon_cortana_dm8e-{border-radius:20px;height:12px;width:12px;box-shadow:0 0 2px 2px #fff;transform:translate(-50%,-50%)}.icon_angle_BwsQo,.icon_cortana_dm8e-{display:block;position:relative;top:50%;left:50%}.icon_angle_BwsQo{width:15px;height:25px}.icon_angle_BwsQo:before{top:2px;transform-origin:right;transform:rotate(45deg)}.icon_angle_BwsQo:after,.icon_angle_BwsQo:before{content:\"\";width:16px;height:2px;background:#fff;position:absolute;bottom:0;margin:auto 0;right:2px;box-shadow:inset 0 0 0 32px #fff}.icon_angle_BwsQo:after{top:0;transform-origin:right;transform:rotate(-45deg)}.icon_up_sdzHj.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(-90deg)}.icon_down_1jp15.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(90deg)}.icon_left_3eERt.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(180deg)}.icon_right_z9BLT.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55)}.icon_up_sdzHj.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(-90deg)}.icon_down_1jp15.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(90deg)}.icon_left_3eERt.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(180deg)}.icon_right_z9BLT.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55)}.icon_up_sdzHj.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(-90deg)}.icon_down_1jp15.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(90deg)}.icon_left_3eERt.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(180deg)}.icon_right_z9BLT.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4)}.icon_up_sdzHj.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(-90deg)}.icon_down_1jp15.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(90deg)}.icon_left_3eERt.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(180deg)}.icon_right_z9BLT.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27)}.icon_resource-manager_1KKto{width:24px;height:18px;background:#ffe793;border-radius:5%;display:block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9)}.icon_resource-manager_1KKto:before{content:\"\";height:7px;width:8px;border:4px solid #3ab5e6;border-bottom:none;display:block;position:absolute;top:8px;left:4px}.icon_resource-manager_1KKto:after{content:\"\";position:absolute;width:6px;height:1px;left:0;top:-2px;background:#fff;border-style:solid;border-width:1px 3px 2px;border-color:#fbd140;border-radius:20%}.icon_unknown_3H9yI{position:relative;left:38%;top:50%;transform:translate(-50%,-50%);background:#fff;width:13px;height:25px;display:block}.icon_unknown_3H9yI:before{content:\"\";position:absolute;left:95%;bottom:0;width:8px;height:19px;background:#fff}.icon_unknown_3H9yI:after{content:\"\";position:absolute;left:99%;border:4px solid transparent;border-left-color:#ccc;border-bottom-color:#ccc;transform:translate(3%,-8%)}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/components/icon.css"],"names":[],"mappings":"AAAA,iBAAM,kBAAmB,cAAe,WAAY,YAAa,SAAU,QAAS,+BAAiC,WAAY,iBAAmB,CAAC,AACrJ,uBAAY,WAAY,qBAAsB,WAAY,YAAa,gBAAkB,CAAC,AAC1F,sBAAW,cAAe,gBAAiB,YAAa,eAAgB,iBAAmB,CAAC,AAC5F,4BAAiB,WAAY,qBAAsB,WAAY,YAAa,iBAAkB,iBAAmB,CAAC,AAElH,uBAAa,WAAY,YAAa,cAAe,kBAAmB,SAAU,eAAiB,CAAC,AACpG,8BAAoB,WAAY,uDAAyD,WAAY,WAAY,WAAY,gBAAiB,cAAe,kBAAmB,wCAA4C,CAAC,AAC7N,+CAAyB,WAAY,eAAiB,CAAC,AAEvD,oBAAS,mBAAoB,YAAa,WAAY,AAAe,4BAAiC,AAAsC,8BAAgC,CAAC,AAE7K,sCAFsD,cAAe,AAAiC,kBAAmB,QAAS,QAAU,CAExD,AAApF,kBAAyC,WAAY,WAAa,CAAkB,AACpF,yBAA0B,QAAS,AAAkI,uBAAwB,uBAAyB,CAAC,AACvN,iDADc,WAAY,AAAS,WAAY,WAAY,gBAAiB,kBAAmB,SAAU,cAAe,UAAW,gCAAkC,CACgD,AAArN,wBAAyB,MAAO,AAAkI,uBAAwB,wBAA0B,CAAC,AACrN,gCAAU,wDAA2D,CAAC,AACtE,kCAAY,uDAA0D,CAAC,AACvE,kCAAY,wDAA2D,CAAC,AACxE,mCAAa,yCAA4C,CAAC,AAC1D,8CAAa,wDAA2D,CAAC,AACzE,gDAAe,uDAA0D,CAAC,AAC1E,gDAAe,wDAA2D,CAAC,AAC3E,iDAAgB,yCAA4C,CAAC,AAC7D,8CAAa,uDAA2D,CAAC,AACzE,gDAAe,sDAA0D,CAAC,AAC1E,gDAAe,uDAA2D,CAAC,AAC3E,iDAAgB,wCAA4C,CAAC,AAC7D,8CAAa,wDAA2D,CAAC,AACzE,gDAAe,uDAA0D,CAAC,AAC1E,gDAAe,wDAA2D,CAAC,AAC3E,iDAAgB,yCAA4C,CAAC,AAE7D,6BAAkB,WAAY,YAAa,mBAAoB,iBAAkB,cAAe,kBAAmB,SAAU,QAAS,wCAA2C,CAAC,AAClL,oCAAyB,WAAY,WAAY,UAAW,yBAA0B,mBAAoB,cAAe,kBAAmB,QAAS,QAAU,CAAC,AAChK,mCAAwB,WAAY,kBAAmB,UAAW,WAAY,OAAU,SAAU,gBAAiB,mBAAoB,yBAA8B,qBAAsB,iBAAmB,CAAC,AAE/M,oBAAS,kBAAmB,SAAU,QAAS,+BAAgC,gBAAiB,WAAY,YAAa,aAAe,CAAC,AACzI,2BAAgB,WAAY,kBAAmB,SAAU,SAAU,UAAW,YAAa,eAAiB,CAAC,AAC7G,0BAAe,WAAY,kBAAmB,SAAU,6BAA8B,uBAAwB,yBAA0B,2BAA6B,CAAC","file":"icon.css","sourcesContent":[".lock{position: relative;display: block;width: 35px;height: 35px;left: 50%;top: 50%;transform: translate(-50%, -50%);color: #fff;text-align: center;}\r\n.lock:after{content: '';display: inline-block;width: 23px;height: 15px;border: 2px solid;}\r\n.lock-ring{display: block;overflow: hidden;height: 12px;margin-top: 2px;text-align: center;}\r\n.lock-ring:after{content: '';display: inline-block;width: 14px;height: 19px;border: 2px solid;border-radius: 50%;}\r\n\r\n.start-menu {width: 46px;height: 15px;display: block;position: relative;top: 12px;perspective: 3px;}\r\n.start-menu:before {content: \"\";transform: translate(56%) rotateY(176.7deg) scaleX(0.34);height: 7px;width: 25px;color: #fff;background: #fff;display: block;position: relative;box-shadow: 27px 0 0 0, 0 8px 0, 27px 8px 0;}\r\n.start-menu.black:before{color: #000;background: #000;}\r\n\r\n.cortana{border-radius: 20px;height: 12px;width: 12px;display: block;box-shadow: 0px 0px 2px 2px #fff;position: relative;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n\r\n.angle{display: block;position: relative;width: 15px;height: 25px;left: 50%;top:50%}\r\n.angle:before{content: '';top: 2px;width: 16px;height: 2px;background: #fff;position: absolute;bottom: 0;margin: auto 0;right: 2px;box-shadow: inset 0 0 0 32px #fff;transform-origin: right;transform: rotate(45deg);}\r\n.angle:after{content: '';top: 0;width: 16px;height: 2px;background: #fff;position: absolute;bottom: 0;margin: auto 0;right: 2px;box-shadow: inset 0 0 0 32px #fff;transform-origin: right;transform: rotate(-45deg);}\r\n.up.angle{transform: translate(-50%,-50%) scale(0.55) rotate(-90deg);}\r\n.down.angle{transform: translate(-50%,-50%) scale(0.55) rotate(90deg);}\r\n.left.angle{transform: translate(-50%,-50%) scale(0.55) rotate(180deg);}\r\n.right.angle{transform: translate(-50%,-50%) scale(0.55);}\r\n.up.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(-90deg);}\r\n.down.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(90deg);}\r\n.left.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(180deg);}\r\n.right.lg.angle{transform: translate(-50%,-50%) scale(0.55);}\r\n.up.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(-90deg);}\r\n.down.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(90deg);}\r\n.left.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(180deg);}\r\n.right.nm.angle{transform: translate(-50%,-50%) scale(0.40);}\r\n.up.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(-90deg);}\r\n.down.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(90deg);}\r\n.left.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(180deg);}\r\n.right.sm.angle{transform: translate(-50%,-50%) scale(0.27);}\r\n\r\n.resource-manager{width: 24px;height: 18px;background: #ffe793;border-radius: 5%;display: block;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%) scale(0.9);}\r\n.resource-manager:before{content: '';height: 7px;width: 8px;border: 4px solid #3ab5e6;border-bottom: none;display: block;position: absolute;top: 8px;left: 4px;}\r\n.resource-manager:after{content: \"\";position: absolute;width: 6px;height: 1px;left: 0px;top: -2px;background: #fff;border-style: solid;border-width: 1px 3px 2px 3px;border-color: #fbd140;border-radius: 20%;}\r\n\r\n.unknown{position: relative;left: 38%;top: 50%;transform: translate(-50%,-50%);background: #fff;width: 13px;height: 25px;display: block;}\r\n.unknown:before{content: '';position: absolute;left: 95%;bottom: 0;width: 8px;height: 19px;background: #fff;}\r\n.unknown:after{content: '';position: absolute;left: 99%;border: 4px solid transparent;border-left-color: #ccc;border-bottom-color: #ccc;transform: translate(3%,-8%);}\r\n"],"sourceRoot":""}]);
+
+// exports
+exports.locals = {
+	"lock": "icon_lock_1pP6V",
+	"lock-ring": "icon_lock-ring_1YISr",
+	"lockRing": "icon_lock-ring_1YISr",
+	"start-menu": "icon_start-menu_1iiCL",
+	"startMenu": "icon_start-menu_1iiCL",
+	"black": "icon_black_tnyFz",
+	"cortana": "icon_cortana_dm8e-",
+	"angle": "icon_angle_BwsQo",
+	"up": "icon_up_sdzHj",
+	"down": "icon_down_1jp15",
+	"left": "icon_left_3eERt",
+	"right": "icon_right_z9BLT",
+	"lg": "icon_lg_3pWDS",
+	"nm": "icon_nm_3-B7y",
+	"sm": "icon_sm_27EQk",
+	"resource-manager": "icon_resource-manager_1KKto",
+	"resourceManager": "icon_resource-manager_1KKto",
+	"unknown": "icon_unknown_3H9yI"
+};
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/components/loader.css":
 /*!*******************************************************************************!*\
   !*** ./node_modules/css-loader??ref--5-1!./app/src/css/components/loader.css ***!
@@ -2455,7 +2873,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".desktop_background-img_1JnJ-{position:absolute;height:100%;width:100%;min-width:850px;min-height:604px;opacity:1;z-index:-1000}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop.css"],"names":[],"mappings":"AACA,8BACE,kBAAmB,AACnB,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,iBAAkB,AAClB,UAAW,AACX,aAAe,CAChB","file":"desktop.css","sourcesContent":["\r\n.background-img{\r\n  position: absolute;\r\n  height: 100%;\r\n  width: 100%;\r\n  min-width: 850px;\r\n  min-height: 604px;\r\n  opacity: 1;\r\n  z-index: -1000;\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, "#start_menu_switch{position:fixed;z-index:9999999;bottom:0;width:46px;height:40px;opacity:0;margin:0;padding:0}.desktop_background-img_1JnJ-{position:absolute;height:100%;width:100%;min-width:850px;min-height:604px;opacity:1;z-index:-1000}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop.css"],"names":[],"mappings":"AAAA,mBACE,eAAgB,AAChB,gBAAiB,AACjB,SAAU,AACV,WAAY,AACZ,YAAa,AACb,UAAW,AACX,SAAU,AACV,SAAW,CACZ,AACD,8BACE,kBAAmB,AACnB,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,iBAAkB,AAClB,UAAW,AACX,aAAe,CAChB","file":"desktop.css","sourcesContent":[":global #start_menu_switch {\r\n  position: fixed;\r\n  z-index: 9999999;\r\n  bottom: 0;\r\n  width: 46px;\r\n  height: 40px;\r\n  opacity: 0;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n.background-img{\r\n  position: absolute;\r\n  height: 100%;\r\n  width: 100%;\r\n  min-width: 850px;\r\n  min-height: 604px;\r\n  opacity: 1;\r\n  z-index: -1000;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -2465,25 +2883,76 @@ exports.locals = {
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/icon.css":
-/*!******************************************************************!*\
-  !*** ./node_modules/css-loader??ref--5-1!./app/src/css/icon.css ***!
-  \******************************************************************/
+/***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/desktop/start-menu.css":
+/*!********************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--5-1!./app/src/css/desktop/start-menu.css ***!
+  \********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(true);
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(true);
 // imports
 
 
 // module
-exports.push([module.i, ".icon_lock_22cxk{position:absolute;display:block;width:35px;height:35px;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;text-align:center}.icon_lock_22cxk:after{content:\"\";display:inline-block;width:23px;height:15px;border:2px solid}.icon_lock-ring_222Rx{display:block;overflow:hidden;height:12px;margin-top:2px;text-align:center}.icon_lock-ring_222Rx:after{content:\"\";display:inline-block;width:14px;height:19px;border:2px solid;border-radius:50%}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/icon.css"],"names":[],"mappings":"AAAA,iBAAM,kBAAmB,cAAe,WAAY,YAAa,SAAU,QAAS,+BAAiC,WAAY,iBAAmB,CAAC,AACrJ,uBAAY,WAAY,qBAAsB,WAAY,YAAa,gBAAkB,CAAC,AAC1F,sBAAW,cAAe,gBAAiB,YAAa,eAAgB,iBAAmB,CAAC,AAC5F,4BAAiB,WAAY,qBAAsB,WAAY,YAAa,iBAAkB,iBAAmB,CAAC","file":"icon.css","sourcesContent":[".lock{position: absolute;display: block;width: 35px;height: 35px;left: 50%;top: 50%;transform: translate(-50%, -50%);color: #fff;text-align: center;}\r\n.lock:after{content: '';display: inline-block;width: 23px;height: 15px;border: 2px solid;}\r\n.lock-ring{display: block;overflow: hidden;height: 12px;margin-top: 2px;text-align: center;}\r\n.lock-ring:after{content: '';display: inline-block;width: 14px;height: 19px;border: 2px solid;border-radius: 50%;}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".start-menu_start-menu_RLS6c{position:absolute;z-index:9999900;bottom:35px;height:0;width:950px;background:rgba(38,47,59,.98);transition:height,bottom,opacity .05s,.05s,.02s;transition-timing-function:cubic-bezier(0,0,1,0);visibility:hidden;opacity:0;display:flex;flex-wrap:wrap;flex-direction:row}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/start-menu.css"],"names":[],"mappings":"AAAA,6BACE,kBAAmB,AACnB,gBAAiB,AACjB,YAAa,AACb,SAAU,AACV,YAAa,AACb,8BAAmC,AACnC,gDAAoD,AACpD,iDAAqD,AACrD,kBAAmB,AACnB,UAAW,AACX,aAAc,AACd,eAAgB,AAChB,kBAAoB,CACrB","file":"start-menu.css","sourcesContent":[".start-menu{\r\n  position: absolute;\r\n  z-index: 9999900;\r\n  bottom: 35px;\r\n  height: 0;\r\n  width: 950px;\r\n  background: rgba(38, 47, 59, 0.98);\r\n  transition: height,bottom,opacity 0.05s,0.05s,0.02s;\r\n  transition-timing-function: cubic-bezier(0, 0, 1, 0);\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n  flex-direction: row;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
-	"lock": "icon_lock_22cxk",
-	"lock-ring": "icon_lock-ring_222Rx",
-	"lockRing": "icon_lock-ring_222Rx"
+	"start-menu": "start-menu_start-menu_RLS6c",
+	"startMenu": "start-menu_start-menu_RLS6c"
+};
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js??ref--5-1!./app/src/css/desktop/taskbar.css":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--5-1!./app/src/css/desktop/taskbar.css ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(true);
+// imports
+
+
+// module
+exports.push([module.i, ".taskbar_taskbar_3hPyP{display:flex;position:fixed;z-index:9999998;bottom:0;height:40px;width:100%;background:rgba(30,37,46,.85)}.taskbar_tb-left_2HjgG,.taskbar_tb-task_1bBpb{display:flex;flex:1}.taskbar_tb-left_2HjgG,.taskbar_tb-right_27mqb{height:inherit}.taskbar_tb-sys_37Ijg{display:flex}.taskbar_tb-sys_37Ijg,.taskbar_tb-task_1bBpb{margin-right:4px}.taskbar_item_36Zmi{margin-right:1px;height:inherit;display:inline-block;width:46px;overflow:hidden}.taskbar_item_36Zmi:hover{background:hsla(0,0%,100%,.1)}.taskbar_item_36Zmi:active{background:hsla(0,0%,100%,.05)}.taskbar_item-cortana_3qlA0:active{background:hsla(0,0%,100%,.15)}.taskbar_item-cortana_3qlA0,.taskbar_item-menu_8Jfia{margin-right:0;width:48px}.taskbar_item-task_2Y0xn{max-width:48px;min-width:35px;height:100%;flex:1;position:relative}.taskbar_item-task_2Y0xn:before{content:\"\";position:absolute;bottom:0;left:50%;transform:translate(-50%);display:inline-block;width:88%;height:7.5%;background-color:#8a9db6;transition:width .2s}.taskbar_item-task_2Y0xn:hover:before{content:\"\";width:100%}.taskbar_icon-ct_1NQ-R{display:block;position:relative;width:30px;height:100%;overflow:hidden;margin:auto}#start_menu_switch:hover~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background:hsla(0,0%,100%,.1)}#start_menu_switch:active~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background:hsla(0,0%,100%,.05)}#start_menu_switch:checked~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background:hsla(0,0%,100%,.2);box-shadow:0 0 5px 0 rgba(0,0,0,.5)}#start_menu_switch:checked:active~.taskbar_taskbar_3hPyP .taskbar_icon-start-menu_2T9Bz:before{background:#515c6b;color:#515c6b}#start_menu_switch:hover~.taskbar_taskbar_3hPyP .taskbar_icon-start-menu_2T9Bz:before{background:#6e7d91;color:#6e7d91}.taskbar_task-switch_3CGgb{display:none;margin:0;opacity:0;position:absolute;left:0;height:100%;width:100%}.taskbar_switch-responser_3Z2GJ{position:absolute;z-index:-1;left:96px;display:none;left:0;width:100%;height:100%}.taskbar_task-switch_3CGgb:hover~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.1)}.taskbar_task-switch_3CGgb:active~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.05)}.taskbar_task-switch_3CGgb:checked~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.15)}.taskbar_task-switch_3CGgb:checked:active~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.05)}.taskbar_tb-tasks_hi9pa{display:block}@media (max-width:486px){.taskbar_switch-responser_3Z2GJ,.taskbar_task-switch_3CGgb{display:block}.taskbar_tb-tasks_hi9pa{position:absolute;bottom:40px;flex-wrap:wrap;width:240px;height:auto;background:rgba(30,37,46,.85);box-shadow:0 0 5px 0 rgba(0,0,0,.5);z-index:-10;display:none}.taskbar_tb-tasks_hi9pa>.taskbar_item-task_2Y0xn{min-width:40px;height:40px}.taskbar_task-switch_3CGgb:checked~.taskbar_tb-tasks_hi9pa{display:block}#taskbar_items-task-switch_y5Qun{display:inline-block}#taskbar_act-hover-items-task-switch_2j4hP{width:200px;display:inline-block}#taskbar_items-task-switch_y5Qun:checked~.taskbar_tb-task_1bBpb.taskbar_resp-pos486_1ydIk{display:none}}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/taskbar.css"],"names":[],"mappings":"AAAA,uBACE,aAAc,AACd,eAAgB,AAChB,gBAAiB,AACjB,SAAU,AACV,YAAa,AACb,WAAY,AACZ,6BAAmC,CACpC,AACD,8CACE,aAAc,AACd,MAAQ,CACT,AACD,+CACE,cAAgB,CACjB,AACD,sBACE,YAAc,CACf,AACD,6CACE,gBAAkB,CACnB,AACD,oBACE,iBAAkB,AAClB,eAAgB,AAChB,qBAAsB,AACtB,WAAY,AACZ,eAAiB,CAClB,AACD,0BACE,6BAAqC,CACtC,AACD,2BACE,8BAAsC,CACvC,AACD,mCACE,8BAAsC,CACvC,AACD,qDACE,eAAgB,AAChB,UAAY,CACb,AACD,yBACE,eAAgB,AAChB,eAAgB,AAChB,YAAa,AACb,OAAQ,AACR,iBAAmB,CACpB,AACD,gCACE,WAAY,AACZ,kBAAmB,AACnB,SAAY,AACZ,SAAU,AACV,0BAA6B,AAC7B,qBAAsB,AACtB,UAAW,AACX,YAAa,AACb,yBAA0B,AAC1B,oBAAuB,CACxB,AACD,sCACE,WAAY,AACZ,UAAY,CACb,AACD,uBACE,cAAe,AACf,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,gBAAiB,AACjB,WAAa,CACd,AAED,yEACE,6BAAqC,CACtC,AACD,0EACE,8BAAsC,CACvC,AACD,2EACE,8BAAqC,AACrC,mCAAyC,CAC1C,AACD,+FACE,mBAAoB,AACpB,aAAe,CAChB,AACD,sFACE,mBAAoB,AACpB,aAAe,CAChB,AACD,2BACE,aAAc,AACd,SAAU,AACV,UAAW,AACX,kBAAmB,AACnB,OAAQ,AACR,YAAa,AACb,UAAY,CACb,AACD,gCACE,kBAAmB,AACnB,WAAY,AACZ,UAAW,AACX,aAAc,AACd,OAAQ,AACR,WAAY,AACZ,WAAa,CACd,AACD,iEACE,6BAAqC,CACtC,AACD,kEACE,8BAAsC,CACvC,AACD,mEACE,8BAAsC,CACvC,AACD,0EACE,8BAAsC,CACvC,AACD,wBACE,aAAe,CAChB,AACD,yBAIE,2DACE,aAAe,CAChB,AACD,wBACE,kBAAmB,AACnB,YAAa,AACb,eAAgB,AAChB,YAAa,AACb,YAAa,AACb,8BAAmC,AACnC,oCAA2C,AAC3C,YAAa,AACb,YAAc,CACf,AACD,iDACE,eAAgB,AAChB,WAAa,CACd,AACD,2DACE,aAAe,CAChB,AACD,iCACE,oBAAsB,CACvB,AACD,2CACE,YAAa,AACb,oBAAsB,CACvB,AACD,0FACE,YAAc,CACf,CACF","file":"taskbar.css","sourcesContent":[".taskbar {\r\n  display: flex;\r\n  position: fixed;\r\n  z-index: 9999998;\r\n  bottom: 0;\r\n  height: 40px;\r\n  width: 100%;\r\n  background: rgba(30, 37, 46, 0.85);\r\n}\r\n.tb-left, .tb-task {\r\n  display: flex;\r\n  flex: 1;\r\n}\r\n.tb-left, .tb-right{\r\n  height: inherit;\r\n}\r\n.tb-sys{\r\n  display: flex;\r\n}\r\n.tb-sys, .tb-task {\r\n  margin-right: 4px;\r\n}\r\n.item{\r\n  margin-right: 1px;\r\n  height: inherit;\r\n  display: inline-block;\r\n  width: 46px;\r\n  overflow: hidden;\r\n}\r\n.item:hover{\r\n  background: rgba(255, 255, 255, 0.1);\r\n}\r\n.item:active{\r\n  background: rgba(255, 255, 255, 0.05);\r\n}\r\n.item-cortana:active{\r\n  background: rgba(255, 255, 255, 0.15);\r\n}\r\n.item-menu, .item-cortana{\r\n  margin-right: 0;\r\n  width: 48px;\r\n}\r\n.item-task{\r\n  max-width: 48px;\r\n  min-width: 35px;\r\n  height: 100%;\r\n  flex: 1;\r\n  position: relative;\r\n}\r\n.item-task:before {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: 0px;\r\n  left: 50%;\r\n  transform: translate(-50%,0);\r\n  display: inline-block;\r\n  width: 88%;\r\n  height: 7.5%;\r\n  background-color: #8a9db6;\r\n  transition: width 0.2s;\r\n}\r\n.item-task:hover:before {\r\n  content: '';\r\n  width: 100%;\r\n}\r\n.icon-ct{\r\n  display: block;\r\n  position: relative;\r\n  width: 30px;\r\n  height: 100%;\r\n  overflow: hidden;\r\n  margin: auto;\r\n}\r\n\r\n:global(#start_menu_switch):hover~.taskbar .item-menu {\r\n  background: rgba(255, 255, 255, 0.1);\r\n}\r\n:global(#start_menu_switch):active~.taskbar .item-menu {\r\n  background: rgba(255, 255, 255, 0.05);\r\n}\r\n:global(#start_menu_switch):checked~.taskbar .item-menu {\r\n  background: rgba(255, 255, 255, 0.2);\r\n  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);\r\n}\r\n:global(#start_menu_switch):checked:active~.taskbar .icon-start-menu:before {\r\n  background: #515c6b;\r\n  color: #515c6b;\r\n}\r\n:global(#start_menu_switch):hover~.taskbar .icon-start-menu:before {\r\n  background: #6e7d91;\r\n  color: #6e7d91;\r\n}\r\n.task-switch{\r\n  display: none;\r\n  margin: 0;\r\n  opacity: 0;\r\n  position: absolute;\r\n  left: 0;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.switch-responser{\r\n  position: absolute;\r\n  z-index: -1;\r\n  left: 96px;\r\n  display: none;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n.task-switch:hover~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.1);\r\n}\r\n.task-switch:active~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.05);\r\n}\r\n.task-switch:checked~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.15);\r\n}\r\n.task-switch:checked:active~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.05);\r\n}\r\n.tb-tasks{\r\n  display: block;\r\n}\r\n@media (max-width: 486px) {\r\n  .task-switch{\r\n    display: block;\r\n  }\r\n  .switch-responser{\r\n    display: block;\r\n  }\r\n  .tb-tasks {\r\n    position: absolute;\r\n    bottom: 40px;\r\n    flex-wrap: wrap;\r\n    width: 240px;\r\n    height: auto;\r\n    background: rgba(30, 37, 46, 0.85);\r\n    box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.5);;\r\n    z-index: -10;\r\n    display: none;\r\n  }\r\n  .tb-tasks>.item-task{\r\n    min-width: 40px;\r\n    height: 40px;\r\n  }\r\n  .task-switch:checked~.tb-tasks{\r\n    display: block;\r\n  }\r\n  #items-task-switch{\r\n    display: inline-block;\r\n  }\r\n  #act-hover-items-task-switch{\r\n    width: 200px;\r\n    display: inline-block;\r\n  }\r\n  #items-task-switch:checked~.tb-task.resp-pos486{\r\n    display: none;\r\n  }\r\n}\r\n"],"sourceRoot":""}]);
+
+// exports
+exports.locals = {
+	"taskbar": "taskbar_taskbar_3hPyP",
+	"tb-left": "taskbar_tb-left_2HjgG",
+	"tbLeft": "taskbar_tb-left_2HjgG",
+	"tb-task": "taskbar_tb-task_1bBpb",
+	"tbTask": "taskbar_tb-task_1bBpb",
+	"tb-right": "taskbar_tb-right_27mqb",
+	"tbRight": "taskbar_tb-right_27mqb",
+	"tb-sys": "taskbar_tb-sys_37Ijg",
+	"tbSys": "taskbar_tb-sys_37Ijg",
+	"item": "taskbar_item_36Zmi",
+	"item-cortana": "taskbar_item-cortana_3qlA0",
+	"itemCortana": "taskbar_item-cortana_3qlA0",
+	"item-menu": "taskbar_item-menu_8Jfia",
+	"itemMenu": "taskbar_item-menu_8Jfia",
+	"item-task": "taskbar_item-task_2Y0xn",
+	"itemTask": "taskbar_item-task_2Y0xn",
+	"icon-ct": "taskbar_icon-ct_1NQ-R",
+	"iconCt": "taskbar_icon-ct_1NQ-R",
+	"icon-start-menu": "taskbar_icon-start-menu_2T9Bz",
+	"iconStartMenu": "taskbar_icon-start-menu_2T9Bz",
+	"task-switch": "taskbar_task-switch_3CGgb",
+	"taskSwitch": "taskbar_task-switch_3CGgb",
+	"switch-responser": "taskbar_switch-responser_3Z2GJ",
+	"switchResponser": "taskbar_switch-responser_3Z2GJ",
+	"tb-tasks": "taskbar_tb-tasks_hi9pa",
+	"tbTasks": "taskbar_tb-tasks_hi9pa",
+	"items-task-switch": "taskbar_items-task-switch_y5Qun",
+	"itemsTaskSwitch": "taskbar_items-task-switch_y5Qun",
+	"act-hover-items-task-switch": "taskbar_act-hover-items-task-switch_2j4hP",
+	"actHoverItemsTaskSwitch": "taskbar_act-hover-items-task-switch_2j4hP",
+	"resp-pos486": "taskbar_resp-pos486_1ydIk",
+	"respPos486": "taskbar_resp-pos486_1ydIk"
 };
 
 /***/ }),

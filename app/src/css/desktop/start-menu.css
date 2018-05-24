@@ -1,0 +1,15 @@
+.start-menu{
+  position: absolute;
+  z-index: 9999900;
+  bottom: 35px;
+  height: 0;
+  width: 950px;
+  background: rgba(38, 47, 59, 0.98);
+  transition: height,bottom,opacity 0.05s,0.05s,0.02s;
+  transition-timing-function: cubic-bezier(0, 0, 1, 0);
+  visibility: hidden;
+  opacity: 0;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
