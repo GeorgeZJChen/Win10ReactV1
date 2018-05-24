@@ -364,7 +364,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var innerHTML = {
   "lock": _react2.default.createElement('span', { className: _icon2.default.lockRing }),
-  "angle": ""
+  "angle": "",
+  "resource-manager": "",
+  "unknown": ""
 };
 
 var Icon = function (_Component) {
@@ -391,11 +393,11 @@ var Icon = function (_Component) {
         var temp = classes[i];
         if (temp.indexOf('-') != -1) {
           var temp_arr = temp.split('-');
-          // for (let j = 0; j < temp_arr.length; j++) {
-          //   if(j!=0){
-          //     temp_arr[j] = temp_arr[j][0].toUpperCase() + temp_arr[j].slice(1)
-          //   }
-          // }
+          for (var j = 0; j < temp_arr.length; j++) {
+            if (j != 0) {
+              temp_arr[j] = temp_arr[j][0].toUpperCase() + temp_arr[j].slice(1);
+            }
+          }
           temp = temp_arr.join('');
         }
         if (i == 0) {
@@ -406,7 +408,7 @@ var Icon = function (_Component) {
       return _react2.default.createElement(
         'span',
         { className: full_name },
-        innerHTML[classes[0]]
+        innerHTML[first_name]
       );
     }
   }, {
@@ -756,7 +758,7 @@ var Taskbar = function (_Component) {
           _react2.default.createElement(
             'span',
             { className: _taskbar2.default.iconCt },
-            _react2.default.createElement('span', { className: _icon2.default.resourceManager })
+            _react2.default.createElement(_icon4.default, { className: 'resource-manager' })
           )
         ),
         _react2.default.createElement(
@@ -765,13 +767,8 @@ var Taskbar = function (_Component) {
           _react2.default.createElement(
             'span',
             { className: _taskbar2.default.iconCt },
-            _react2.default.createElement('span', { className: _icon2.default.unknown })
+            _react2.default.createElement(_icon4.default, { className: 'unknown' })
           )
-        ),
-        _react2.default.createElement(
-          'div',
-          { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask },
-          _react2.default.createElement(_icon4.default, { className: 'angle sm left a-b-cc rewf-acs' })
         )
       );
     }

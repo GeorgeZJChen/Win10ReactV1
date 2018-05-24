@@ -4,6 +4,7 @@ import axios from 'axios'
 import Loader from '../components/loader.js'
 import Events from '../components/event.js'
 import Desktop from '../desktop/desktop.js'
+import DateSpan from '../components/date.js'
 import css from '../../css/login/login.css'
 import icon from '../../css/components/icon.css'
 
@@ -28,7 +29,7 @@ class Login extends Component{
       this.setState({
         pageReady : 1,
       })
-    }, 2000)
+    }, 10)
     this.dateIntvId = setInterval(()=>{
       let date = new Date()
       let dateStr = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][date.getDay()]+ ', '
@@ -39,7 +40,7 @@ class Login extends Component{
         date: dateStr,
         time: (date.getHours()>9?date.getHours():'0'+date.getHours())+':'+(date.getMinutes()>9?date.getMinutes():'0'+date.getMinutes())
       })
-    }, 10)
+    }, 1000)
     this.loadUserInformation()
   }
   componentWillUnmount(){
@@ -128,8 +129,8 @@ class Login extends Component{
         <div className={css.dateCover+' '+css.fullScreen} onClick={()=>this.toLogin()}
           style={{top: (this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))?'-50%':0, opacity: (this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))?0:1,zIndex:this.state.removeDateCover?0:2}}>
           <div className={css.date}>
-            <div className={css.dateTime}>{this.state.time}</div>
-            <div className={css.dateDate}>{this.state.date}</div>
+            <div className={css.dateTime}><DateSpan format='hh:mm'/></div>
+            <div className={css.dateDate}><DateSpan format='W, ~, d'/></div>
           </div>
         </div>
         <div style={{visibility:(this.state.imgReady&&this.state.pageReady?'hidden':'visible'), marginTop: 50}}>

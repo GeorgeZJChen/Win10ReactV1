@@ -4,37 +4,39 @@ import icon from '../../css/components/icon.css'
 
 const innerHTML = {
   "lock": (<span className={icon.lockRing}></span>),
-  "angle": "",
-  "resource-manager": "",
-  "unknown": ""
+  "WLAN-signal": (<span className={icon['WLAN-signal-inner']}></span>),
+  "teamviewer": (<span className={icon['teamviewer-inner']}></span>),
+  'weChat': (<span><span className={icon['weChat-inner1']}></span><span className={icon['weChat-inner2']}></span></span>)
+}
+let empty = [
+  "angle", "resource-manager", "unknown", "operations", "kugou"
+]
+for (var i = 0; i < empty.length; i++) {
+  innerHTML[empty[i]] = ""
 }
 
 class Icon extends Component{
   constructor(props){
     super(props)
-    this.state ={
-      className: props.className
-    }
+    this.className = props.className
   }
   getHtml(){
-    const classes = this.state.className.split(/\s+/)
+    const classes = this.className.split(/\s+/)
     let full_name = ''
     let first_name = ''
     for (let i = 0; i < classes.length; i++) {
-      let temp = classes[i]
-      if(temp.indexOf('-')!=-1){
-        let temp_arr = temp.split('-')
-        for (let j = 0; j < temp_arr.length; j++) {
-          if(j!=0){
-            temp_arr[j] = temp_arr[j][0].toUpperCase() + temp_arr[j].slice(1)
-          }
-        }
-        temp = temp_arr.join('')
-      }
       if(i==0){
-        first_name = temp
+        first_name = classes[i]
       }
-      full_name += icon[classes[i]] +' '
+      let class_s = icon[classes[i]]
+      if(class_s){
+        full_name += class_s +' '
+      }else {
+        full_name += classes[i] +' '
+      }
+    }
+    if(first_name.indexOf('weChat')!=-1){
+      console.log(full_name);
     }
     return (
       <span className={full_name}>
