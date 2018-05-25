@@ -432,10 +432,13 @@ var MyEvents = function (_EventEmitter) {
 }(_events.EventEmitter);
 
 var myEvents = new MyEvents();
-var eventsCount = 1000;
+var ec = 1000;
 
-myEvents.names = {
-  desktopReady: eventsCount++ + ''
+myEvents.names = { //tasks names
+  desktopReady: ec++ + '',
+  to_taskbar_add_new_task: ec++ + '',
+  to_task_items_add_new_task: ec++ + '',
+  handle_task_items_onclick: ec++ + ''
 };
 
 exports.default = myEvents;
@@ -503,31 +506,47 @@ var Icon = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Icon.__proto__ || Object.getPrototypeOf(Icon)).call(this, props));
 
     _this.className = props.className;
+
+    if (_this.className == undefined) return _possibleConstructorReturn(_this);
+
+    var classes = _this.className.split(/\s+/);
+    var full_name = '';
+    var first_name = '';
+    for (var _i = 0; _i < classes.length; _i++) {
+      if (_i == 0) {
+        first_name = classes[_i];
+      }
+      var class_s = _icon2.default[classes[_i]];
+      if (class_s) {
+        full_name += class_s + ' ';
+      } else {
+        full_name += classes[_i] + ' ';
+      }
+    }
+    _this.full_name = full_name;
+    _this.first_name = first_name;
     return _this;
   }
 
   _createClass(Icon, [{
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      console.log('unmount icon');
+    }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate(nextProps, nextState) {
+      if (this.className == nextProps.className) return false;
+      return true;
+    }
+  }, {
     key: 'getHtml',
     value: function getHtml() {
       if (this.className == undefined) return _react2.default.createElement('span', null);
-      var classes = this.className.split(/\s+/);
-      var full_name = '';
-      var first_name = '';
-      for (var _i = 0; _i < classes.length; _i++) {
-        if (_i == 0) {
-          first_name = classes[_i];
-        }
-        var class_s = _icon2.default[classes[_i]];
-        if (class_s) {
-          full_name += class_s + ' ';
-        } else {
-          full_name += classes[_i] + ' ';
-        }
-      }
       return _react2.default.createElement(
         'span',
-        { className: full_name },
-        innerHTML[first_name]
+        { className: this.full_name },
+        innerHTML[this.first_name]
       );
     }
   }, {
@@ -663,6 +682,8 @@ var _task = __webpack_require__(/*! ./task.js */ "./app/src/js/desktop/task.js")
 
 var _task2 = _interopRequireDefault(_task);
 
+__webpack_require__(/*! ./event-handler.js */ "./app/src/js/desktop/event-handler.js");
+
 var _startMenu = __webpack_require__(/*! ./start-menu.js */ "./app/src/js/desktop/start-menu.js");
 
 var _startMenu2 = _interopRequireDefault(_startMenu);
@@ -697,49 +718,66 @@ var Desktop = function (_Component) {
       imgURL: 'static/img/desktop_default.jpg',
       pageReady: 0,
       imgReady: 0,
-      tasks: [],
-      tasksCount: 0
+      tasks: []
     };
     return _this;
   }
 
   _createClass(Desktop, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
+    key: 'render',
+    value: function render() {
       var _this2 = this;
 
-      setTimeout(function () {
-        _event2.default.emit(_event2.default.names.desktopReady, 'Ready');
-      }, 10);
+      return _react2.default.createElement(
+        'div',
+        { className: _desktop2.default.desktop },
+        _react2.default.createElement('img', { className: _desktop2.default.backgroundImg, src: this.state.imgURL, onLoad: function onLoad() {
+            return _this2.setState({ imgReady: 1 });
+          } }),
+        _react2.default.createElement('input', { id: 'start_menu_switch', type: 'checkbox' }),
+        _react2.default.createElement(_startMenu2.default, null),
+        _react2.default.createElement(_taskbar2.default, { tasks: this.state.tasks })
+      );
+    }
+  }, {
+    key: 'init',
+    value: function init() {
+      var _this3 = this;
+
+      this.addSystemTasks();
 
       setTimeout(function () {
-        _this2.addTask('i6oxuWOp');
-        console.log('addTask');
+        _this3.addTask('wechat_W8kyt9KR');
+        _this3.addTask('wechat_W8kyt9KR0');
+      }, 1000);
+
+      setTimeout(function () {
+        _this3.addTask('dundee_pEsnAYaw0');
       }, 2000);
 
-      var system_tasks = _task2.default.systemTasks;
-      // tasksCount: prevState.tasksCount+1
+      setTimeout(function () {
+        _this3.addTask('dundee_pEsnAYaw');
+      }, 3000);
 
-      var _loop = function _loop(key) {
-        _this2.setState(function (prevState) {
-          tasks: prevState.tasks.push(system_tasks[key]);
-        });
-      };
-
-      for (var key in system_tasks) {
-        _loop(key);
-      }
       // TODO:
       //initial tasks
-      var init_tasks = ['rOYGH6M8'];
+      var init_tasks = ['i6oxuWOp', 'i6oxuWOp0', 'i6oxuWOp1', 'i6oxuWOp2', 'i6oxuWOp3', 'teamviewer_i6oxuWOp4', 'rOYGH6M8', "WLAN_W8kyt9KR2", "kugou_W8kyt9KR"];
       for (var i = 0; i < init_tasks.length; i++) {
         this.addTask(init_tasks[i]);
       }
     }
   }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.init();
+      setTimeout(function () {
+        _event2.default.emit(_event2.default.names.desktopReady, 'Ready');
+      }, 10);
+    }
+  }, {
     key: 'addTask',
     value: function addTask(name_id) {
-      var _this3 = this;
+      var _this4 = this;
 
       if (_task2.default.registeredTasks.has(name_id)) {
         var url = 'static/data/tasks/' + name_id + '.json';
@@ -749,10 +787,7 @@ var Desktop = function (_Component) {
           responseType: 'json'
         }).then(function (res) {
           try {
-            // tasksCount: prevState.tasksCount+1
-            _this3.setState(function (prevState) {
-              tasks: prevState.tasks.push(res.data);
-            });
+            _this4.renderNewTask(res.data);
           } catch (e) {
             console.error('Data format error');
           }
@@ -762,20 +797,18 @@ var Desktop = function (_Component) {
       }
     }
   }, {
-    key: 'render',
-    value: function render() {
-      var _this4 = this;
-
-      return _react2.default.createElement(
-        'div',
-        { className: _desktop2.default.desktop },
-        _react2.default.createElement('img', { className: _desktop2.default.backgroundImg, src: this.state.imgURL, onLoad: function onLoad() {
-            return _this4.setState({ imgReady: 1 });
-          } }),
-        _react2.default.createElement('input', { id: 'start_menu_switch', type: 'checkbox' }),
-        _react2.default.createElement(_startMenu2.default, null),
-        _react2.default.createElement(_taskbar2.default, { tasks: this.state.tasks, tasksCount: this.state.tasksCount })
-      );
+    key: 'addSystemTasks',
+    value: function addSystemTasks() {
+      var system_tasks = _task2.default.systemTasks;
+      for (var key in system_tasks) {
+        this.renderNewTask(system_tasks[key]);
+      }
+    }
+  }, {
+    key: 'renderNewTask',
+    value: function renderNewTask(task) {
+      this.state.tasks.push(task);
+      _event2.default.emit(_event2.default.names.to_taskbar_add_new_task, task);
     }
   }]);
 
@@ -783,6 +816,29 @@ var Desktop = function (_Component) {
 }(_react.Component);
 
 exports.default = Desktop;
+
+/***/ }),
+
+/***/ "./app/src/js/desktop/event-handler.js":
+/*!*********************************************!*\
+  !*** ./app/src/js/desktop/event-handler.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
+
+var _event2 = _interopRequireDefault(_event);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_event2.default.on(_event2.default.names.handle_task_items_onclick, function (e, id) {
+  // console.log(id);
+  // // TODO: 
+});
 
 /***/ }),
 
@@ -885,7 +941,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var registeredTasks = new Set(["rOYGH6M8", "i6oxuWOp"]);
+var registeredTasks = new Set(["i6oxuWOp", "i6oxuWOp0", "i6oxuWOp1", "i6oxuWOp2", "i6oxuWOp3", "i6oxuWOp4", "WLAN_W8kyt9KR2", "kugou_W8kyt9KR", "teamviewer_i6oxuWOp4", "wechat_W8kyt9KR", "wechat_W8kyt9KR0", "dundee_pEsnAYaw", "dundee_pEsnAYaw0"]);
 var systemTasks = {
   "resource_manager": {
     id: "resource_manager",
@@ -911,6 +967,289 @@ var Task = function (_Component) {
 Task.systemTasks = systemTasks;
 Task.registeredTasks = registeredTasks;
 exports.default = Task;
+
+/***/ }),
+
+/***/ "./app/src/js/desktop/taskItems.js":
+/*!*****************************************!*\
+  !*** ./app/src/js/desktop/taskItems.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
+
+var _event2 = _interopRequireDefault(_event);
+
+var _icon = __webpack_require__(/*! ../components/icon.js */ "./app/src/js/components/icon.js");
+
+var _icon2 = _interopRequireDefault(_icon);
+
+var _taskbar = __webpack_require__(/*! ../../css/desktop/taskbar.css */ "./app/src/css/desktop/taskbar.css");
+
+var _taskbar2 = _interopRequireDefault(_taskbar);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var TaskItems = function (_Component) {
+  _inherits(TaskItems, _Component);
+
+  function TaskItems(props) {
+    _classCallCheck(this, TaskItems);
+
+    var _this = _possibleConstructorReturn(this, (TaskItems.__proto__ || Object.getPrototypeOf(TaskItems)).call(this, props));
+
+    _this.state = {
+      renderFlag: true
+    };
+    return _this;
+  }
+
+  _createClass(TaskItems, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      _event2.default.on(_event2.default.names.to_task_items_add_new_task, function (task) {
+        _this2.setState(function (prevState) {
+          return { renderFlag: !prevState.renderFlag };
+        });
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this3 = this;
+
+      return _react2.default.createElement(
+        _react2.default.Fragment,
+        null,
+        this.props.tasks.map(function (task, index) {
+          if (_this3.props.type == 0) {
+            //render on taskbar
+            if (task.isTaskbarTask) {
+              if (task.taskbarIcon.URL) return _react2.default.createElement(Item, { key: task.id, id: task.id, className: 'unknown', URL: task.taskbarIcon.URL, isImage: true, index: index });else return _react2.default.createElement(Item, { key: task.id, id: task.id, className: task.taskbarIcon.className, index: index });
+            }
+          } else {
+            //render background task
+            if (task.isBackgroundTask) {
+              var t = _this3.props.type;
+              var d = task.backgroundIcon ? task.backgroundIcon.display : 0;
+              if (t == 1 && d == 1 || d == 0 && t != 1) return;
+              if (task.backgroundIcon.URL) return _react2.default.createElement(BackgroundItem, { key: task.id, URL: task.backgroundIcon.URL, id: task.id, className: 'unknown bg',
+                isImage: true, index: index, type: _this3.props.type });else return _react2.default.createElement(BackgroundItem, { key: task.id, id: task.id, className: task.backgroundIcon.className,
+                index: index, type: _this3.props.type });
+            }
+          }
+        })
+      );
+    }
+  }]);
+
+  return TaskItems;
+}(_react.Component);
+
+var Item = function (_Component2) {
+  _inherits(Item, _Component2);
+
+  function Item(props) {
+    _classCallCheck(this, Item);
+
+    var _this4 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
+
+    _this4.state = {
+      imgReady: 0,
+      renderFlag: true
+    };
+    _this4.imgStyle = {
+      width: '80%',
+      height: '70%',
+      position: 'relative',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%,-50%)',
+      display: 'block'
+    };
+    _this4.imgStyleNotReady = {
+      display: 'none'
+    };
+    _this4.index = props.index;
+    _this4.setref = props.setref;
+    return _this4;
+  }
+
+  _createClass(Item, [{
+    key: 'imgOnload',
+    value: function imgOnload() {
+      this.setState(function (prevState) {
+        return {
+          imgReady: 1,
+          renderFlag: !prevState.renderFlag
+        };
+      });
+    }
+  }, {
+    key: 'onclick',
+    value: function onclick(e) {
+      _event2.default.emit(_event2.default.names.handle_task_items_onclick, e, this.props.id);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this5 = this;
+
+      if (this.props.isImage) {
+        return _react2.default.createElement(
+          'div',
+          { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask, key: this.props.id, onClick: function onClick(e) {
+              return _this5.onclick(e);
+            } },
+          _react2.default.createElement(
+            'span',
+            { className: _taskbar2.default.iconCt },
+            this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: this.props.className }),
+            _react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady, src: this.props.URL, onLoad: function onLoad() {
+                _this5.imgOnload();
+              } })
+          )
+        );
+      } else return _react2.default.createElement(
+        'div',
+        { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask, key: this.props.id, onClick: function onClick(e) {
+            return _this5.onclick(e);
+          } },
+        _react2.default.createElement(
+          'span',
+          { className: _taskbar2.default.iconCt },
+          _react2.default.createElement(_icon2.default, { className: this.props.className })
+        )
+      );
+    }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate(nextProps, nextState) {
+      if (this.index == nextProps.index && this.state.renderFlag == nextState.renderFlag) return false;
+      return true;
+    }
+  }]);
+
+  return Item;
+}(_react.Component);
+
+var BackgroundItem = function (_Component3) {
+  _inherits(BackgroundItem, _Component3);
+
+  function BackgroundItem(props) {
+    _classCallCheck(this, BackgroundItem);
+
+    var _this6 = _possibleConstructorReturn(this, (BackgroundItem.__proto__ || Object.getPrototypeOf(BackgroundItem)).call(this, props));
+
+    _this6.index = props.index;
+    _this6.state = {
+      imgReady: 0,
+      renderFlag: true
+    };
+    _this6.imgStyle = {
+      width: '90%',
+      height: '90%',
+      position: 'relative',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%,-50%)',
+      display: 'block'
+    };
+    _this6.imgStyleNotReady = {
+      display: 'none'
+    };
+    return _this6;
+  }
+
+  _createClass(BackgroundItem, [{
+    key: 'imgOnload',
+    value: function imgOnload() {
+      this.setState(function (prevState) {
+        return {
+          imgReady: 1,
+          renderFlag: !prevState.renderFlag
+        };
+      });
+    }
+  }, {
+    key: 'onclick',
+    value: function onclick(e) {
+      _event2.default.emit(_event2.default.names.handle_task_items_onclick, e, this.props.id);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this7 = this;
+
+      var t = '';
+      if (this.props.type == 1) t = _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item;else if (this.props.type == 2) t = _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink;else if (this.props.type == 3) t = _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink;
+      if (this.props.isImage) {
+        return _react2.default.createElement(
+          'div',
+          { className: t, key: this.props.id, onClick: function onClick(e) {
+              return _this7.onclick(e);
+            } },
+          _react2.default.createElement(
+            'span',
+            { className: _taskbar2.default.iconCtBg },
+            this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: this.props.className }),
+            _react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady, src: this.props.URL, onLoad: function onLoad() {
+                _this7.imgOnload();
+              } })
+          )
+        );
+      } else {
+        return _react2.default.createElement(
+          'div',
+          { className: t, key: this.props.id, onClick: function onClick(e) {
+              return _this7.onclick(e);
+            } },
+          _react2.default.createElement(
+            'span',
+            { className: _taskbar2.default.iconCtBg },
+            _react2.default.createElement(_icon2.default, { className: this.props.className })
+          )
+        );
+      }
+    }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate(nextProps, nextState) {
+      if (this.index == nextProps.index && this.state.renderFlag == nextState.renderFlag) return false;
+      return true;
+    }
+  }]);
+
+  return BackgroundItem;
+}(_react.Component);
+
+exports.default = TaskItems;
 
 /***/ }),
 
@@ -950,6 +1289,14 @@ var _task = __webpack_require__(/*! ./task.js */ "./app/src/js/desktop/task.js")
 
 var _task2 = _interopRequireDefault(_task);
 
+var _taskItems = __webpack_require__(/*! ./taskItems.js */ "./app/src/js/desktop/taskItems.js");
+
+var _taskItems2 = _interopRequireDefault(_taskItems);
+
+var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
+
+var _event2 = _interopRequireDefault(_event);
+
 var _icon = __webpack_require__(/*! ../components/icon.js */ "./app/src/js/components/icon.js");
 
 var _icon2 = _interopRequireDefault(_icon);
@@ -976,17 +1323,17 @@ var Taskbar = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Taskbar.__proto__ || Object.getPrototypeOf(Taskbar)).call(this, props));
 
-    _this.state = {
-      test: 1,
-      date: '2018/12/30',
-      time: '00:00'
-    };
+    _this.state = {};
     return _this;
   }
 
   _createClass(Taskbar, [{
     key: 'componentDidMount',
-    value: function componentDidMount() {}
+    value: function componentDidMount() {
+      _event2.default.on(_event2.default.names.to_taskbar_add_new_task, function (task) {
+        _event2.default.emit(_event2.default.names.to_task_items_add_new_task, task);
+      });
+    }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
@@ -1003,30 +1350,6 @@ var Taskbar = function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      console.log('render');
-      var TaskItems = function TaskItems() {
-        var items = new Array(_this2.props.tasks.length);
-        for (var i = 0; i < _this2.props.tasks.length; i++) {
-          var task = _this2.props.tasks[i];
-          if (task.URL) {} else {
-            var item = _react2.default.createElement(
-              'div',
-              { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask, key: task.id },
-              _react2.default.createElement(
-                'span',
-                { className: _taskbar2.default.iconCt },
-                _react2.default.createElement(_icon2.default, { className: task.taskbarIcon.className })
-              )
-            );
-            items.push(item);
-          }
-        }
-        return _react2.default.createElement(
-          'div',
-          { className: _taskbar2.default.tbTasks },
-          items
-        );
-      };
       return _react2.default.createElement(
         'div',
         { className: _taskbar2.default.taskbar },
@@ -1056,7 +1379,11 @@ var Taskbar = function (_Component) {
               { className: _taskbar2.default.item + ' ' + _taskbar2.default.switchResponser },
               _react2.default.createElement(_icon2.default, { className: 'angle up ' + _taskbar2.default.switchAU })
             ),
-            _react2.default.createElement(TaskItems, null)
+            _react2.default.createElement(
+              'div',
+              { className: _taskbar2.default.tbTasks },
+              _react2.default.createElement(_taskItems2.default, { tasks: this.props.tasks, type: 0 })
+            )
           )
         ),
         _react2.default.createElement(
@@ -1098,103 +1425,8 @@ var Taskbar = function (_Component) {
               _react2.default.createElement(
                 'div',
                 { className: _taskbar2.default.itemsBgHidden },
-                _react2.default.createElement(
-                  'div',
-                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
-                  _react2.default.createElement(
-                    'span',
-                    { className: _taskbar2.default.iconCtBg },
-                    _react2.default.createElement(_icon2.default, { className: 'unknown bg' })
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
-                  _react2.default.createElement(
-                    'span',
-                    { className: _taskbar2.default.iconCtBg },
-                    _react2.default.createElement(_icon2.default, { className: 'unknown bg' })
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
-                  _react2.default.createElement(
-                    'span',
-                    { className: _taskbar2.default.iconCtBg },
-                    _react2.default.createElement(_icon2.default, { className: 'unknown bg' })
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
-                  _react2.default.createElement(
-                    'span',
-                    { className: _taskbar2.default.iconCtBg },
-                    _react2.default.createElement(_icon2.default, { className: 'unknown bg' })
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
-                  _react2.default.createElement(
-                    'span',
-                    { className: _taskbar2.default.iconCtBg },
-                    _react2.default.createElement(_icon2.default, { className: 'teamviewer bg' })
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
-                  _react2.default.createElement(
-                    'span',
-                    { className: _taskbar2.default.iconCtBg },
-                    _react2.default.createElement(_icon2.default, { className: 'weChat bg coloured' })
-                  )
-                ),
-                _react2.default.createElement('span', { ref: 'insertBeforeThis' }),
-                _react2.default.createElement(
-                  'div',
-                  { className: _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
-                  _react2.default.createElement(
-                    'span',
-                    { className: _taskbar2.default.iconCtBg },
-                    _react2.default.createElement(_icon2.default, { className: 'kugou bg' })
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
-                  _react2.default.createElement(
-                    'span',
-                    { className: _taskbar2.default.iconCtBg },
-                    _react2.default.createElement(_icon2.default, { className: 'weChat bg' })
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
-                  _react2.default.createElement(
-                    'span',
-                    { className: _taskbar2.default.iconCtBg },
-                    _react2.default.createElement(_icon2.default, { className: 'WLAN-signal' })
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink, onClick: function onClick() {
-                      _this2.changeLanguage();
-                    } },
-                  _react2.default.createElement(
-                    'span',
-                    { className: _taskbar2.default.iconCtBg },
-                    _react2.default.createElement(
-                      'span',
-                      { className: _taskbar2.default.itemBgLang, ref: 'item_lang' },
-                      '\u82F1'
-                    )
-                  )
-                )
+                _react2.default.createElement(_taskItems2.default, { tasks: this.props.tasks, type: 1 }),
+                _react2.default.createElement(_taskItems2.default, { tasks: this.props.tasks, type: 2 })
               )
             ),
             _react2.default.createElement(
@@ -1202,7 +1434,7 @@ var Taskbar = function (_Component) {
               { className: _taskbar2.default.itemsBgCt },
               _react2.default.createElement(
                 'div',
-                { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink, onClick: function onClick() {
+                { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemBg, onClick: function onClick() {
                     _this2.changeLanguage();
                   } },
                 _react2.default.createElement(
@@ -1215,33 +1447,7 @@ var Taskbar = function (_Component) {
                   )
                 )
               ),
-              _react2.default.createElement(
-                'div',
-                { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
-                _react2.default.createElement(
-                  'span',
-                  { className: _taskbar2.default.iconCtBg },
-                  _react2.default.createElement(_icon2.default, { className: 'WLAN-signal' })
-                )
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
-                _react2.default.createElement(
-                  'span',
-                  { className: _taskbar2.default.iconCtBg },
-                  _react2.default.createElement(_icon2.default, { className: 'weChat bg' })
-                )
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
-                _react2.default.createElement(
-                  'span',
-                  { className: _taskbar2.default.iconCtBg },
-                  _react2.default.createElement(_icon2.default, { className: 'kugou bg' })
-                )
-              )
+              _react2.default.createElement(_taskItems2.default, { tasks: this.props.tasks, type: 3 })
             )
           )
         )
@@ -1330,7 +1536,8 @@ var Login = function (_Component) {
       opacity: 1,
       imgURL: 'static/img/login_default.jpg',
       imgReady: 0,
-      usernameWidth: 0
+      usernameWidth: 0,
+      renderFlag: true
     };
     _this.userInfo = {
       username: '',
@@ -1344,11 +1551,6 @@ var Login = function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      setTimeout(function () {
-        _this2.setState({
-          pageReady: 1
-        });
-      }, 10);
       this.dateIntvId = setInterval(function () {
         var date = new Date();
         var dateStr = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getDay()] + ', ' + ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()] + ', ' + date.getDate();
@@ -1357,7 +1559,13 @@ var Login = function (_Component) {
           time: (date.getHours() > 9 ? date.getHours() : '0' + date.getHours()) + ':' + (date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes())
         });
       }, 1000);
-      this.loadUserInformation();
+      this.loadUserInformation(function () {
+        setTimeout(function () {
+          _this2.setState({
+            pageReady: 1
+          });
+        }, 2000);
+      });
     }
   }, {
     key: 'componentWillUnmount',
@@ -1366,7 +1574,7 @@ var Login = function (_Component) {
     }
   }, {
     key: 'loadUserInformation',
-    value: function loadUserInformation() {
+    value: function loadUserInformation(cb) {
       var _this3 = this;
 
       //shall get data from cookies or back end server
@@ -1379,6 +1587,8 @@ var Login = function (_Component) {
           _this3.userInfo = res.data;
           _this3.refs.username.innerHTML = res.data.username;
           _this3.refs.greetings.style.maxWidth = _this3.refs.username.offsetWidth + 'px';
+
+          cb();
         } catch (e) {
           console.error('Data format error');
         }
@@ -1498,7 +1708,9 @@ var Login = function (_Component) {
           { className: _login2.default.dateCover + ' ' + _login2.default.fullScreen, onClick: function onClick() {
               return _this5.toLogin();
             },
-            style: { top: this.state.removeDateCover && this.state.imgReady && this.state.pageReady ? '-50%' : 0, opacity: this.state.removeDateCover && this.state.imgReady && this.state.pageReady ? 0 : 1, zIndex: this.state.removeDateCover ? 0 : 2 } },
+            style: { top: this.state.removeDateCover && this.state.imgReady && this.state.pageReady ? '-50%' : 0,
+              opacity: this.state.removeDateCover && this.state.imgReady && this.state.pageReady || !(this.state.imgReady && this.state.pageReady) ? 0 : 1,
+              zIndex: this.state.removeDateCover ? 0 : 2 } },
           _react2.default.createElement(
             'div',
             { className: _login2.default.date },
@@ -1550,19 +1762,17 @@ var _login = __webpack_require__(/*! ./js/login/login.js */ "./app/src/js/login/
 
 var _login2 = _interopRequireDefault(_login);
 
-var _desktop = __webpack_require__(/*! ./js/desktop/desktop.js */ "./app/src/js/desktop/desktop.js");
-
-var _desktop2 = _interopRequireDefault(_desktop);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(0, _reactDom.render)(_react2.default.createElement('div', null), document.getElementById('win10_login'));
-// setTimeout(function functionName() {
-// render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
-// }, 500)
+// import Loader from './js/components/loader.js'
+setTimeout(function functionName() {
+  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
+}, 500);
 
+// import Desktop from './js/desktop/desktop.js';
+// render(<div></div>, document.getElementById('win10_login'));
+// render(<Desktop/>, document.getElementById('win10_main'))
 
-(0, _reactDom.render)(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
 
 console.log('Copyright (c) 2018 Zhuojun Chen All Rights Reserved.');
 
@@ -3248,7 +3458,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".icon_lock_1pP6V{position:relative;display:block;width:35px;height:35px;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;text-align:center}.icon_lock_1pP6V:after{content:\"\";display:inline-block;width:23px;height:15px;border:2px solid}.icon_lock-ring_1YISr{display:block;overflow:hidden;height:12px;margin-top:2px;text-align:center}.icon_lock-ring_1YISr:after{content:\"\";display:inline-block;width:14px;height:19px;border:2px solid;border-radius:50%}.icon_windows-logo_2K4gV{width:46px;height:15px;display:block;position:relative;top:12px;perspective:3px}.icon_windows-logo_2K4gV:before{content:\"\";transform:translate(56%) rotateY(176.7deg) scaleX(.34);height:7px;width:25px;color:#fff;background:#fff;display:block;position:relative;box-shadow:27px 0 0 0,0 8px 0,27px 8px 0}.icon_windows-logo_2K4gV.icon_black_tnyFz:before{color:#000;background:#000}.icon_cortana_dm8e-{border-radius:20px;height:12px;width:12px;box-shadow:0 0 2px 2px #fff;transform:translate(-50%,-50%)}.icon_angle_BwsQo,.icon_cortana_dm8e-{display:block;position:relative;top:50%;left:50%}.icon_angle_BwsQo{width:15px;height:25px}.icon_angle_BwsQo:before{top:2px;transform-origin:right;transform:rotate(45deg)}.icon_angle_BwsQo:after,.icon_angle_BwsQo:before{content:\"\";width:16px;height:2px;background:#fff;position:absolute;bottom:0;margin:auto 0;right:2px;box-shadow:inset 0 0 0 32px #fff}.icon_angle_BwsQo:after{top:0;transform-origin:right;transform:rotate(-45deg)}.icon_up_sdzHj.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(-90deg)}.icon_down_1jp15.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(90deg)}.icon_left_3eERt.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(180deg)}.icon_right_z9BLT.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55)}.icon_up_sdzHj.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(-90deg)}.icon_down_1jp15.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(90deg)}.icon_left_3eERt.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(180deg)}.icon_right_z9BLT.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55)}.icon_up_sdzHj.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(-90deg)}.icon_down_1jp15.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(90deg)}.icon_left_3eERt.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(180deg)}.icon_right_z9BLT.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4)}.icon_up_sdzHj.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(-90deg)}.icon_down_1jp15.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(90deg)}.icon_left_3eERt.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(180deg)}.icon_right_z9BLT.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27)}.icon_resource-manager_1KKto{width:24px;height:18px;background:#ffe793;border-radius:5%;display:block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9)}.icon_resource-manager_1KKto:before{content:\"\";height:7px;width:8px;border:4px solid #3ab5e6;border-bottom:none;display:block;position:absolute;top:8px;left:4px}.icon_resource-manager_1KKto:after{content:\"\";position:absolute;width:6px;height:1px;left:0;top:-2px;background:#fff;border-style:solid;border-width:1px 3px 2px;border-color:#fbd140;border-radius:20%}.icon_bg_38NwV.icon_unknown_3H9yI{transform:translate(-50%,-50%) scale(.6);left:40%}.icon_unknown_3H9yI{position:relative;left:38%;top:50%;transform:translate(-50%,-50%);background:#fff;width:13px;height:25px;display:block}.icon_unknown_3H9yI:before{content:\"\";position:absolute;left:95%;bottom:0;width:8px;height:19px;background:#fff}.icon_unknown_3H9yI:after{content:\"\";position:absolute;left:99%;border:4px solid transparent;border-left-color:#ccc;border-bottom-color:#ccc;transform:translate(3%,-8%)}.icon_operations_3r2yJ{width:36px;height:28px;border:2px solid #fff;border-bottom-color:transparent;display:block;position:relative;left:50%;top:50%;transform:translate(-50%,-50%) scale(.45)}.icon_operations_3r2yJ:before{content:\"\";position:absolute;top:94%;width:35%;height:3px;background:#fff;box-shadow:23px 0 #fff}.icon_operations_3r2yJ:after{content:\"\";position:absolute;left:37%;top:88%;width:7px;height:7px;border-left:2px solid #fff;border-top:2px solid #fff;transform:rotate(-135deg)}.icon_WLAN-signal_3zSeq{position:relative;display:block;width:17px;height:17px;top:50%;left:50%;transform:translate(-50%,-50%)}.icon_WLAN-signal_3zSeq:before{content:\"\";position:absolute;right:1px;bottom:1px;width:3px;height:3px;background:#fff;border-radius:50% 50%}.icon_WLAN-signal-inner_Zg6Sx{width:50px;height:50px;border-radius:50% 50%;border:2px solid transparent;border-top-color:hsla(0,0%,67%,.6);transform:rotate(-45deg) scale(.5);overflow:hidden;display:block;position:absolute;left:-11px;top:-11px}.icon_WLAN-signal-inner_Zg6Sx:before{width:36px;height:36px;top:5px;left:5px}.icon_WLAN-signal-inner_Zg6Sx:after,.icon_WLAN-signal-inner_Zg6Sx:before{content:\"\";border-radius:50% 50%;border:2px solid transparent;border-top-color:#fff;display:block;position:absolute}.icon_WLAN-signal-inner_Zg6Sx:after{width:22px;height:22px;top:12px;left:12px}.icon_teamviewer_2U3CM.icon_bg_38NwV{transform:translate(-50%,-50%) scale(.35)}.icon_teamviewer_2U3CM{top:50%;left:50%;transition:translate(-50%,-50%);display:block;position:absolute;overflow:hidden;width:50px;height:50px;border-radius:7%;background:#0a79d9;background:-moz-linear-gradient(top,#0f8ce4 0,#0764c5 100%);background:-webkit-gradient(left top,left bottom,color-stop(0,#0f8ce4),color-stop(100%,#0764c5));background:-webkit-linear-gradient(top,#0f8ce4,#0764c5);background:-o-linear-gradient(top,#0f8ce4 0,#0764c5 100%);background:-ms-linear-gradient(top,#0f8ce4 0,#0764c5 100%);background:linear-gradient(180deg,#0f8ce4 0,#0764c5);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\"#0f8ce4\",endColorstr=\"#0764c5\",GradientType=0)}.icon_teamviewer_2U3CM:before{content:\"\";position:absolute;width:42px;height:42px;top:4px;left:4px;border-radius:50%;background:#fff}.icon_teamviewer_2U3CM:after{content:\"\";position:absolute;width:0;height:0;border-width:0 19px 10px;border-style:solid;border-color:transparent;border-bottom-color:#0a78d8;top:15px;left:6px}.icon_teamviewer-inner_1zWZh{display:block;position:absolute;width:0;height:0;border-width:10px 19px 0;border-style:solid;border-color:transparent;border-top-color:#0a78d8;top:25px;left:6px}.icon_teamviewer-inner_1zWZh:before{border-width:18px 7px 0;border-style:solid;border-color:transparent;border-top-color:#fff;top:-7px}.icon_teamviewer-inner_1zWZh:after,.icon_teamviewer-inner_1zWZh:before{content:\"\";position:absolute;width:0;height:0;left:-7px;transform:translateX(5%)}.icon_teamviewer-inner_1zWZh:after{border-width:0 7px 18px;border-style:solid;border-color:transparent;border-bottom-color:#fff;top:-30px;z-index:1}.icon_weChat_2la2c.icon_task_XM2ho{transform:translate(-50%,-50%)scale(.48);top:46%;left:40%}.icon_weChat_2la2c.icon_bg_38NwV{transform:translate(-50%,-50%)scale(.38);top:46%;left:43%}.icon_weChat_2la2c{width:30px;height:23px;border:3px solid #fff;border-radius:50% 50% 50% 50%/45% 45% 50% 50%;display:block;position:absolute}.icon_weChat_2la2c:before{left:3px;transform:translateX(-5%)}.icon_weChat_2la2c:after,.icon_weChat_2la2c:before{content:\"\";width:4px;height:4px;border-radius:50% 50%;border:5px solid #fff;position:absolute;top:0}.icon_weChat_2la2c:after{left:14px}.icon_weChat-inner1_2nkcY{width:9px;height:8px;background:#fff;border-radius:50% 50%;position:absolute;top:4px;box-shadow:0 5px,2px 8px,9px 9px 0 4px,12px -6px,25px 0;color:#fff;left:-2px;display:block}.icon_weChat-inner1_2nkcY:before{content:\"\";position:absolute;width:0;border-bottom:6px solid #fff;border-right:6px solid transparent;border-left:5px solid transparent;transform:rotate(106deg);top:16px;left:3px}.icon_weChat-inner1_2nkcY:after{content:\"\";position:absolute;width:0;border-bottom:4px solid #fff;border-right:5px solid transparent;border-left:3px solid transparent;transform:rotate(30deg);top:26px;left:35px;z-index:2}.icon_weChat-inner2_2ZEvh{width:20px;height:8px;box-shadow:0 0 0 2px #000;border:5px solid #fff;border-bottom:11px solid #fff;border-radius:50% 50% 50% 50%/45% 45% 50% 50%;display:block;position:relative;left:14px;top:10px;z-index:1}.icon_weChat-inner2_2ZEvh:before{left:-1px}.icon_weChat-inner2_2ZEvh:after,.icon_weChat-inner2_2ZEvh:before{content:\"\";position:absolute;width:3px;height:3px;border-radius:50% 50%;border:5px solid #fff;top:-2px;transform:scale(1.2)}.icon_weChat-inner2_2ZEvh:after{left:9px}.icon_coloured_2rd5d.icon_weChat_2la2c,.icon_coloured_2rd5d.icon_weChat_2la2c:after,.icon_coloured_2rd5d.icon_weChat_2la2c:before{border-color:#80cb4b}.icon_coloured_2rd5d.icon_weChat_2la2c .icon_weChat-inner1_2nkcY:before{border-bottom-color:#80cb4b}.icon_coloured_2rd5d.icon_weChat_2la2c .icon_weChat-inner1_2nkcY{background:#80cb4b;color:#80cb4b}.icon_coloured_2rd5d.icon_weChat_2la2c .icon_weChat-inner2_2ZEvh{box-shadow:none}.icon_bg_38NwV.icon_kugou_1Dtew{top:50%;left:50%;transform:translate(-50%,-50%) scale(.27)}.icon_kugou_1Dtew{width:55px;height:55px;background:#008ad4;border-radius:50%;border:4px solid #fff;display:block;position:absolute;top:0;top:50%;left:50%;transform:translate(-50%,-50%)}.icon_kugou_1Dtew:before{content:\"K\";font-family:sans-serif;color:#fff;text-shadow:2px 0 0 #fff;font-size:44px;display:block;position:absolute;top:-4px;left:12px;transform:rotate(6deg)}.icon_kugou_1Dtew:after{content:\"\";position:absolute;width:28px;height:7px;left:15px;top:5px;background:#008ad4;box-shadow:-1px 37px #008ad4}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/components/icon.css"],"names":[],"mappings":"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","file":"icon.css","sourcesContent":[".lock{position: relative;display: block;width: 35px;height: 35px;left: 50%;top: 50%;transform: translate(-50%, -50%);color: #fff;text-align: center;}\r\n.lock:after{content: '';display: inline-block;width: 23px;height: 15px;border: 2px solid;}\r\n.lock-ring{display: block;overflow: hidden;height: 12px;margin-top: 2px;text-align: center;}\r\n.lock-ring:after{content: '';display: inline-block;width: 14px;height: 19px;border: 2px solid;border-radius: 50%;}\r\n\r\n.windows-logo {width: 46px;height: 15px;display: block;position: relative;top: 12px;perspective: 3px;}\r\n.windows-logo:before {content: \"\";transform: translate(56%) rotateY(176.7deg) scaleX(0.34);height: 7px;width: 25px;color: #fff;background: #fff;display: block;position: relative;box-shadow: 27px 0 0 0, 0 8px 0, 27px 8px 0;}\r\n.windows-logo.black:before{color: #000;background: #000;}\r\n\r\n.cortana{border-radius: 20px;height: 12px;width: 12px;display: block;box-shadow: 0px 0px 2px 2px #fff;position: relative;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n\r\n.angle{display: block;position: relative;width: 15px;height: 25px;left: 50%;top:50%}\r\n.angle:before{content: '';top: 2px;width: 16px;height: 2px;background: #fff;position: absolute;bottom: 0;margin: auto 0;right: 2px;box-shadow: inset 0 0 0 32px #fff;transform-origin: right;transform: rotate(45deg);}\r\n.angle:after{content: '';top: 0;width: 16px;height: 2px;background: #fff;position: absolute;bottom: 0;margin: auto 0;right: 2px;box-shadow: inset 0 0 0 32px #fff;transform-origin: right;transform: rotate(-45deg);}\r\n.up.angle{transform: translate(-50%,-50%) scale(0.55) rotate(-90deg);}\r\n.down.angle{transform: translate(-50%,-50%) scale(0.55) rotate(90deg);}\r\n.left.angle{transform: translate(-50%,-50%) scale(0.55) rotate(180deg);}\r\n.right.angle{transform: translate(-50%,-50%) scale(0.55);}\r\n.up.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(-90deg);}\r\n.down.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(90deg);}\r\n.left.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(180deg);}\r\n.right.lg.angle{transform: translate(-50%,-50%) scale(0.55);}\r\n.up.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(-90deg);}\r\n.down.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(90deg);}\r\n.left.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(180deg);}\r\n.right.nm.angle{transform: translate(-50%,-50%) scale(0.40);}\r\n.up.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(-90deg);}\r\n.down.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(90deg);}\r\n.left.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(180deg);}\r\n.right.sm.angle{transform: translate(-50%,-50%) scale(0.27);}\r\n\r\n.resource-manager{width: 24px;height: 18px;background: #ffe793;border-radius: 5%;display: block;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%) scale(0.9);}\r\n.resource-manager:before{content: '';height: 7px;width: 8px;border: 4px solid #3ab5e6;border-bottom: none;display: block;position: absolute;top: 8px;left: 4px;}\r\n.resource-manager:after{content: \"\";position: absolute;width: 6px;height: 1px;left: 0px;top: -2px;background: #fff;border-style: solid;border-width: 1px 3px 2px 3px;border-color: #fbd140;border-radius: 20%;}\r\n\r\n.bg.unknown{transform: translate(-50%,-50%) scale(0.6);left: 40%;}\r\n.unknown{position: relative;left: 38%;top: 50%;transform: translate(-50%,-50%);background: #fff;width: 13px;height: 25px;display: block;}\r\n.unknown:before{content: '';position: absolute;left: 95%;bottom: 0;width: 8px;height: 19px;background: #fff;}\r\n.unknown:after{content: '';position: absolute;left: 99%;border: 4px solid transparent;border-left-color: #ccc;border-bottom-color: #ccc;transform: translate(3%,-8%);}\r\n\r\n.operations{width: 36px;height: 28px;border: 2px solid #fff;border-bottom-color: transparent;display: block;position: relative;left: 50%;top: 50%;transform: translate(-50%,-50%) scale(0.45);}\r\n.operations:before{content: \"\";position: absolute;top: 94%;width: 35%;height: 3px;background: #fff;box-shadow: 23px 0 #fff;}\r\n.operations:after{content: \"\";position: absolute;left: 37%;top: 88%;width: 7px;height: 7px;border-left: 2px solid #fff;border-top: 2px solid #fff;transform: rotate(-135deg);}\r\n\r\n.WLAN-signal{position: relative;display: block;width: 17px;height: 17px;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n.WLAN-signal:before{content: \"\";position: absolute;right: 1px;bottom: 1px;width: 3px;height: 3px;background: #fff;border-radius: 50% 50%;}\r\n.WLAN-signal-inner{width: 50px;height: 50px;border-radius: 50% 50%;border: 2px solid transparent;border-top-color: rgba(170, 170, 170, 0.6);transform: rotate(-45deg) scale(0.5);overflow: hidden;display: block;position: absolute;left: -11px;top: -11px;}\r\n.WLAN-signal-inner:before{content: \"\";width: 36px;height: 36px;border-radius: 50% 50%;border: 2px solid transparent;border-top-color: #fff;display: block;position: absolute;top: 5px;left: 5px;}\r\n.WLAN-signal-inner:after{content: \"\";width: 22px;height: 22px;border-radius: 50% 50%;border: 2px solid transparent;border-top-color: #fff;display: block;position: absolute;top: 12px;left: 12px;}\r\n\r\n.teamviewer.bg{transform: translate(-50%,-50%) scale(0.35);}\r\n.teamviewer{top: 50%;left: 50%;transition: translate(-50%,-50%);display: block;position: absolute;overflow: hidden;width: 50px;height: 50px;border-radius: 7%;background: #0a79d9;background: -moz-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(15,140,228,1)), color-stop(100%, rgba(7,100,197,1)));background: -webkit-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: -o-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: -ms-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: linear-gradient(to bottom, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0f8ce4', endColorstr='#0764c5', GradientType=0 );}\r\n.teamviewer:before{content: '';position: absolute;width: 42px;height: 42px;top: 4px;left: 4px;border-radius: 50%;background: #fff;}\r\n.teamviewer:after{content: \"\";position: absolute;width: 0;height: 0;border-width: 0 19px 10px 19px;border-style: solid;border-color: transparent;border-bottom-color: #0a78d8;top: 15px;left: 6px;}\r\n.teamviewer-inner{display: block;position: absolute;width: 0;height: 0;border-width: 10px 19px 0 19px;border-style: solid;border-color: transparent;border-top-color: #0a78d8;top: 25px;left: 6px;}\r\n.teamviewer-inner:before{content: \"\";position: absolute;width: 0;height: 0;border-width: 18px 7px 0 7px;border-style: solid;border-color: transparent;border-top-color: #fff;top: -7px;left: -7px;transform: translateX(5%);}\r\n.teamviewer-inner:after{content: \"\";position: absolute;width: 0;height: 0;border-width: 0 7px 18px 7px;border-style: solid;border-color: transparent;border-bottom-color: #fff;top: -30px;left: -7px;z-index: 1;transform: translateX(5%);}\r\n\r\n.weChat.task{transform: translate(-50%,-50%)scale(0.48);top: 46%;left: 40%;}\r\n.weChat.bg{transform: translate(-50%,-50%)scale(0.38);top: 46%;left: 43%;}\r\n.weChat{width: 30px;height: 23px;border: 3px solid #fff;border-radius: 50% 50% 50% 50%/45% 45% 50% 50%;display: block;position: absolute;}\r\n.weChat:before{content: \"\";width: 4px;height: 4px;border-radius: 50% 50%;border: 5px solid #fff;position: absolute;top: 0px;left: 3px;transform: translateX(-5%);}\r\n.weChat:after{content: \"\";width: 4px;height: 4px;border-radius: 50% 50%;border: 5px solid #fff;position: absolute;top: 0px;left: 14px;}\r\n.weChat-inner1{width: 9px;height: 8px;background: #fff;border-radius: 50% 50%;position: absolute;top: 4px;box-shadow: 0px 5px, 2px 8px, 9px 9px 0 4px, 12px -6px, 25px 0px;color: #fff;left: -2px;display: block;}\r\n.weChat-inner1:before{content: \"\";position: absolute;width: 0px;border-bottom: 6px solid #fff;border-right: 6px solid transparent;border-left: 5px solid transparent;transform: rotate(106deg);top: 16px;left: 3px;}\r\n.weChat-inner1:after{content: \"\";position: absolute;width: 0px;border-bottom: 4px solid #fff;border-right: 5px solid transparent;border-left: 3px solid transparent;transform: rotate(30deg);top: 26px;left: 35px;z-index: 2;}\r\n.weChat-inner2{width: 20px;height: 8px;box-shadow: 0 0 0 2px #000;/*colour to be set*/border: 5px solid #fff;border-bottom: 11px solid #fff;border-radius: 50% 50% 50% 50%/45% 45% 50% 50%;display: block;position: relative;left: 14px;top: 10px;z-index: 1;}\r\n.weChat-inner2:before{content: \"\";position: absolute;width: 3px;height: 3px;border-radius: 50% 50%;border: 5px solid #fff;top: -2px;left: -1px;transform: scale(1.2);}\r\n.weChat-inner2:after{content: \"\";position: absolute;width: 3px;height: 3px;border-radius: 50% 50%;border: 5px solid #fff;top: -2px;left: 9px;transform: scale(1.2);}\r\n.coloured.weChat, .coloured.weChat:before, .coloured.weChat:after {border-color: #80cb4b;}\r\n.coloured.weChat .weChat-inner1:before{border-bottom-color: #80cb4b;}\r\n.coloured.weChat .weChat-inner1{background: #80cb4b;color: #80cb4b;}\r\n.coloured.weChat .weChat-inner2{box-shadow: none;}\r\n\r\n.bg.kugou{top: 50%;left: 50%;transform: translate(-50%,-50%) scale(0.27);}\r\n.kugou{width: 55px;height: 55px;background: #008ad4;border-radius: 50%;border: 4px solid #fff;display: block;position: absolute;top: 0px;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n.kugou:before{content: 'K';font-family: sans-serif;color: #fff;text-shadow: 2px 0px 0px #fff;font-size: 44px;display: block;position: absolute;top: -4px;left: 12px;transform: rotate(6deg);}\r\n.kugou:after{content: \"\";position: absolute;width: 28px;height: 7px;left: 15px;top: 5px;background: #008ad4;box-shadow: -1px 37px #008ad4;}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".icon_lock_1pP6V{position:relative;display:block;width:35px;height:35px;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;text-align:center}.icon_lock_1pP6V:after{content:\"\";display:inline-block;width:23px;height:15px;border:2px solid}.icon_lock-ring_1YISr{display:block;overflow:hidden;height:12px;margin-top:2px;text-align:center}.icon_lock-ring_1YISr:after{content:\"\";display:inline-block;width:14px;height:19px;border:2px solid;border-radius:50%}.icon_windows-logo_2K4gV{width:46px;height:15px;display:block;position:relative;top:12px;perspective:3px}.icon_windows-logo_2K4gV:before{content:\"\";transform:translate(56%) rotateY(176.7deg) scaleX(.34);height:7px;width:25px;color:#fff;background:#fff;display:block;position:relative;box-shadow:27px 0 0 0,0 8px 0,27px 8px 0}.icon_windows-logo_2K4gV.icon_black_tnyFz:before{color:#000;background:#000}.icon_cortana_dm8e-{border-radius:20px;height:12px;width:12px;box-shadow:0 0 2px 2px #fff;transform:translate(-50%,-50%)}.icon_angle_BwsQo,.icon_cortana_dm8e-{display:block;position:relative;top:50%;left:50%}.icon_angle_BwsQo{width:15px;height:25px}.icon_angle_BwsQo:before{top:2px;transform-origin:right;transform:rotate(45deg)}.icon_angle_BwsQo:after,.icon_angle_BwsQo:before{content:\"\";width:16px;height:2px;background:#fff;position:absolute;bottom:0;margin:auto 0;right:2px;box-shadow:inset 0 0 0 32px #fff}.icon_angle_BwsQo:after{top:0;transform-origin:right;transform:rotate(-45deg)}.icon_up_sdzHj.icon_angle_BwsQo{transform:translate(-55%,-50%) scale(.55) rotate(-90deg)}.icon_down_1jp15.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(90deg)}.icon_left_3eERt.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(180deg)}.icon_right_z9BLT.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55)}.icon_up_sdzHj.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(-90deg)}.icon_down_1jp15.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(90deg)}.icon_left_3eERt.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(180deg)}.icon_right_z9BLT.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55)}.icon_up_sdzHj.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(-90deg)}.icon_down_1jp15.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(90deg)}.icon_left_3eERt.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(180deg)}.icon_right_z9BLT.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4)}.icon_up_sdzHj.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(-90deg)}.icon_down_1jp15.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(90deg)}.icon_left_3eERt.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(180deg)}.icon_right_z9BLT.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27)}.icon_resource-manager_1KKto{width:24px;height:18px;background:#ffe793;border-radius:5%;display:block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9)}.icon_resource-manager_1KKto:before{content:\"\";height:7px;width:8px;border:4px solid #3ab5e6;border-bottom:none;display:block;position:absolute;top:8px;left:4px}.icon_resource-manager_1KKto:after{content:\"\";position:absolute;width:6px;height:1px;left:0;top:-2px;background:#fff;border-style:solid;border-width:1px 3px 2px;border-color:#fbd140;border-radius:20%}.icon_bg_38NwV.icon_unknown_3H9yI{transform:translate(-50%,-50%) scale(.6);left:40%}.icon_unknown_3H9yI{position:relative;left:38%;top:50%;transform:translate(-50%,-50%);background:#fff;width:13px;height:25px;display:block}.icon_unknown_3H9yI:before{content:\"\";position:absolute;left:95%;bottom:0;width:8px;height:19px;background:#fff}.icon_unknown_3H9yI:after{content:\"\";position:absolute;left:99%;border:4px solid transparent;border-left-color:#ccc;border-bottom-color:#ccc;transform:translate(3%,-8%)}.icon_operations_3r2yJ{width:36px;height:28px;border:2px solid #fff;border-bottom-color:transparent;display:block;position:relative;left:50%;top:50%;transform:translate(-50%,-50%) scale(.45)}.icon_operations_3r2yJ:before{content:\"\";position:absolute;top:94%;width:35%;height:3px;background:#fff;box-shadow:23px 0 #fff}.icon_operations_3r2yJ:after{content:\"\";position:absolute;left:37%;top:88%;width:7px;height:7px;border-left:2px solid #fff;border-top:2px solid #fff;transform:rotate(-135deg)}.icon_WLAN-signal_3zSeq{position:relative;display:block;width:17px;height:17px;top:50%;left:50%;transform:translate(-50%,-50%)}.icon_WLAN-signal_3zSeq:before{content:\"\";position:absolute;right:1px;bottom:1px;width:3px;height:3px;background:#fff;border-radius:50% 50%}.icon_WLAN-signal-inner_Zg6Sx{width:50px;height:50px;border-radius:50% 50%;border:2px solid transparent;border-top-color:hsla(0,0%,67%,.6);transform:rotate(-45deg) scale(.5);overflow:hidden;display:block;position:absolute;left:-11px;top:-11px}.icon_WLAN-signal-inner_Zg6Sx:before{width:36px;height:36px;top:5px;left:5px}.icon_WLAN-signal-inner_Zg6Sx:after,.icon_WLAN-signal-inner_Zg6Sx:before{content:\"\";border-radius:50% 50%;border:2px solid transparent;border-top-color:#fff;display:block;position:absolute}.icon_WLAN-signal-inner_Zg6Sx:after{width:22px;height:22px;top:12px;left:12px}.icon_teamviewer_2U3CM.icon_bg_38NwV{transform:translate(-50%,-50%) scale(.35)}.icon_teamviewer_2U3CM{top:50%;left:50%;transition:translate(-50%,-50%);display:block;position:absolute;overflow:hidden;width:50px;height:50px;border-radius:7%;background:#0a79d9;background:-moz-linear-gradient(top,#0f8ce4 0,#0764c5 100%);background:-webkit-gradient(left top,left bottom,color-stop(0,#0f8ce4),color-stop(100%,#0764c5));background:-webkit-linear-gradient(top,#0f8ce4,#0764c5);background:-o-linear-gradient(top,#0f8ce4 0,#0764c5 100%);background:-ms-linear-gradient(top,#0f8ce4 0,#0764c5 100%);background:linear-gradient(180deg,#0f8ce4 0,#0764c5);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\"#0f8ce4\",endColorstr=\"#0764c5\",GradientType=0)}.icon_teamviewer_2U3CM:before{content:\"\";position:absolute;width:42px;height:42px;top:4px;left:4px;border-radius:50%;background:#fff}.icon_teamviewer_2U3CM:after{content:\"\";position:absolute;width:0;height:0;border-width:0 19px 10px;border-style:solid;border-color:transparent;border-bottom-color:#0a78d8;top:15px;left:6px}.icon_teamviewer-inner_1zWZh{display:block;position:absolute;width:0;height:0;border-width:10px 19px 0;border-style:solid;border-color:transparent;border-top-color:#0a78d8;top:25px;left:6px}.icon_teamviewer-inner_1zWZh:before{border-width:18px 7px 0;border-style:solid;border-color:transparent;border-top-color:#fff;top:-7px}.icon_teamviewer-inner_1zWZh:after,.icon_teamviewer-inner_1zWZh:before{content:\"\";position:absolute;width:0;height:0;left:-7px;transform:translateX(5%)}.icon_teamviewer-inner_1zWZh:after{border-width:0 7px 18px;border-style:solid;border-color:transparent;border-bottom-color:#fff;top:-30px;z-index:1}.icon_weChat_2la2c.icon_task_XM2ho{transform:translate(-50%,-50%)scale(.48);top:46%;left:40%}.icon_weChat_2la2c.icon_bg_38NwV{transform:translate(-50%,-50%)scale(.38);top:46%;left:43%}.icon_weChat_2la2c{width:30px;height:23px;border:3px solid #fff;border-radius:50% 50% 50% 50%/45% 45% 50% 50%;display:block;position:absolute}.icon_weChat_2la2c:before{left:3px;transform:translateX(-5%)}.icon_weChat_2la2c:after,.icon_weChat_2la2c:before{content:\"\";width:4px;height:4px;border-radius:50% 50%;border:5px solid #fff;position:absolute;top:0}.icon_weChat_2la2c:after{left:14px}.icon_weChat-inner1_2nkcY{width:9px;height:8px;background:#fff;border-radius:50% 50%;position:absolute;top:4px;box-shadow:0 5px,2px 8px,9px 9px 0 4px,12px -6px,25px 0;color:#fff;left:-2px;display:block}.icon_weChat-inner1_2nkcY:before{content:\"\";position:absolute;width:0;border-bottom:6px solid #fff;border-right:6px solid transparent;border-left:5px solid transparent;transform:rotate(106deg);top:16px;left:3px}.icon_weChat-inner1_2nkcY:after{content:\"\";position:absolute;width:0;border-bottom:4px solid #fff;border-right:5px solid transparent;border-left:3px solid transparent;transform:rotate(30deg);top:26px;left:35px;z-index:2}.icon_weChat-inner2_2ZEvh{width:20px;height:8px;box-shadow:0 0 0 2px rgba(52,61,73,.9);border:5px solid #fff;border-bottom:11px solid #fff;border-radius:50% 50% 50% 50%/45% 45% 50% 50%;display:block;position:relative;left:14px;top:10px;z-index:1}.icon_weChat-inner2_2ZEvh:before{left:-1px}.icon_weChat-inner2_2ZEvh:after,.icon_weChat-inner2_2ZEvh:before{content:\"\";position:absolute;width:3px;height:3px;border-radius:50% 50%;border:5px solid #fff;top:-2px;transform:scale(1.2)}.icon_weChat-inner2_2ZEvh:after{left:9px}.icon_coloured_2rd5d.icon_weChat_2la2c,.icon_coloured_2rd5d.icon_weChat_2la2c:after,.icon_coloured_2rd5d.icon_weChat_2la2c:before{border-color:#80cb4b}.icon_coloured_2rd5d.icon_weChat_2la2c .icon_weChat-inner1_2nkcY:before{border-bottom-color:#80cb4b}.icon_coloured_2rd5d.icon_weChat_2la2c .icon_weChat-inner1_2nkcY{background:#80cb4b;color:#80cb4b}.icon_coloured_2rd5d.icon_weChat_2la2c .icon_weChat-inner2_2ZEvh{box-shadow:none}.icon_bg_38NwV.icon_kugou_1Dtew{top:50%;left:50%;transform:translate(-50%,-50%) scale(.27)}.icon_kugou_1Dtew{width:55px;height:55px;background:#008ad4;border-radius:50%;border:4px solid #fff;display:block;position:absolute;top:0;top:50%;left:50%;transform:translate(-50%,-50%)}.icon_kugou_1Dtew:before{content:\"K\";font-family:sans-serif;color:#fff;text-shadow:2px 0 0 #fff;font-size:44px;display:block;position:absolute;top:-4px;left:12px;transform:rotate(6deg)}.icon_kugou_1Dtew:after{content:\"\";position:absolute;width:28px;height:7px;left:15px;top:5px;background:#008ad4;box-shadow:-1px 37px #008ad4}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/components/icon.css"],"names":[],"mappings":"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","file":"icon.css","sourcesContent":[".lock{position: relative;display: block;width: 35px;height: 35px;left: 50%;top: 50%;transform: translate(-50%, -50%);color: #fff;text-align: center;}\r\n.lock:after{content: '';display: inline-block;width: 23px;height: 15px;border: 2px solid;}\r\n.lock-ring{display: block;overflow: hidden;height: 12px;margin-top: 2px;text-align: center;}\r\n.lock-ring:after{content: '';display: inline-block;width: 14px;height: 19px;border: 2px solid;border-radius: 50%;}\r\n\r\n.windows-logo {width: 46px;height: 15px;display: block;position: relative;top: 12px;perspective: 3px;}\r\n.windows-logo:before {content: \"\";transform: translate(56%) rotateY(176.7deg) scaleX(0.34);height: 7px;width: 25px;color: #fff;background: #fff;display: block;position: relative;box-shadow: 27px 0 0 0, 0 8px 0, 27px 8px 0;}\r\n.windows-logo.black:before{color: #000;background: #000;}\r\n\r\n.cortana{border-radius: 20px;height: 12px;width: 12px;display: block;box-shadow: 0px 0px 2px 2px #fff;position: relative;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n\r\n.angle{display: block;position: relative;width: 15px;height: 25px;left: 50%;top:50%}\r\n.angle:before{content: '';top: 2px;width: 16px;height: 2px;background: #fff;position: absolute;bottom: 0;margin: auto 0;right: 2px;box-shadow: inset 0 0 0 32px #fff;transform-origin: right;transform: rotate(45deg);}\r\n.angle:after{content: '';top: 0;width: 16px;height: 2px;background: #fff;position: absolute;bottom: 0;margin: auto 0;right: 2px;box-shadow: inset 0 0 0 32px #fff;transform-origin: right;transform: rotate(-45deg);}\r\n.up.angle{transform: translate(-55%,-50%) scale(0.55) rotate(-90deg);}\r\n.down.angle{transform: translate(-50%,-50%) scale(0.55) rotate(90deg);}\r\n.left.angle{transform: translate(-50%,-50%) scale(0.55) rotate(180deg);}\r\n.right.angle{transform: translate(-50%,-50%) scale(0.55);}\r\n.up.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(-90deg);}\r\n.down.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(90deg);}\r\n.left.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(180deg);}\r\n.right.lg.angle{transform: translate(-50%,-50%) scale(0.55);}\r\n.up.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(-90deg);}\r\n.down.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(90deg);}\r\n.left.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(180deg);}\r\n.right.nm.angle{transform: translate(-50%,-50%) scale(0.40);}\r\n.up.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(-90deg);}\r\n.down.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(90deg);}\r\n.left.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(180deg);}\r\n.right.sm.angle{transform: translate(-50%,-50%) scale(0.27);}\r\n\r\n.resource-manager{width: 24px;height: 18px;background: #ffe793;border-radius: 5%;display: block;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%) scale(0.9);}\r\n.resource-manager:before{content: '';height: 7px;width: 8px;border: 4px solid #3ab5e6;border-bottom: none;display: block;position: absolute;top: 8px;left: 4px;}\r\n.resource-manager:after{content: \"\";position: absolute;width: 6px;height: 1px;left: 0px;top: -2px;background: #fff;border-style: solid;border-width: 1px 3px 2px 3px;border-color: #fbd140;border-radius: 20%;}\r\n\r\n.bg.unknown{transform: translate(-50%,-50%) scale(0.6);left: 40%;}\r\n.unknown{position: relative;left: 38%;top: 50%;transform: translate(-50%,-50%);background: #fff;width: 13px;height: 25px;display: block;}\r\n.unknown:before{content: '';position: absolute;left: 95%;bottom: 0;width: 8px;height: 19px;background: #fff;}\r\n.unknown:after{content: '';position: absolute;left: 99%;border: 4px solid transparent;border-left-color: #ccc;border-bottom-color: #ccc;transform: translate(3%,-8%);}\r\n\r\n.operations{width: 36px;height: 28px;border: 2px solid #fff;border-bottom-color: transparent;display: block;position: relative;left: 50%;top: 50%;transform: translate(-50%,-50%) scale(0.45);}\r\n.operations:before{content: \"\";position: absolute;top: 94%;width: 35%;height: 3px;background: #fff;box-shadow: 23px 0 #fff;}\r\n.operations:after{content: \"\";position: absolute;left: 37%;top: 88%;width: 7px;height: 7px;border-left: 2px solid #fff;border-top: 2px solid #fff;transform: rotate(-135deg);}\r\n\r\n.WLAN-signal{position: relative;display: block;width: 17px;height: 17px;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n.WLAN-signal:before{content: \"\";position: absolute;right: 1px;bottom: 1px;width: 3px;height: 3px;background: #fff;border-radius: 50% 50%;}\r\n.WLAN-signal-inner{width: 50px;height: 50px;border-radius: 50% 50%;border: 2px solid transparent;border-top-color: rgba(170, 170, 170, 0.6);transform: rotate(-45deg) scale(0.5);overflow: hidden;display: block;position: absolute;left: -11px;top: -11px;}\r\n.WLAN-signal-inner:before{content: \"\";width: 36px;height: 36px;border-radius: 50% 50%;border: 2px solid transparent;border-top-color: #fff;display: block;position: absolute;top: 5px;left: 5px;}\r\n.WLAN-signal-inner:after{content: \"\";width: 22px;height: 22px;border-radius: 50% 50%;border: 2px solid transparent;border-top-color: #fff;display: block;position: absolute;top: 12px;left: 12px;}\r\n\r\n.teamviewer.bg{transform: translate(-50%,-50%) scale(0.35);}\r\n.teamviewer{top: 50%;left: 50%;transition: translate(-50%,-50%);display: block;position: absolute;overflow: hidden;width: 50px;height: 50px;border-radius: 7%;background: #0a79d9;background: -moz-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(15,140,228,1)), color-stop(100%, rgba(7,100,197,1)));background: -webkit-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: -o-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: -ms-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: linear-gradient(to bottom, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0f8ce4', endColorstr='#0764c5', GradientType=0 );}\r\n.teamviewer:before{content: '';position: absolute;width: 42px;height: 42px;top: 4px;left: 4px;border-radius: 50%;background: #fff;}\r\n.teamviewer:after{content: \"\";position: absolute;width: 0;height: 0;border-width: 0 19px 10px 19px;border-style: solid;border-color: transparent;border-bottom-color: #0a78d8;top: 15px;left: 6px;}\r\n.teamviewer-inner{display: block;position: absolute;width: 0;height: 0;border-width: 10px 19px 0 19px;border-style: solid;border-color: transparent;border-top-color: #0a78d8;top: 25px;left: 6px;}\r\n.teamviewer-inner:before{content: \"\";position: absolute;width: 0;height: 0;border-width: 18px 7px 0 7px;border-style: solid;border-color: transparent;border-top-color: #fff;top: -7px;left: -7px;transform: translateX(5%);}\r\n.teamviewer-inner:after{content: \"\";position: absolute;width: 0;height: 0;border-width: 0 7px 18px 7px;border-style: solid;border-color: transparent;border-bottom-color: #fff;top: -30px;left: -7px;z-index: 1;transform: translateX(5%);}\r\n\r\n.weChat.task{transform: translate(-50%,-50%)scale(0.48);top: 46%;left: 40%;}\r\n.weChat.bg{transform: translate(-50%,-50%)scale(0.38);top: 46%;left: 43%;}\r\n.weChat{width: 30px;height: 23px;border: 3px solid #fff;border-radius: 50% 50% 50% 50%/45% 45% 50% 50%;display: block;position: absolute;}\r\n.weChat:before{content: \"\";width: 4px;height: 4px;border-radius: 50% 50%;border: 5px solid #fff;position: absolute;top: 0px;left: 3px;transform: translateX(-5%);}\r\n.weChat:after{content: \"\";width: 4px;height: 4px;border-radius: 50% 50%;border: 5px solid #fff;position: absolute;top: 0px;left: 14px;}\r\n.weChat-inner1{width: 9px;height: 8px;background: #fff;border-radius: 50% 50%;position: absolute;top: 4px;box-shadow: 0px 5px, 2px 8px, 9px 9px 0 4px, 12px -6px, 25px 0px;color: #fff;left: -2px;display: block;}\r\n.weChat-inner1:before{content: \"\";position: absolute;width: 0px;border-bottom: 6px solid #fff;border-right: 6px solid transparent;border-left: 5px solid transparent;transform: rotate(106deg);top: 16px;left: 3px;}\r\n.weChat-inner1:after{content: \"\";position: absolute;width: 0px;border-bottom: 4px solid #fff;border-right: 5px solid transparent;border-left: 3px solid transparent;transform: rotate(30deg);top: 26px;left: 35px;z-index: 2;}\r\n.weChat-inner2{width: 20px;height: 8px;box-shadow: 0 0 0 2px rgba(52,61,73,.9);/*colour to be set*/border: 5px solid #fff;border-bottom: 11px solid #fff;border-radius: 50% 50% 50% 50%/45% 45% 50% 50%;display: block;position: relative;left: 14px;top: 10px;z-index: 1;}\r\n.weChat-inner2:before{content: \"\";position: absolute;width: 3px;height: 3px;border-radius: 50% 50%;border: 5px solid #fff;top: -2px;left: -1px;transform: scale(1.2);}\r\n.weChat-inner2:after{content: \"\";position: absolute;width: 3px;height: 3px;border-radius: 50% 50%;border: 5px solid #fff;top: -2px;left: 9px;transform: scale(1.2);}\r\n.coloured.weChat, .coloured.weChat:before, .coloured.weChat:after {border-color: #80cb4b;}\r\n.coloured.weChat .weChat-inner1:before{border-bottom-color: #80cb4b;}\r\n.coloured.weChat .weChat-inner1{background: #80cb4b;color: #80cb4b;}\r\n.coloured.weChat .weChat-inner2{box-shadow: none;}\r\n\r\n.bg.kugou{top: 50%;left: 50%;transform: translate(-50%,-50%) scale(0.27);}\r\n.kugou{width: 55px;height: 55px;background: #008ad4;border-radius: 50%;border: 4px solid #fff;display: block;position: absolute;top: 0px;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n.kugou:before{content: 'K';font-family: sans-serif;color: #fff;text-shadow: 2px 0px 0px #fff;font-size: 44px;display: block;position: absolute;top: -4px;left: 12px;transform: rotate(6deg);}\r\n.kugou:after{content: \"\";position: absolute;width: 28px;height: 7px;left: 15px;top: 5px;background: #008ad4;box-shadow: -1px 37px #008ad4;}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
