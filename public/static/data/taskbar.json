@@ -1,0 +1,12 @@
+{
+  "tasks": [
+    {"className":"resource-manager", "name":"Resource Manager"},
+    {"className":"unknown", "name":"File A"},
+    {"className":"weChat coloured task", "name": "WeChat"},
+    {"URL":"static/data/icon.png", "name": ""},
+    {"URL":"https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg", "Name":"University"}
+  ],
+  "backgroundTasks":[
+
+  ]
+}

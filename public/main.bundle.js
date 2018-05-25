@@ -281,6 +281,122 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./app/src/js/components/date.js":
+/*!***************************************!*\
+  !*** ./app/src/js/components/date.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+var Month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+var DateSpan = function (_Component) {
+  _inherits(DateSpan, _Component);
+
+  function DateSpan(props) {
+    _classCallCheck(this, DateSpan);
+
+    var _this = _possibleConstructorReturn(this, (DateSpan.__proto__ || Object.getPrototypeOf(DateSpan)).call(this, props));
+
+    _this.format = props.format;
+    _this.state = {
+      date: [2018, 12, 1, 0],
+      time: [18, 30, 59]
+    };
+    return _this;
+  }
+
+  _createClass(DateSpan, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      var updateDate = function updateDate() {
+        var date = new window.Date();
+        _this2.setState({
+          date: [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getDay()],
+          time: [date.getHours(), date.getMinutes(), date.getSeconds()]
+        });
+      };
+      updateDate();
+      this.dateIntvId = setInterval(updateDate, 1000);
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      clearInterval(this.dateIntvId);
+    }
+  }, {
+    key: 'getFormated',
+    value: function getFormated() {
+      var str = this.format;
+      var y = this.state.date[0];
+      str = str.replace(/yyyy|YYYY/, y);
+      str = str.replace(/yy|YY/, y % 100 > 9 ? (y % 100).toString() : '0' + y % 100);
+      var m = this.state.date[1];
+      str = str.replace(/MM/, this.m > 9 ? m.toString() : '0' + m);
+      str = str.replace(/M/g, m);
+      var d = this.state.date[2];
+      str = str.replace(/dd|DD/, d > 9 ? d.toString() : '0' + d);
+      str = str.replace(/d|D/g, d);
+      var h = this.state.time[0];
+      str = str.replace(/hh|HH/, h > 9 ? h.toString() : '0' + h);
+      str = str.replace(/h|H/g, h);
+      var mt = this.state.time[1];
+      str = str.replace(/mm/, mt > 9 ? mt.toString() : '0' + mt);
+      str = str.replace(/m/g, mt);
+      var s = this.state.time[2];
+      str = str.replace(/ss|SS/, s > 9 ? s.toString() : '0' + s);
+      str = str.replace(/s|S/g, s);
+
+      str = str.replace(/w|W/g, Week[this.state.date[3]]);
+      str = str.replace(/~/g, Month[m]);
+      return str;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'span',
+        null,
+        this.getFormated()
+      );
+    }
+  }]);
+
+  return DateSpan;
+}(_react.Component);
+
+exports.default = DateSpan;
+
+/***/ }),
+
 /***/ "./app/src/js/components/event.js":
 /*!****************************************!*\
   !*** ./app/src/js/components/event.js ***!
@@ -364,10 +480,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var innerHTML = {
   "lock": _react2.default.createElement('span', { className: _icon2.default.lockRing }),
-  "angle": "",
-  "resource-manager": "",
-  "unknown": ""
+  "WLAN-signal": _react2.default.createElement('span', { className: _icon2.default['WLAN-signal-inner'] }),
+  "teamviewer": _react2.default.createElement('span', { className: _icon2.default['teamviewer-inner'] }),
+  'weChat': _react2.default.createElement(
+    'span',
+    null,
+    _react2.default.createElement('span', { className: _icon2.default['weChat-inner1'] }),
+    _react2.default.createElement('span', { className: _icon2.default['weChat-inner2'] })
+  )
 };
+var empty = ["windows-logo", "angle", "resource-manager", "unknown", "operations", "kugou"];
+for (var i = 0; i < empty.length; i++) {
+  innerHTML[empty[i]] = "";
+}
 
 var Icon = function (_Component) {
   _inherits(Icon, _Component);
@@ -377,33 +502,27 @@ var Icon = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Icon.__proto__ || Object.getPrototypeOf(Icon)).call(this, props));
 
-    _this.state = {
-      className: props.className
-    };
+    _this.className = props.className;
     return _this;
   }
 
   _createClass(Icon, [{
     key: 'getHtml',
     value: function getHtml() {
-      var classes = this.state.className.split(/\s+/);
+      if (this.className == undefined) return _react2.default.createElement('span', null);
+      var classes = this.className.split(/\s+/);
       var full_name = '';
       var first_name = '';
-      for (var i = 0; i < classes.length; i++) {
-        var temp = classes[i];
-        if (temp.indexOf('-') != -1) {
-          var temp_arr = temp.split('-');
-          for (var j = 0; j < temp_arr.length; j++) {
-            if (j != 0) {
-              temp_arr[j] = temp_arr[j][0].toUpperCase() + temp_arr[j].slice(1);
-            }
-          }
-          temp = temp_arr.join('');
+      for (var _i = 0; _i < classes.length; _i++) {
+        if (_i == 0) {
+          first_name = classes[_i];
         }
-        if (i == 0) {
-          first_name = temp;
+        var class_s = _icon2.default[classes[_i]];
+        if (class_s) {
+          full_name += class_s + ' ';
+        } else {
+          full_name += classes[_i] + ' ';
         }
-        full_name += _icon2.default[classes[i]] + ' ';
       }
       return _react2.default.createElement(
         'span',
@@ -540,6 +659,10 @@ var _taskbar = __webpack_require__(/*! ./taskbar.js */ "./app/src/js/desktop/tas
 
 var _taskbar2 = _interopRequireDefault(_taskbar);
 
+var _task = __webpack_require__(/*! ./task.js */ "./app/src/js/desktop/task.js");
+
+var _task2 = _interopRequireDefault(_task);
+
 var _startMenu = __webpack_require__(/*! ./start-menu.js */ "./app/src/js/desktop/start-menu.js");
 
 var _startMenu2 = _interopRequireDefault(_startMenu);
@@ -573,7 +696,9 @@ var Desktop = function (_Component) {
     _this.state = {
       imgURL: 'static/img/desktop_default.jpg',
       pageReady: 0,
-      imgReady: 0
+      imgReady: 0,
+      tasks: [],
+      tasksCount: 0
     };
     return _this;
   }
@@ -581,24 +706,75 @@ var Desktop = function (_Component) {
   _createClass(Desktop, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      var _this2 = this;
+
       setTimeout(function () {
         _event2.default.emit(_event2.default.names.desktopReady, 'Ready');
       }, 10);
+
+      setTimeout(function () {
+        _this2.addTask('i6oxuWOp');
+        console.log('addTask');
+      }, 2000);
+
+      var system_tasks = _task2.default.systemTasks;
+      // tasksCount: prevState.tasksCount+1
+
+      var _loop = function _loop(key) {
+        _this2.setState(function (prevState) {
+          tasks: prevState.tasks.push(system_tasks[key]);
+        });
+      };
+
+      for (var key in system_tasks) {
+        _loop(key);
+      }
+      // TODO:
+      //initial tasks
+      var init_tasks = ['rOYGH6M8'];
+      for (var i = 0; i < init_tasks.length; i++) {
+        this.addTask(init_tasks[i]);
+      }
+    }
+  }, {
+    key: 'addTask',
+    value: function addTask(name_id) {
+      var _this3 = this;
+
+      if (_task2.default.registeredTasks.has(name_id)) {
+        var url = 'static/data/tasks/' + name_id + '.json';
+        (0, _axios2.default)({
+          method: 'get',
+          url: url,
+          responseType: 'json'
+        }).then(function (res) {
+          try {
+            // tasksCount: prevState.tasksCount+1
+            _this3.setState(function (prevState) {
+              tasks: prevState.tasks.push(res.data);
+            });
+          } catch (e) {
+            console.error('Data format error');
+          }
+        }).catch(function (err) {
+          console.warn(err);
+        });
+      }
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this4 = this;
 
       return _react2.default.createElement(
         'div',
         { className: _desktop2.default.desktop },
         _react2.default.createElement('img', { className: _desktop2.default.backgroundImg, src: this.state.imgURL, onLoad: function onLoad() {
-            return _this2.setState({ imgReady: 1 });
+            return _this4.setState({ imgReady: 1 });
           } }),
         _react2.default.createElement('input', { id: 'start_menu_switch', type: 'checkbox' }),
         _react2.default.createElement(_startMenu2.default, null),
-        _react2.default.createElement(_taskbar2.default, null)
+        _react2.default.createElement(_taskbar2.default, { tasks: this.state.tasks, tasksCount: this.state.tasksCount })
       );
     }
   }]);
@@ -679,6 +855,65 @@ exports.default = StartMenu;
 
 /***/ }),
 
+/***/ "./app/src/js/desktop/task.js":
+/*!************************************!*\
+  !*** ./app/src/js/desktop/task.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var registeredTasks = new Set(["rOYGH6M8", "i6oxuWOp"]);
+var systemTasks = {
+  "resource_manager": {
+    id: "resource_manager",
+    name: "Resource Manager",
+    isBackgroundTask: 0,
+    isTaskbarTask: 1,
+    taskbarIcon: { className: "resource-manager" }
+  }
+};
+
+var Task = function (_Component) {
+  _inherits(Task, _Component);
+
+  function Task() {
+    _classCallCheck(this, Task);
+
+    return _possibleConstructorReturn(this, (Task.__proto__ || Object.getPrototypeOf(Task)).apply(this, arguments));
+  }
+
+  return Task;
+}(_react.Component);
+
+Task.systemTasks = systemTasks;
+Task.registeredTasks = registeredTasks;
+exports.default = Task;
+
+/***/ }),
+
 /***/ "./app/src/js/desktop/taskbar.js":
 /*!***************************************!*\
   !*** ./app/src/js/desktop/taskbar.js ***!
@@ -711,13 +946,17 @@ var _taskbar = __webpack_require__(/*! ../../css/desktop/taskbar.css */ "./app/s
 
 var _taskbar2 = _interopRequireDefault(_taskbar);
 
-var _icon = __webpack_require__(/*! ../../css/components/icon.css */ "./app/src/css/components/icon.css");
+var _task = __webpack_require__(/*! ./task.js */ "./app/src/js/desktop/task.js");
+
+var _task2 = _interopRequireDefault(_task);
+
+var _icon = __webpack_require__(/*! ../components/icon.js */ "./app/src/js/components/icon.js");
 
 var _icon2 = _interopRequireDefault(_icon);
 
-var _icon3 = __webpack_require__(/*! ../components/icon.js */ "./app/src/js/components/icon.js");
+var _date = __webpack_require__(/*! ../components/date.js */ "./app/src/js/components/date.js");
 
-var _icon4 = _interopRequireDefault(_icon3);
+var _date2 = _interopRequireDefault(_date);
 
 __webpack_require__(/*! ../../css/system.css */ "./app/src/css/system.css");
 
@@ -738,7 +977,9 @@ var Taskbar = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Taskbar.__proto__ || Object.getPrototypeOf(Taskbar)).call(this, props));
 
     _this.state = {
-      test: 1
+      test: 1,
+      date: '2018/12/30',
+      time: '00:00'
     };
     return _this;
   }
@@ -747,34 +988,45 @@ var Taskbar = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {}
   }, {
-    key: 'renderTasks',
-    value: function renderTasks() {
-      return _react2.default.createElement(
-        'div',
-        { className: _taskbar2.default.tbTasks },
-        _react2.default.createElement(
-          'div',
-          { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask },
-          _react2.default.createElement(
-            'span',
-            { className: _taskbar2.default.iconCt },
-            _react2.default.createElement(_icon4.default, { className: 'resource-manager' })
-          )
-        ),
-        _react2.default.createElement(
-          'div',
-          { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask },
-          _react2.default.createElement(
-            'span',
-            { className: _taskbar2.default.iconCt },
-            _react2.default.createElement(_icon4.default, { className: 'unknown' })
-          )
-        )
-      );
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      // clearInterval(this.dateIntvId)
+    }
+  }, {
+    key: 'changeLanguage',
+    value: function changeLanguage() {
+      var item = this.refs['item_lang'];
+      if (item.innerHTML == '英') item.innerHTML = '中';else item.innerHTML = '英';
     }
   }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
+      console.log('render');
+      var TaskItems = function TaskItems() {
+        var items = new Array(_this2.props.tasks.length);
+        for (var i = 0; i < _this2.props.tasks.length; i++) {
+          var task = _this2.props.tasks[i];
+          if (task.URL) {} else {
+            var item = _react2.default.createElement(
+              'div',
+              { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask, key: task.id },
+              _react2.default.createElement(
+                'span',
+                { className: _taskbar2.default.iconCt },
+                _react2.default.createElement(_icon2.default, { className: task.taskbarIcon.className })
+              )
+            );
+            items.push(item);
+          }
+        }
+        return _react2.default.createElement(
+          'div',
+          { className: _taskbar2.default.tbTasks },
+          items
+        );
+      };
       return _react2.default.createElement(
         'div',
         { className: _taskbar2.default.taskbar },
@@ -787,24 +1039,210 @@ var Taskbar = function (_Component) {
             _react2.default.createElement(
               'div',
               { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemMenu },
-              _react2.default.createElement('span', { className: _icon2.default.startMenu + ' ' + _taskbar2.default.iconStartMenu })
+              _react2.default.createElement(_icon2.default, { className: 'windows-logo ' + _taskbar2.default.iconStartMenu })
             ),
             _react2.default.createElement(
               'div',
               { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemCortana },
-              _react2.default.createElement('span', { className: _icon2.default.cortana })
+              _react2.default.createElement(_icon2.default, { className: 'cortana' })
             )
           ),
           _react2.default.createElement(
             'div',
-            { style: { display: 'flex', flex: 1, position: 'relative' } },
+            { className: _taskbar2.default.tasksCt },
             _react2.default.createElement('input', { type: 'checkbox', className: _taskbar2.default.item + ' ' + _taskbar2.default.taskSwitch, defaultChecked: true }),
             _react2.default.createElement(
               'div',
               { className: _taskbar2.default.item + ' ' + _taskbar2.default.switchResponser },
-              _react2.default.createElement('span', { className: _icon2.default.angle + ' ' + _icon2.default.up, style: { top: '50%', left: 10 } })
+              _react2.default.createElement(_icon2.default, { className: 'angle up ' + _taskbar2.default.switchAU })
             ),
-            this.renderTasks()
+            _react2.default.createElement(TaskItems, null)
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: _taskbar2.default.tbRight },
+          _react2.default.createElement('div', { className: _taskbar2.default.item + ' ' + _taskbar2.default.showDesktop }),
+          _react2.default.createElement(
+            'div',
+            { className: _taskbar2.default.item + ' ' + _taskbar2.default.operations },
+            _react2.default.createElement(_icon2.default, { className: 'operations' })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: _taskbar2.default.item + ' ' + _taskbar2.default.dtp },
+            _react2.default.createElement(
+              'div',
+              { className: _taskbar2.default.dateTime },
+              _react2.default.createElement(_date2.default, { format: 'hh:mm' })
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: _taskbar2.default.dateTime },
+              _react2.default.createElement(_date2.default, { format: 'yyyy/M/d' })
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: _taskbar2.default.tbBg },
+            _react2.default.createElement(
+              'div',
+              { className: _taskbar2.default.itemsBgHiddenCt },
+              _react2.default.createElement('input', { className: _taskbar2.default.itemBgHiddenSwitch, type: 'checkbox' }),
+              _react2.default.createElement('div', { className: _taskbar2.default.bgSwitchResponse, id: 'act-hover-more-bg-switch' }),
+              _react2.default.createElement(
+                'span',
+                { className: _taskbar2.default.iconCtBg, style: { position: 'absolute' } },
+                _react2.default.createElement(_icon2.default, { className: 'angle up' })
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: _taskbar2.default.itemsBgHidden },
+                _react2.default.createElement(
+                  'div',
+                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.iconCtBg },
+                    _react2.default.createElement(_icon2.default, { className: 'unknown bg' })
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.iconCtBg },
+                    _react2.default.createElement(_icon2.default, { className: 'unknown bg' })
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.iconCtBg },
+                    _react2.default.createElement(_icon2.default, { className: 'unknown bg' })
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.iconCtBg },
+                    _react2.default.createElement(_icon2.default, { className: 'unknown bg' })
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.iconCtBg },
+                    _react2.default.createElement(_icon2.default, { className: 'teamviewer bg' })
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.iconCtBg },
+                    _react2.default.createElement(_icon2.default, { className: 'weChat bg coloured' })
+                  )
+                ),
+                _react2.default.createElement('span', { ref: 'insertBeforeThis' }),
+                _react2.default.createElement(
+                  'div',
+                  { className: _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.iconCtBg },
+                    _react2.default.createElement(_icon2.default, { className: 'kugou bg' })
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.iconCtBg },
+                    _react2.default.createElement(_icon2.default, { className: 'weChat bg' })
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.iconCtBg },
+                    _react2.default.createElement(_icon2.default, { className: 'WLAN-signal' })
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink, onClick: function onClick() {
+                      _this2.changeLanguage();
+                    } },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.iconCtBg },
+                    _react2.default.createElement(
+                      'span',
+                      { className: _taskbar2.default.itemBgLang, ref: 'item_lang' },
+                      '\u82F1'
+                    )
+                  )
+                )
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: _taskbar2.default.itemsBgCt },
+              _react2.default.createElement(
+                'div',
+                { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink, onClick: function onClick() {
+                    _this2.changeLanguage();
+                  } },
+                _react2.default.createElement(
+                  'span',
+                  { className: _taskbar2.default.iconCtBg },
+                  _react2.default.createElement(
+                    'span',
+                    { className: _taskbar2.default.itemBgLang, ref: 'item_lang' },
+                    '\u82F1'
+                  )
+                )
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
+                _react2.default.createElement(
+                  'span',
+                  { className: _taskbar2.default.iconCtBg },
+                  _react2.default.createElement(_icon2.default, { className: 'WLAN-signal' })
+                )
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
+                _react2.default.createElement(
+                  'span',
+                  { className: _taskbar2.default.iconCtBg },
+                  _react2.default.createElement(_icon2.default, { className: 'weChat bg' })
+                )
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink },
+                _react2.default.createElement(
+                  'span',
+                  { className: _taskbar2.default.iconCtBg },
+                  _react2.default.createElement(_icon2.default, { className: 'kugou bg' })
+                )
+              )
+            )
           )
         )
       );
@@ -858,6 +1296,10 @@ var _desktop = __webpack_require__(/*! ../desktop/desktop.js */ "./app/src/js/de
 
 var _desktop2 = _interopRequireDefault(_desktop);
 
+var _date = __webpack_require__(/*! ../components/date.js */ "./app/src/js/components/date.js");
+
+var _date2 = _interopRequireDefault(_date);
+
 var _login = __webpack_require__(/*! ../../css/login/login.css */ "./app/src/css/login/login.css");
 
 var _login2 = _interopRequireDefault(_login);
@@ -906,7 +1348,7 @@ var Login = function (_Component) {
         _this2.setState({
           pageReady: 1
         });
-      }, 2000);
+      }, 10);
       this.dateIntvId = setInterval(function () {
         var date = new Date();
         var dateStr = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getDay()] + ', ' + ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()] + ', ' + date.getDate();
@@ -914,7 +1356,7 @@ var Login = function (_Component) {
           date: dateStr,
           time: (date.getHours() > 9 ? date.getHours() : '0' + date.getHours()) + ':' + (date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes())
         });
-      }, 10);
+      }, 1000);
       this.loadUserInformation();
     }
   }, {
@@ -1063,12 +1505,12 @@ var Login = function (_Component) {
             _react2.default.createElement(
               'div',
               { className: _login2.default.dateTime },
-              this.state.time
+              _react2.default.createElement(_date2.default, { format: 'hh:mm' })
             ),
             _react2.default.createElement(
               'div',
               { className: _login2.default.dateDate },
-              this.state.date
+              _react2.default.createElement(_date2.default, { format: 'W, ~, d' })
             )
           )
         ),
@@ -1116,7 +1558,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 (0, _reactDom.render)(_react2.default.createElement('div', null), document.getElementById('win10_login'));
 // setTimeout(function functionName() {
-//   render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
+// render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
 // }, 500)
 
 
@@ -2806,15 +3248,15 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".icon_lock_1pP6V{position:relative;display:block;width:35px;height:35px;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;text-align:center}.icon_lock_1pP6V:after{content:\"\";display:inline-block;width:23px;height:15px;border:2px solid}.icon_lock-ring_1YISr{display:block;overflow:hidden;height:12px;margin-top:2px;text-align:center}.icon_lock-ring_1YISr:after{content:\"\";display:inline-block;width:14px;height:19px;border:2px solid;border-radius:50%}.icon_start-menu_1iiCL{width:46px;height:15px;display:block;position:relative;top:12px;perspective:3px}.icon_start-menu_1iiCL:before{content:\"\";transform:translate(56%) rotateY(176.7deg) scaleX(.34);height:7px;width:25px;color:#fff;background:#fff;display:block;position:relative;box-shadow:27px 0 0 0,0 8px 0,27px 8px 0}.icon_start-menu_1iiCL.icon_black_tnyFz:before{color:#000;background:#000}.icon_cortana_dm8e-{border-radius:20px;height:12px;width:12px;box-shadow:0 0 2px 2px #fff;transform:translate(-50%,-50%)}.icon_angle_BwsQo,.icon_cortana_dm8e-{display:block;position:relative;top:50%;left:50%}.icon_angle_BwsQo{width:15px;height:25px}.icon_angle_BwsQo:before{top:2px;transform-origin:right;transform:rotate(45deg)}.icon_angle_BwsQo:after,.icon_angle_BwsQo:before{content:\"\";width:16px;height:2px;background:#fff;position:absolute;bottom:0;margin:auto 0;right:2px;box-shadow:inset 0 0 0 32px #fff}.icon_angle_BwsQo:after{top:0;transform-origin:right;transform:rotate(-45deg)}.icon_up_sdzHj.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(-90deg)}.icon_down_1jp15.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(90deg)}.icon_left_3eERt.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(180deg)}.icon_right_z9BLT.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55)}.icon_up_sdzHj.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(-90deg)}.icon_down_1jp15.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(90deg)}.icon_left_3eERt.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(180deg)}.icon_right_z9BLT.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55)}.icon_up_sdzHj.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(-90deg)}.icon_down_1jp15.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(90deg)}.icon_left_3eERt.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(180deg)}.icon_right_z9BLT.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4)}.icon_up_sdzHj.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(-90deg)}.icon_down_1jp15.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(90deg)}.icon_left_3eERt.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(180deg)}.icon_right_z9BLT.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27)}.icon_resource-manager_1KKto{width:24px;height:18px;background:#ffe793;border-radius:5%;display:block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9)}.icon_resource-manager_1KKto:before{content:\"\";height:7px;width:8px;border:4px solid #3ab5e6;border-bottom:none;display:block;position:absolute;top:8px;left:4px}.icon_resource-manager_1KKto:after{content:\"\";position:absolute;width:6px;height:1px;left:0;top:-2px;background:#fff;border-style:solid;border-width:1px 3px 2px;border-color:#fbd140;border-radius:20%}.icon_unknown_3H9yI{position:relative;left:38%;top:50%;transform:translate(-50%,-50%);background:#fff;width:13px;height:25px;display:block}.icon_unknown_3H9yI:before{content:\"\";position:absolute;left:95%;bottom:0;width:8px;height:19px;background:#fff}.icon_unknown_3H9yI:after{content:\"\";position:absolute;left:99%;border:4px solid transparent;border-left-color:#ccc;border-bottom-color:#ccc;transform:translate(3%,-8%)}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/components/icon.css"],"names":[],"mappings":"AAAA,iBAAM,kBAAmB,cAAe,WAAY,YAAa,SAAU,QAAS,+BAAiC,WAAY,iBAAmB,CAAC,AACrJ,uBAAY,WAAY,qBAAsB,WAAY,YAAa,gBAAkB,CAAC,AAC1F,sBAAW,cAAe,gBAAiB,YAAa,eAAgB,iBAAmB,CAAC,AAC5F,4BAAiB,WAAY,qBAAsB,WAAY,YAAa,iBAAkB,iBAAmB,CAAC,AAElH,uBAAa,WAAY,YAAa,cAAe,kBAAmB,SAAU,eAAiB,CAAC,AACpG,8BAAoB,WAAY,uDAAyD,WAAY,WAAY,WAAY,gBAAiB,cAAe,kBAAmB,wCAA4C,CAAC,AAC7N,+CAAyB,WAAY,eAAiB,CAAC,AAEvD,oBAAS,mBAAoB,YAAa,WAAY,AAAe,4BAAiC,AAAsC,8BAAgC,CAAC,AAE7K,sCAFsD,cAAe,AAAiC,kBAAmB,QAAS,QAAU,CAExD,AAApF,kBAAyC,WAAY,WAAa,CAAkB,AACpF,yBAA0B,QAAS,AAAkI,uBAAwB,uBAAyB,CAAC,AACvN,iDADc,WAAY,AAAS,WAAY,WAAY,gBAAiB,kBAAmB,SAAU,cAAe,UAAW,gCAAkC,CACgD,AAArN,wBAAyB,MAAO,AAAkI,uBAAwB,wBAA0B,CAAC,AACrN,gCAAU,wDAA2D,CAAC,AACtE,kCAAY,uDAA0D,CAAC,AACvE,kCAAY,wDAA2D,CAAC,AACxE,mCAAa,yCAA4C,CAAC,AAC1D,8CAAa,wDAA2D,CAAC,AACzE,gDAAe,uDAA0D,CAAC,AAC1E,gDAAe,wDAA2D,CAAC,AAC3E,iDAAgB,yCAA4C,CAAC,AAC7D,8CAAa,uDAA2D,CAAC,AACzE,gDAAe,sDAA0D,CAAC,AAC1E,gDAAe,uDAA2D,CAAC,AAC3E,iDAAgB,wCAA4C,CAAC,AAC7D,8CAAa,wDAA2D,CAAC,AACzE,gDAAe,uDAA0D,CAAC,AAC1E,gDAAe,wDAA2D,CAAC,AAC3E,iDAAgB,yCAA4C,CAAC,AAE7D,6BAAkB,WAAY,YAAa,mBAAoB,iBAAkB,cAAe,kBAAmB,SAAU,QAAS,wCAA2C,CAAC,AAClL,oCAAyB,WAAY,WAAY,UAAW,yBAA0B,mBAAoB,cAAe,kBAAmB,QAAS,QAAU,CAAC,AAChK,mCAAwB,WAAY,kBAAmB,UAAW,WAAY,OAAU,SAAU,gBAAiB,mBAAoB,yBAA8B,qBAAsB,iBAAmB,CAAC,AAE/M,oBAAS,kBAAmB,SAAU,QAAS,+BAAgC,gBAAiB,WAAY,YAAa,aAAe,CAAC,AACzI,2BAAgB,WAAY,kBAAmB,SAAU,SAAU,UAAW,YAAa,eAAiB,CAAC,AAC7G,0BAAe,WAAY,kBAAmB,SAAU,6BAA8B,uBAAwB,yBAA0B,2BAA6B,CAAC","file":"icon.css","sourcesContent":[".lock{position: relative;display: block;width: 35px;height: 35px;left: 50%;top: 50%;transform: translate(-50%, -50%);color: #fff;text-align: center;}\r\n.lock:after{content: '';display: inline-block;width: 23px;height: 15px;border: 2px solid;}\r\n.lock-ring{display: block;overflow: hidden;height: 12px;margin-top: 2px;text-align: center;}\r\n.lock-ring:after{content: '';display: inline-block;width: 14px;height: 19px;border: 2px solid;border-radius: 50%;}\r\n\r\n.start-menu {width: 46px;height: 15px;display: block;position: relative;top: 12px;perspective: 3px;}\r\n.start-menu:before {content: \"\";transform: translate(56%) rotateY(176.7deg) scaleX(0.34);height: 7px;width: 25px;color: #fff;background: #fff;display: block;position: relative;box-shadow: 27px 0 0 0, 0 8px 0, 27px 8px 0;}\r\n.start-menu.black:before{color: #000;background: #000;}\r\n\r\n.cortana{border-radius: 20px;height: 12px;width: 12px;display: block;box-shadow: 0px 0px 2px 2px #fff;position: relative;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n\r\n.angle{display: block;position: relative;width: 15px;height: 25px;left: 50%;top:50%}\r\n.angle:before{content: '';top: 2px;width: 16px;height: 2px;background: #fff;position: absolute;bottom: 0;margin: auto 0;right: 2px;box-shadow: inset 0 0 0 32px #fff;transform-origin: right;transform: rotate(45deg);}\r\n.angle:after{content: '';top: 0;width: 16px;height: 2px;background: #fff;position: absolute;bottom: 0;margin: auto 0;right: 2px;box-shadow: inset 0 0 0 32px #fff;transform-origin: right;transform: rotate(-45deg);}\r\n.up.angle{transform: translate(-50%,-50%) scale(0.55) rotate(-90deg);}\r\n.down.angle{transform: translate(-50%,-50%) scale(0.55) rotate(90deg);}\r\n.left.angle{transform: translate(-50%,-50%) scale(0.55) rotate(180deg);}\r\n.right.angle{transform: translate(-50%,-50%) scale(0.55);}\r\n.up.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(-90deg);}\r\n.down.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(90deg);}\r\n.left.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(180deg);}\r\n.right.lg.angle{transform: translate(-50%,-50%) scale(0.55);}\r\n.up.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(-90deg);}\r\n.down.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(90deg);}\r\n.left.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(180deg);}\r\n.right.nm.angle{transform: translate(-50%,-50%) scale(0.40);}\r\n.up.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(-90deg);}\r\n.down.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(90deg);}\r\n.left.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(180deg);}\r\n.right.sm.angle{transform: translate(-50%,-50%) scale(0.27);}\r\n\r\n.resource-manager{width: 24px;height: 18px;background: #ffe793;border-radius: 5%;display: block;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%) scale(0.9);}\r\n.resource-manager:before{content: '';height: 7px;width: 8px;border: 4px solid #3ab5e6;border-bottom: none;display: block;position: absolute;top: 8px;left: 4px;}\r\n.resource-manager:after{content: \"\";position: absolute;width: 6px;height: 1px;left: 0px;top: -2px;background: #fff;border-style: solid;border-width: 1px 3px 2px 3px;border-color: #fbd140;border-radius: 20%;}\r\n\r\n.unknown{position: relative;left: 38%;top: 50%;transform: translate(-50%,-50%);background: #fff;width: 13px;height: 25px;display: block;}\r\n.unknown:before{content: '';position: absolute;left: 95%;bottom: 0;width: 8px;height: 19px;background: #fff;}\r\n.unknown:after{content: '';position: absolute;left: 99%;border: 4px solid transparent;border-left-color: #ccc;border-bottom-color: #ccc;transform: translate(3%,-8%);}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".icon_lock_1pP6V{position:relative;display:block;width:35px;height:35px;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;text-align:center}.icon_lock_1pP6V:after{content:\"\";display:inline-block;width:23px;height:15px;border:2px solid}.icon_lock-ring_1YISr{display:block;overflow:hidden;height:12px;margin-top:2px;text-align:center}.icon_lock-ring_1YISr:after{content:\"\";display:inline-block;width:14px;height:19px;border:2px solid;border-radius:50%}.icon_windows-logo_2K4gV{width:46px;height:15px;display:block;position:relative;top:12px;perspective:3px}.icon_windows-logo_2K4gV:before{content:\"\";transform:translate(56%) rotateY(176.7deg) scaleX(.34);height:7px;width:25px;color:#fff;background:#fff;display:block;position:relative;box-shadow:27px 0 0 0,0 8px 0,27px 8px 0}.icon_windows-logo_2K4gV.icon_black_tnyFz:before{color:#000;background:#000}.icon_cortana_dm8e-{border-radius:20px;height:12px;width:12px;box-shadow:0 0 2px 2px #fff;transform:translate(-50%,-50%)}.icon_angle_BwsQo,.icon_cortana_dm8e-{display:block;position:relative;top:50%;left:50%}.icon_angle_BwsQo{width:15px;height:25px}.icon_angle_BwsQo:before{top:2px;transform-origin:right;transform:rotate(45deg)}.icon_angle_BwsQo:after,.icon_angle_BwsQo:before{content:\"\";width:16px;height:2px;background:#fff;position:absolute;bottom:0;margin:auto 0;right:2px;box-shadow:inset 0 0 0 32px #fff}.icon_angle_BwsQo:after{top:0;transform-origin:right;transform:rotate(-45deg)}.icon_up_sdzHj.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(-90deg)}.icon_down_1jp15.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(90deg)}.icon_left_3eERt.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(180deg)}.icon_right_z9BLT.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55)}.icon_up_sdzHj.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(-90deg)}.icon_down_1jp15.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(90deg)}.icon_left_3eERt.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55) rotate(180deg)}.icon_right_z9BLT.icon_lg_3pWDS.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.55)}.icon_up_sdzHj.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(-90deg)}.icon_down_1jp15.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(90deg)}.icon_left_3eERt.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4) rotate(180deg)}.icon_right_z9BLT.icon_nm_3-B7y.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.4)}.icon_up_sdzHj.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(-90deg)}.icon_down_1jp15.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(90deg)}.icon_left_3eERt.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27) rotate(180deg)}.icon_right_z9BLT.icon_sm_27EQk.icon_angle_BwsQo{transform:translate(-50%,-50%) scale(.27)}.icon_resource-manager_1KKto{width:24px;height:18px;background:#ffe793;border-radius:5%;display:block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9)}.icon_resource-manager_1KKto:before{content:\"\";height:7px;width:8px;border:4px solid #3ab5e6;border-bottom:none;display:block;position:absolute;top:8px;left:4px}.icon_resource-manager_1KKto:after{content:\"\";position:absolute;width:6px;height:1px;left:0;top:-2px;background:#fff;border-style:solid;border-width:1px 3px 2px;border-color:#fbd140;border-radius:20%}.icon_bg_38NwV.icon_unknown_3H9yI{transform:translate(-50%,-50%) scale(.6);left:40%}.icon_unknown_3H9yI{position:relative;left:38%;top:50%;transform:translate(-50%,-50%);background:#fff;width:13px;height:25px;display:block}.icon_unknown_3H9yI:before{content:\"\";position:absolute;left:95%;bottom:0;width:8px;height:19px;background:#fff}.icon_unknown_3H9yI:after{content:\"\";position:absolute;left:99%;border:4px solid transparent;border-left-color:#ccc;border-bottom-color:#ccc;transform:translate(3%,-8%)}.icon_operations_3r2yJ{width:36px;height:28px;border:2px solid #fff;border-bottom-color:transparent;display:block;position:relative;left:50%;top:50%;transform:translate(-50%,-50%) scale(.45)}.icon_operations_3r2yJ:before{content:\"\";position:absolute;top:94%;width:35%;height:3px;background:#fff;box-shadow:23px 0 #fff}.icon_operations_3r2yJ:after{content:\"\";position:absolute;left:37%;top:88%;width:7px;height:7px;border-left:2px solid #fff;border-top:2px solid #fff;transform:rotate(-135deg)}.icon_WLAN-signal_3zSeq{position:relative;display:block;width:17px;height:17px;top:50%;left:50%;transform:translate(-50%,-50%)}.icon_WLAN-signal_3zSeq:before{content:\"\";position:absolute;right:1px;bottom:1px;width:3px;height:3px;background:#fff;border-radius:50% 50%}.icon_WLAN-signal-inner_Zg6Sx{width:50px;height:50px;border-radius:50% 50%;border:2px solid transparent;border-top-color:hsla(0,0%,67%,.6);transform:rotate(-45deg) scale(.5);overflow:hidden;display:block;position:absolute;left:-11px;top:-11px}.icon_WLAN-signal-inner_Zg6Sx:before{width:36px;height:36px;top:5px;left:5px}.icon_WLAN-signal-inner_Zg6Sx:after,.icon_WLAN-signal-inner_Zg6Sx:before{content:\"\";border-radius:50% 50%;border:2px solid transparent;border-top-color:#fff;display:block;position:absolute}.icon_WLAN-signal-inner_Zg6Sx:after{width:22px;height:22px;top:12px;left:12px}.icon_teamviewer_2U3CM.icon_bg_38NwV{transform:translate(-50%,-50%) scale(.35)}.icon_teamviewer_2U3CM{top:50%;left:50%;transition:translate(-50%,-50%);display:block;position:absolute;overflow:hidden;width:50px;height:50px;border-radius:7%;background:#0a79d9;background:-moz-linear-gradient(top,#0f8ce4 0,#0764c5 100%);background:-webkit-gradient(left top,left bottom,color-stop(0,#0f8ce4),color-stop(100%,#0764c5));background:-webkit-linear-gradient(top,#0f8ce4,#0764c5);background:-o-linear-gradient(top,#0f8ce4 0,#0764c5 100%);background:-ms-linear-gradient(top,#0f8ce4 0,#0764c5 100%);background:linear-gradient(180deg,#0f8ce4 0,#0764c5);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=\"#0f8ce4\",endColorstr=\"#0764c5\",GradientType=0)}.icon_teamviewer_2U3CM:before{content:\"\";position:absolute;width:42px;height:42px;top:4px;left:4px;border-radius:50%;background:#fff}.icon_teamviewer_2U3CM:after{content:\"\";position:absolute;width:0;height:0;border-width:0 19px 10px;border-style:solid;border-color:transparent;border-bottom-color:#0a78d8;top:15px;left:6px}.icon_teamviewer-inner_1zWZh{display:block;position:absolute;width:0;height:0;border-width:10px 19px 0;border-style:solid;border-color:transparent;border-top-color:#0a78d8;top:25px;left:6px}.icon_teamviewer-inner_1zWZh:before{border-width:18px 7px 0;border-style:solid;border-color:transparent;border-top-color:#fff;top:-7px}.icon_teamviewer-inner_1zWZh:after,.icon_teamviewer-inner_1zWZh:before{content:\"\";position:absolute;width:0;height:0;left:-7px;transform:translateX(5%)}.icon_teamviewer-inner_1zWZh:after{border-width:0 7px 18px;border-style:solid;border-color:transparent;border-bottom-color:#fff;top:-30px;z-index:1}.icon_weChat_2la2c.icon_task_XM2ho{transform:translate(-50%,-50%)scale(.48);top:46%;left:40%}.icon_weChat_2la2c.icon_bg_38NwV{transform:translate(-50%,-50%)scale(.38);top:46%;left:43%}.icon_weChat_2la2c{width:30px;height:23px;border:3px solid #fff;border-radius:50% 50% 50% 50%/45% 45% 50% 50%;display:block;position:absolute}.icon_weChat_2la2c:before{left:3px;transform:translateX(-5%)}.icon_weChat_2la2c:after,.icon_weChat_2la2c:before{content:\"\";width:4px;height:4px;border-radius:50% 50%;border:5px solid #fff;position:absolute;top:0}.icon_weChat_2la2c:after{left:14px}.icon_weChat-inner1_2nkcY{width:9px;height:8px;background:#fff;border-radius:50% 50%;position:absolute;top:4px;box-shadow:0 5px,2px 8px,9px 9px 0 4px,12px -6px,25px 0;color:#fff;left:-2px;display:block}.icon_weChat-inner1_2nkcY:before{content:\"\";position:absolute;width:0;border-bottom:6px solid #fff;border-right:6px solid transparent;border-left:5px solid transparent;transform:rotate(106deg);top:16px;left:3px}.icon_weChat-inner1_2nkcY:after{content:\"\";position:absolute;width:0;border-bottom:4px solid #fff;border-right:5px solid transparent;border-left:3px solid transparent;transform:rotate(30deg);top:26px;left:35px;z-index:2}.icon_weChat-inner2_2ZEvh{width:20px;height:8px;box-shadow:0 0 0 2px #000;border:5px solid #fff;border-bottom:11px solid #fff;border-radius:50% 50% 50% 50%/45% 45% 50% 50%;display:block;position:relative;left:14px;top:10px;z-index:1}.icon_weChat-inner2_2ZEvh:before{left:-1px}.icon_weChat-inner2_2ZEvh:after,.icon_weChat-inner2_2ZEvh:before{content:\"\";position:absolute;width:3px;height:3px;border-radius:50% 50%;border:5px solid #fff;top:-2px;transform:scale(1.2)}.icon_weChat-inner2_2ZEvh:after{left:9px}.icon_coloured_2rd5d.icon_weChat_2la2c,.icon_coloured_2rd5d.icon_weChat_2la2c:after,.icon_coloured_2rd5d.icon_weChat_2la2c:before{border-color:#80cb4b}.icon_coloured_2rd5d.icon_weChat_2la2c .icon_weChat-inner1_2nkcY:before{border-bottom-color:#80cb4b}.icon_coloured_2rd5d.icon_weChat_2la2c .icon_weChat-inner1_2nkcY{background:#80cb4b;color:#80cb4b}.icon_coloured_2rd5d.icon_weChat_2la2c .icon_weChat-inner2_2ZEvh{box-shadow:none}.icon_bg_38NwV.icon_kugou_1Dtew{top:50%;left:50%;transform:translate(-50%,-50%) scale(.27)}.icon_kugou_1Dtew{width:55px;height:55px;background:#008ad4;border-radius:50%;border:4px solid #fff;display:block;position:absolute;top:0;top:50%;left:50%;transform:translate(-50%,-50%)}.icon_kugou_1Dtew:before{content:\"K\";font-family:sans-serif;color:#fff;text-shadow:2px 0 0 #fff;font-size:44px;display:block;position:absolute;top:-4px;left:12px;transform:rotate(6deg)}.icon_kugou_1Dtew:after{content:\"\";position:absolute;width:28px;height:7px;left:15px;top:5px;background:#008ad4;box-shadow:-1px 37px #008ad4}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/components/icon.css"],"names":[],"mappings":"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","file":"icon.css","sourcesContent":[".lock{position: relative;display: block;width: 35px;height: 35px;left: 50%;top: 50%;transform: translate(-50%, -50%);color: #fff;text-align: center;}\r\n.lock:after{content: '';display: inline-block;width: 23px;height: 15px;border: 2px solid;}\r\n.lock-ring{display: block;overflow: hidden;height: 12px;margin-top: 2px;text-align: center;}\r\n.lock-ring:after{content: '';display: inline-block;width: 14px;height: 19px;border: 2px solid;border-radius: 50%;}\r\n\r\n.windows-logo {width: 46px;height: 15px;display: block;position: relative;top: 12px;perspective: 3px;}\r\n.windows-logo:before {content: \"\";transform: translate(56%) rotateY(176.7deg) scaleX(0.34);height: 7px;width: 25px;color: #fff;background: #fff;display: block;position: relative;box-shadow: 27px 0 0 0, 0 8px 0, 27px 8px 0;}\r\n.windows-logo.black:before{color: #000;background: #000;}\r\n\r\n.cortana{border-radius: 20px;height: 12px;width: 12px;display: block;box-shadow: 0px 0px 2px 2px #fff;position: relative;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n\r\n.angle{display: block;position: relative;width: 15px;height: 25px;left: 50%;top:50%}\r\n.angle:before{content: '';top: 2px;width: 16px;height: 2px;background: #fff;position: absolute;bottom: 0;margin: auto 0;right: 2px;box-shadow: inset 0 0 0 32px #fff;transform-origin: right;transform: rotate(45deg);}\r\n.angle:after{content: '';top: 0;width: 16px;height: 2px;background: #fff;position: absolute;bottom: 0;margin: auto 0;right: 2px;box-shadow: inset 0 0 0 32px #fff;transform-origin: right;transform: rotate(-45deg);}\r\n.up.angle{transform: translate(-50%,-50%) scale(0.55) rotate(-90deg);}\r\n.down.angle{transform: translate(-50%,-50%) scale(0.55) rotate(90deg);}\r\n.left.angle{transform: translate(-50%,-50%) scale(0.55) rotate(180deg);}\r\n.right.angle{transform: translate(-50%,-50%) scale(0.55);}\r\n.up.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(-90deg);}\r\n.down.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(90deg);}\r\n.left.lg.angle{transform: translate(-50%,-50%) scale(0.55) rotate(180deg);}\r\n.right.lg.angle{transform: translate(-50%,-50%) scale(0.55);}\r\n.up.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(-90deg);}\r\n.down.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(90deg);}\r\n.left.nm.angle{transform: translate(-50%,-50%) scale(0.40) rotate(180deg);}\r\n.right.nm.angle{transform: translate(-50%,-50%) scale(0.40);}\r\n.up.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(-90deg);}\r\n.down.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(90deg);}\r\n.left.sm.angle{transform: translate(-50%,-50%) scale(0.27) rotate(180deg);}\r\n.right.sm.angle{transform: translate(-50%,-50%) scale(0.27);}\r\n\r\n.resource-manager{width: 24px;height: 18px;background: #ffe793;border-radius: 5%;display: block;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%) scale(0.9);}\r\n.resource-manager:before{content: '';height: 7px;width: 8px;border: 4px solid #3ab5e6;border-bottom: none;display: block;position: absolute;top: 8px;left: 4px;}\r\n.resource-manager:after{content: \"\";position: absolute;width: 6px;height: 1px;left: 0px;top: -2px;background: #fff;border-style: solid;border-width: 1px 3px 2px 3px;border-color: #fbd140;border-radius: 20%;}\r\n\r\n.bg.unknown{transform: translate(-50%,-50%) scale(0.6);left: 40%;}\r\n.unknown{position: relative;left: 38%;top: 50%;transform: translate(-50%,-50%);background: #fff;width: 13px;height: 25px;display: block;}\r\n.unknown:before{content: '';position: absolute;left: 95%;bottom: 0;width: 8px;height: 19px;background: #fff;}\r\n.unknown:after{content: '';position: absolute;left: 99%;border: 4px solid transparent;border-left-color: #ccc;border-bottom-color: #ccc;transform: translate(3%,-8%);}\r\n\r\n.operations{width: 36px;height: 28px;border: 2px solid #fff;border-bottom-color: transparent;display: block;position: relative;left: 50%;top: 50%;transform: translate(-50%,-50%) scale(0.45);}\r\n.operations:before{content: \"\";position: absolute;top: 94%;width: 35%;height: 3px;background: #fff;box-shadow: 23px 0 #fff;}\r\n.operations:after{content: \"\";position: absolute;left: 37%;top: 88%;width: 7px;height: 7px;border-left: 2px solid #fff;border-top: 2px solid #fff;transform: rotate(-135deg);}\r\n\r\n.WLAN-signal{position: relative;display: block;width: 17px;height: 17px;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n.WLAN-signal:before{content: \"\";position: absolute;right: 1px;bottom: 1px;width: 3px;height: 3px;background: #fff;border-radius: 50% 50%;}\r\n.WLAN-signal-inner{width: 50px;height: 50px;border-radius: 50% 50%;border: 2px solid transparent;border-top-color: rgba(170, 170, 170, 0.6);transform: rotate(-45deg) scale(0.5);overflow: hidden;display: block;position: absolute;left: -11px;top: -11px;}\r\n.WLAN-signal-inner:before{content: \"\";width: 36px;height: 36px;border-radius: 50% 50%;border: 2px solid transparent;border-top-color: #fff;display: block;position: absolute;top: 5px;left: 5px;}\r\n.WLAN-signal-inner:after{content: \"\";width: 22px;height: 22px;border-radius: 50% 50%;border: 2px solid transparent;border-top-color: #fff;display: block;position: absolute;top: 12px;left: 12px;}\r\n\r\n.teamviewer.bg{transform: translate(-50%,-50%) scale(0.35);}\r\n.teamviewer{top: 50%;left: 50%;transition: translate(-50%,-50%);display: block;position: absolute;overflow: hidden;width: 50px;height: 50px;border-radius: 7%;background: #0a79d9;background: -moz-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(15,140,228,1)), color-stop(100%, rgba(7,100,197,1)));background: -webkit-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: -o-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: -ms-linear-gradient(top, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);background: linear-gradient(to bottom, rgba(15,140,228,1) 0%, rgba(7,100,197,1) 100%);filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0f8ce4', endColorstr='#0764c5', GradientType=0 );}\r\n.teamviewer:before{content: '';position: absolute;width: 42px;height: 42px;top: 4px;left: 4px;border-radius: 50%;background: #fff;}\r\n.teamviewer:after{content: \"\";position: absolute;width: 0;height: 0;border-width: 0 19px 10px 19px;border-style: solid;border-color: transparent;border-bottom-color: #0a78d8;top: 15px;left: 6px;}\r\n.teamviewer-inner{display: block;position: absolute;width: 0;height: 0;border-width: 10px 19px 0 19px;border-style: solid;border-color: transparent;border-top-color: #0a78d8;top: 25px;left: 6px;}\r\n.teamviewer-inner:before{content: \"\";position: absolute;width: 0;height: 0;border-width: 18px 7px 0 7px;border-style: solid;border-color: transparent;border-top-color: #fff;top: -7px;left: -7px;transform: translateX(5%);}\r\n.teamviewer-inner:after{content: \"\";position: absolute;width: 0;height: 0;border-width: 0 7px 18px 7px;border-style: solid;border-color: transparent;border-bottom-color: #fff;top: -30px;left: -7px;z-index: 1;transform: translateX(5%);}\r\n\r\n.weChat.task{transform: translate(-50%,-50%)scale(0.48);top: 46%;left: 40%;}\r\n.weChat.bg{transform: translate(-50%,-50%)scale(0.38);top: 46%;left: 43%;}\r\n.weChat{width: 30px;height: 23px;border: 3px solid #fff;border-radius: 50% 50% 50% 50%/45% 45% 50% 50%;display: block;position: absolute;}\r\n.weChat:before{content: \"\";width: 4px;height: 4px;border-radius: 50% 50%;border: 5px solid #fff;position: absolute;top: 0px;left: 3px;transform: translateX(-5%);}\r\n.weChat:after{content: \"\";width: 4px;height: 4px;border-radius: 50% 50%;border: 5px solid #fff;position: absolute;top: 0px;left: 14px;}\r\n.weChat-inner1{width: 9px;height: 8px;background: #fff;border-radius: 50% 50%;position: absolute;top: 4px;box-shadow: 0px 5px, 2px 8px, 9px 9px 0 4px, 12px -6px, 25px 0px;color: #fff;left: -2px;display: block;}\r\n.weChat-inner1:before{content: \"\";position: absolute;width: 0px;border-bottom: 6px solid #fff;border-right: 6px solid transparent;border-left: 5px solid transparent;transform: rotate(106deg);top: 16px;left: 3px;}\r\n.weChat-inner1:after{content: \"\";position: absolute;width: 0px;border-bottom: 4px solid #fff;border-right: 5px solid transparent;border-left: 3px solid transparent;transform: rotate(30deg);top: 26px;left: 35px;z-index: 2;}\r\n.weChat-inner2{width: 20px;height: 8px;box-shadow: 0 0 0 2px #000;/*colour to be set*/border: 5px solid #fff;border-bottom: 11px solid #fff;border-radius: 50% 50% 50% 50%/45% 45% 50% 50%;display: block;position: relative;left: 14px;top: 10px;z-index: 1;}\r\n.weChat-inner2:before{content: \"\";position: absolute;width: 3px;height: 3px;border-radius: 50% 50%;border: 5px solid #fff;top: -2px;left: -1px;transform: scale(1.2);}\r\n.weChat-inner2:after{content: \"\";position: absolute;width: 3px;height: 3px;border-radius: 50% 50%;border: 5px solid #fff;top: -2px;left: 9px;transform: scale(1.2);}\r\n.coloured.weChat, .coloured.weChat:before, .coloured.weChat:after {border-color: #80cb4b;}\r\n.coloured.weChat .weChat-inner1:before{border-bottom-color: #80cb4b;}\r\n.coloured.weChat .weChat-inner1{background: #80cb4b;color: #80cb4b;}\r\n.coloured.weChat .weChat-inner2{box-shadow: none;}\r\n\r\n.bg.kugou{top: 50%;left: 50%;transform: translate(-50%,-50%) scale(0.27);}\r\n.kugou{width: 55px;height: 55px;background: #008ad4;border-radius: 50%;border: 4px solid #fff;display: block;position: absolute;top: 0px;top: 50%;left: 50%;transform: translate(-50%,-50%);}\r\n.kugou:before{content: 'K';font-family: sans-serif;color: #fff;text-shadow: 2px 0px 0px #fff;font-size: 44px;display: block;position: absolute;top: -4px;left: 12px;transform: rotate(6deg);}\r\n.kugou:after{content: \"\";position: absolute;width: 28px;height: 7px;left: 15px;top: 5px;background: #008ad4;box-shadow: -1px 37px #008ad4;}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
 	"lock": "icon_lock_1pP6V",
 	"lock-ring": "icon_lock-ring_1YISr",
 	"lockRing": "icon_lock-ring_1YISr",
-	"start-menu": "icon_start-menu_1iiCL",
-	"startMenu": "icon_start-menu_1iiCL",
+	"windows-logo": "icon_windows-logo_2K4gV",
+	"windowsLogo": "icon_windows-logo_2K4gV",
 	"black": "icon_black_tnyFz",
 	"cortana": "icon_cortana_dm8e-",
 	"angle": "icon_angle_BwsQo",
@@ -2827,7 +3269,24 @@ exports.locals = {
 	"sm": "icon_sm_27EQk",
 	"resource-manager": "icon_resource-manager_1KKto",
 	"resourceManager": "icon_resource-manager_1KKto",
-	"unknown": "icon_unknown_3H9yI"
+	"bg": "icon_bg_38NwV",
+	"unknown": "icon_unknown_3H9yI",
+	"operations": "icon_operations_3r2yJ",
+	"WLAN-signal": "icon_WLAN-signal_3zSeq",
+	"wlanSignal": "icon_WLAN-signal_3zSeq",
+	"WLAN-signal-inner": "icon_WLAN-signal-inner_Zg6Sx",
+	"wlanSignalInner": "icon_WLAN-signal-inner_Zg6Sx",
+	"teamviewer": "icon_teamviewer_2U3CM",
+	"teamviewer-inner": "icon_teamviewer-inner_1zWZh",
+	"teamviewerInner": "icon_teamviewer-inner_1zWZh",
+	"weChat": "icon_weChat_2la2c",
+	"task": "icon_task_XM2ho",
+	"weChat-inner1": "icon_weChat-inner1_2nkcY",
+	"weChatInner1": "icon_weChat-inner1_2nkcY",
+	"weChat-inner2": "icon_weChat-inner2_2ZEvh",
+	"weChatInner2": "icon_weChat-inner2_2ZEvh",
+	"coloured": "icon_coloured_2rd5d",
+	"kugou": "icon_kugou_1Dtew"
 };
 
 /***/ }),
@@ -2914,7 +3373,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".taskbar_taskbar_3hPyP{display:flex;position:fixed;z-index:9999998;bottom:0;height:40px;width:100%;background:rgba(30,37,46,.85)}.taskbar_tb-left_2HjgG,.taskbar_tb-task_1bBpb{display:flex;flex:1}.taskbar_tb-left_2HjgG,.taskbar_tb-right_27mqb{height:inherit}.taskbar_tb-sys_37Ijg{display:flex}.taskbar_tb-sys_37Ijg,.taskbar_tb-task_1bBpb{margin-right:4px}.taskbar_item_36Zmi{margin-right:1px;height:inherit;display:inline-block;width:46px;overflow:hidden}.taskbar_item_36Zmi:hover{background:hsla(0,0%,100%,.1)}.taskbar_item_36Zmi:active{background:hsla(0,0%,100%,.05)}.taskbar_item-cortana_3qlA0:active{background:hsla(0,0%,100%,.15)}.taskbar_item-cortana_3qlA0,.taskbar_item-menu_8Jfia{margin-right:0;width:48px}.taskbar_item-task_2Y0xn{max-width:48px;min-width:35px;height:100%;flex:1;position:relative}.taskbar_item-task_2Y0xn:before{content:\"\";position:absolute;bottom:0;left:50%;transform:translate(-50%);display:inline-block;width:88%;height:7.5%;background-color:#8a9db6;transition:width .2s}.taskbar_item-task_2Y0xn:hover:before{content:\"\";width:100%}.taskbar_icon-ct_1NQ-R{display:block;position:relative;width:30px;height:100%;overflow:hidden;margin:auto}#start_menu_switch:hover~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background:hsla(0,0%,100%,.1)}#start_menu_switch:active~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background:hsla(0,0%,100%,.05)}#start_menu_switch:checked~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background:hsla(0,0%,100%,.2);box-shadow:0 0 5px 0 rgba(0,0,0,.5)}#start_menu_switch:checked:active~.taskbar_taskbar_3hPyP .taskbar_icon-start-menu_2T9Bz:before{background:#515c6b;color:#515c6b}#start_menu_switch:hover~.taskbar_taskbar_3hPyP .taskbar_icon-start-menu_2T9Bz:before{background:#6e7d91;color:#6e7d91}.taskbar_task-switch_3CGgb{display:none;margin:0;opacity:0;position:absolute;left:0;height:100%;width:100%}.taskbar_switch-responser_3Z2GJ{position:absolute;z-index:-1;left:96px;display:none;left:0;width:100%;height:100%}.taskbar_task-switch_3CGgb:hover~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.1)}.taskbar_task-switch_3CGgb:active~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.05)}.taskbar_task-switch_3CGgb:checked~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.15)}.taskbar_task-switch_3CGgb:checked:active~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.05)}.taskbar_tb-tasks_hi9pa{display:block}@media (max-width:486px){.taskbar_switch-responser_3Z2GJ,.taskbar_task-switch_3CGgb{display:block}.taskbar_tb-tasks_hi9pa{position:absolute;bottom:40px;flex-wrap:wrap;width:240px;height:auto;background:rgba(30,37,46,.85);box-shadow:0 0 5px 0 rgba(0,0,0,.5);z-index:-10;display:none}.taskbar_tb-tasks_hi9pa>.taskbar_item-task_2Y0xn{min-width:40px;height:40px}.taskbar_task-switch_3CGgb:checked~.taskbar_tb-tasks_hi9pa{display:block}#taskbar_items-task-switch_y5Qun{display:inline-block}#taskbar_act-hover-items-task-switch_2j4hP{width:200px;display:inline-block}#taskbar_items-task-switch_y5Qun:checked~.taskbar_tb-task_1bBpb.taskbar_resp-pos486_1ydIk{display:none}}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/taskbar.css"],"names":[],"mappings":"AAAA,uBACE,aAAc,AACd,eAAgB,AAChB,gBAAiB,AACjB,SAAU,AACV,YAAa,AACb,WAAY,AACZ,6BAAmC,CACpC,AACD,8CACE,aAAc,AACd,MAAQ,CACT,AACD,+CACE,cAAgB,CACjB,AACD,sBACE,YAAc,CACf,AACD,6CACE,gBAAkB,CACnB,AACD,oBACE,iBAAkB,AAClB,eAAgB,AAChB,qBAAsB,AACtB,WAAY,AACZ,eAAiB,CAClB,AACD,0BACE,6BAAqC,CACtC,AACD,2BACE,8BAAsC,CACvC,AACD,mCACE,8BAAsC,CACvC,AACD,qDACE,eAAgB,AAChB,UAAY,CACb,AACD,yBACE,eAAgB,AAChB,eAAgB,AAChB,YAAa,AACb,OAAQ,AACR,iBAAmB,CACpB,AACD,gCACE,WAAY,AACZ,kBAAmB,AACnB,SAAY,AACZ,SAAU,AACV,0BAA6B,AAC7B,qBAAsB,AACtB,UAAW,AACX,YAAa,AACb,yBAA0B,AAC1B,oBAAuB,CACxB,AACD,sCACE,WAAY,AACZ,UAAY,CACb,AACD,uBACE,cAAe,AACf,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,gBAAiB,AACjB,WAAa,CACd,AAED,yEACE,6BAAqC,CACtC,AACD,0EACE,8BAAsC,CACvC,AACD,2EACE,8BAAqC,AACrC,mCAAyC,CAC1C,AACD,+FACE,mBAAoB,AACpB,aAAe,CAChB,AACD,sFACE,mBAAoB,AACpB,aAAe,CAChB,AACD,2BACE,aAAc,AACd,SAAU,AACV,UAAW,AACX,kBAAmB,AACnB,OAAQ,AACR,YAAa,AACb,UAAY,CACb,AACD,gCACE,kBAAmB,AACnB,WAAY,AACZ,UAAW,AACX,aAAc,AACd,OAAQ,AACR,WAAY,AACZ,WAAa,CACd,AACD,iEACE,6BAAqC,CACtC,AACD,kEACE,8BAAsC,CACvC,AACD,mEACE,8BAAsC,CACvC,AACD,0EACE,8BAAsC,CACvC,AACD,wBACE,aAAe,CAChB,AACD,yBAIE,2DACE,aAAe,CAChB,AACD,wBACE,kBAAmB,AACnB,YAAa,AACb,eAAgB,AAChB,YAAa,AACb,YAAa,AACb,8BAAmC,AACnC,oCAA2C,AAC3C,YAAa,AACb,YAAc,CACf,AACD,iDACE,eAAgB,AAChB,WAAa,CACd,AACD,2DACE,aAAe,CAChB,AACD,iCACE,oBAAsB,CACvB,AACD,2CACE,YAAa,AACb,oBAAsB,CACvB,AACD,0FACE,YAAc,CACf,CACF","file":"taskbar.css","sourcesContent":[".taskbar {\r\n  display: flex;\r\n  position: fixed;\r\n  z-index: 9999998;\r\n  bottom: 0;\r\n  height: 40px;\r\n  width: 100%;\r\n  background: rgba(30, 37, 46, 0.85);\r\n}\r\n.tb-left, .tb-task {\r\n  display: flex;\r\n  flex: 1;\r\n}\r\n.tb-left, .tb-right{\r\n  height: inherit;\r\n}\r\n.tb-sys{\r\n  display: flex;\r\n}\r\n.tb-sys, .tb-task {\r\n  margin-right: 4px;\r\n}\r\n.item{\r\n  margin-right: 1px;\r\n  height: inherit;\r\n  display: inline-block;\r\n  width: 46px;\r\n  overflow: hidden;\r\n}\r\n.item:hover{\r\n  background: rgba(255, 255, 255, 0.1);\r\n}\r\n.item:active{\r\n  background: rgba(255, 255, 255, 0.05);\r\n}\r\n.item-cortana:active{\r\n  background: rgba(255, 255, 255, 0.15);\r\n}\r\n.item-menu, .item-cortana{\r\n  margin-right: 0;\r\n  width: 48px;\r\n}\r\n.item-task{\r\n  max-width: 48px;\r\n  min-width: 35px;\r\n  height: 100%;\r\n  flex: 1;\r\n  position: relative;\r\n}\r\n.item-task:before {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: 0px;\r\n  left: 50%;\r\n  transform: translate(-50%,0);\r\n  display: inline-block;\r\n  width: 88%;\r\n  height: 7.5%;\r\n  background-color: #8a9db6;\r\n  transition: width 0.2s;\r\n}\r\n.item-task:hover:before {\r\n  content: '';\r\n  width: 100%;\r\n}\r\n.icon-ct{\r\n  display: block;\r\n  position: relative;\r\n  width: 30px;\r\n  height: 100%;\r\n  overflow: hidden;\r\n  margin: auto;\r\n}\r\n\r\n:global(#start_menu_switch):hover~.taskbar .item-menu {\r\n  background: rgba(255, 255, 255, 0.1);\r\n}\r\n:global(#start_menu_switch):active~.taskbar .item-menu {\r\n  background: rgba(255, 255, 255, 0.05);\r\n}\r\n:global(#start_menu_switch):checked~.taskbar .item-menu {\r\n  background: rgba(255, 255, 255, 0.2);\r\n  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);\r\n}\r\n:global(#start_menu_switch):checked:active~.taskbar .icon-start-menu:before {\r\n  background: #515c6b;\r\n  color: #515c6b;\r\n}\r\n:global(#start_menu_switch):hover~.taskbar .icon-start-menu:before {\r\n  background: #6e7d91;\r\n  color: #6e7d91;\r\n}\r\n.task-switch{\r\n  display: none;\r\n  margin: 0;\r\n  opacity: 0;\r\n  position: absolute;\r\n  left: 0;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.switch-responser{\r\n  position: absolute;\r\n  z-index: -1;\r\n  left: 96px;\r\n  display: none;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n.task-switch:hover~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.1);\r\n}\r\n.task-switch:active~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.05);\r\n}\r\n.task-switch:checked~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.15);\r\n}\r\n.task-switch:checked:active~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.05);\r\n}\r\n.tb-tasks{\r\n  display: block;\r\n}\r\n@media (max-width: 486px) {\r\n  .task-switch{\r\n    display: block;\r\n  }\r\n  .switch-responser{\r\n    display: block;\r\n  }\r\n  .tb-tasks {\r\n    position: absolute;\r\n    bottom: 40px;\r\n    flex-wrap: wrap;\r\n    width: 240px;\r\n    height: auto;\r\n    background: rgba(30, 37, 46, 0.85);\r\n    box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.5);;\r\n    z-index: -10;\r\n    display: none;\r\n  }\r\n  .tb-tasks>.item-task{\r\n    min-width: 40px;\r\n    height: 40px;\r\n  }\r\n  .task-switch:checked~.tb-tasks{\r\n    display: block;\r\n  }\r\n  #items-task-switch{\r\n    display: inline-block;\r\n  }\r\n  #act-hover-items-task-switch{\r\n    width: 200px;\r\n    display: inline-block;\r\n  }\r\n  #items-task-switch:checked~.tb-task.resp-pos486{\r\n    display: none;\r\n  }\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".taskbar_taskbar_3hPyP{display:flex;position:fixed;z-index:9999998;bottom:0;height:40px;width:100%;background:rgba(30,37,46,.85)}.taskbar_tb-left_2HjgG,.taskbar_tb-task_1bBpb{display:flex;flex:1}.taskbar_tb-left_2HjgG,.taskbar_tb-right_27mqb{height:inherit}.taskbar_tb-sys_37Ijg{display:flex}.taskbar_tb-sys_37Ijg,.taskbar_tb-task_1bBpb{margin-right:4px}.taskbar_item_36Zmi{margin-right:1px;height:inherit;display:inline-block;width:48px;overflow:hidden;position:relative}.taskbar_item_36Zmi:hover{background:hsla(0,0%,100%,.08)}.taskbar_item_36Zmi:active{background:hsla(0,0%,100%,.03)}.taskbar_item-cortana_3qlA0:active{background:hsla(0,0%,100%,.13)}.taskbar_item-cortana_3qlA0,.taskbar_item-menu_8Jfia{margin-right:0;width:48px}.taskbar_item-task_2Y0xn{max-width:48px;min-width:35px;height:100%;flex:1;position:relative}.taskbar_item-task_2Y0xn:before{content:\"\";position:absolute;bottom:0;left:50%;transform:translate(-50%);display:inline-block;width:88%;height:7.5%;background-color:#8a9db6;transition:width .2s}.taskbar_item-task_2Y0xn:hover:before{content:\"\";width:100%}.taskbar_icon-ct_1NQ-R{display:block;position:relative;width:30px;height:100%;overflow:hidden;margin:auto}#start_menu_switch:hover~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background:hsla(0,0%,100%,.08)}#start_menu_switch:active~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background:hsla(0,0%,100%,.03)}#start_menu_switch:checked~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background:hsla(0,0%,100%,.17);box-shadow:0 0 5px 0 rgba(0,0,0,.3)}#start_menu_switch:checked:active~.taskbar_taskbar_3hPyP .taskbar_icon-start-menu_2T9Bz:before{background:#515c6b;color:#515c6b}#start_menu_switch:hover~.taskbar_taskbar_3hPyP .taskbar_icon-start-menu_2T9Bz:before{background:#6e7d91;color:#6e7d91}.taskbar_task-switch_3CGgb{display:none;margin:0;opacity:0;position:absolute;left:0;height:100%;width:100%}.taskbar_switch-responser_3Z2GJ{position:absolute;z-index:-1;left:96px;display:none;left:0;width:100%;height:100%}.taskbar_switchAU_1cBFM{left:10px!important}.taskbar_tasks-ct_cOZKi{display:flex;flex:1;position:relative;margin-right:1px}.taskbar_task-switch_3CGgb:hover~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.12)}.taskbar_task-switch_3CGgb:active~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.07)}.taskbar_task-switch_3CGgb:checked~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.12)}.taskbar_task-switch_3CGgb:checked:active~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.07)!important}.taskbar_task-switch_3CGgb:checked:hover~.taskbar_switch-responser_3Z2GJ{background:hsla(0,0%,100%,.18)}.taskbar_tb-tasks_hi9pa{display:block}@media (max-width:486px){.taskbar_switch-responser_3Z2GJ,.taskbar_task-switch_3CGgb{display:block}.taskbar_tb-tasks_hi9pa{position:absolute;bottom:40px;flex-wrap:wrap;width:240px;height:auto;background:rgba(30,37,46,.85);box-shadow:0 0 5px 0 rgba(0,0,0,.5);z-index:-10;display:none}.taskbar_tb-tasks_hi9pa>.taskbar_item-task_2Y0xn{min-width:40px;height:40px}.taskbar_task-switch_3CGgb:checked~.taskbar_tb-tasks_hi9pa{display:block}#taskbar_items-task-switch_y5Qun{display:inline-block}#taskbar_act-hover-items-task-switch_2j4hP{width:200px;display:inline-block}#taskbar_items-task-switch_y5Qun:checked~.taskbar_tb-task_1bBpb.taskbar_resp-pos486_1ydIk{display:none}}.taskbar_tb-right_27mqb>.taskbar_item_36Zmi,.taskbar_tbg_Ghdr-{float:right}.taskbar_show-desktop_1n3Wx{width:5px;border-left:1px solid #999}.taskbar_operations_2Ir6d{width:42px;margin-right:8px}.taskbar_date-time_3W13N{height:50%;font-size:12px;color:#fff;text-align:center;line-height:150%}.taskbar_dtp_3FZu4:active,.taskbar_operations_2Ir6d:active{background:hsla(0,0%,78%,.18)}.taskbar_dtp_3FZu4{width:76px}.taskbar_tb-bg_340TU{width:auto;height:100%;display:inline-block}.taskbar_item-bg_gQ5oR{width:23px;height:100%;display:inline-block}.taskbar_item-bg_gQ5oR:hover{background:hsla(0,0%,78%,.12)}.taskbar_item-bg_gQ5oR:active{background:hsla(0,0%,78%,.07)}.taskbar_icon-ct-bg_gH6-4{display:block;overflow:hidden;width:24px;height:24px;margin:auto;margin-top:8px}.taskbar_item-bg-hidden-switch_3puHx{margin:0;opacity:0;z-index:1}.taskbar_bg-switch-response_30opY,.taskbar_item-bg-hidden-switch_3puHx{position:absolute;width:100%;height:100%}.taskbar_item-bg-hidden-switch_3puHx:checked~.taskbar_items-bg-hidden_3BBz3{display:flex}.taskbar_item-bg-hidden-switch_3puHx:hover~.taskbar_bg-switch-response_30opY{background:hsla(0,0%,100%,.12)}.taskbar_item-bg-hidden-switch_3puHx:active~.taskbar_bg-switch-response_30opY{background:hsla(0,0%,100%,.07)}.taskbar_items-bg-hidden-ct_mgt9k{height:100%;width:23px;position:relative;display:inline-block}.taskbar_items-bg-hidden_3BBz3{display:none;flex-wrap:wrap;position:absolute;bottom:40px;background:rgba(52,61,73,.9);box-shadow:0 0 5px 0 rgba(0,0,0,.5);width:160px;transform:translateX(-43%)}.taskbar_item-bg-h_7kZFx{width:40px;height:40px;margin:0;position:relative}.taskbar_items-bg-ct_3Kyrx{display:inline-block;height:100%}.taskbar_items-bg-ct_3Kyrx>.taskbar_item_36Zmi{float:right}.taskbar_item-bg-lang_dpmDV{font-size:16px;color:#fff;display:block;text-align:center}.taskbar_items-bg-hidden_3BBz3 .taskbar_shrink_19PUx{display:none}@media (max-width:640px){.taskbar_shrink_19PUx.taskbar_item-bg_gQ5oR{display:none}.taskbar_items-bg-hidden_3BBz3 .taskbar_shrink_19PUx{display:inline-block}}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/taskbar.css"],"names":[],"mappings":"AAAA,uBACE,aAAc,AACd,eAAgB,AAChB,gBAAiB,AACjB,SAAU,AACV,YAAa,AACb,WAAY,AACZ,6BAAmC,CACpC,AACD,8CACE,aAAc,AACd,MAAQ,CACT,AACD,+CACE,cAAgB,CACjB,AACD,sBACE,YAAc,CACf,AACD,6CACE,gBAAkB,CACnB,AACD,oBACE,iBAAkB,AAClB,eAAgB,AAChB,qBAAsB,AACtB,WAAY,AACZ,gBAAiB,AACjB,iBAAmB,CACpB,AACD,0BACE,8BAAsC,CACvC,AACD,2BACE,8BAAsC,CACvC,AACD,mCACE,8BAAsC,CACvC,AACD,qDACE,eAAgB,AAChB,UAAY,CACb,AACD,yBACE,eAAgB,AAChB,eAAgB,AAChB,YAAa,AACb,OAAQ,AACR,iBAAmB,CACpB,AACD,gCACE,WAAY,AACZ,kBAAmB,AACnB,SAAY,AACZ,SAAU,AACV,0BAA6B,AAC7B,qBAAsB,AACtB,UAAW,AACX,YAAa,AACb,yBAA0B,AAC1B,oBAAuB,CACxB,AACD,sCACE,WAAY,AACZ,UAAY,CACb,AACD,uBACE,cAAe,AACf,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,gBAAiB,AACjB,WAAa,CACd,AAED,yEACE,8BAAsC,CACvC,AACD,0EACE,8BAAsC,CACvC,AACD,2EACE,+BAAsC,AACtC,mCAAyC,CAC1C,AACD,+FACE,mBAAoB,AACpB,aAAe,CAChB,AACD,sFACE,mBAAoB,AACpB,aAAe,CAChB,AACD,2BACE,aAAc,AACd,SAAU,AACV,UAAW,AACX,kBAAmB,AACnB,OAAQ,AACR,YAAa,AACb,UAAY,CACb,AACD,gCACE,kBAAmB,AACnB,WAAY,AACZ,UAAW,AACX,aAAc,AACd,OAAQ,AACR,WAAY,AACZ,WAAa,CACd,AACD,wBACE,mBAAqB,CACtB,AACD,wBACE,aAAc,AACd,OAAQ,AACR,kBAAmB,AACnB,gBAAkB,CACnB,AACD,iEACE,8BAAsC,CACvC,AACD,kEACE,8BAAsC,CACvC,AACD,mEACE,8BAAsC,CACvC,AACD,0EACE,wCAAgD,CACjD,AACD,yEACE,8BAAsC,CACvC,AACD,wBACE,aAAe,CAChB,AACD,yBAIE,2DACE,aAAe,CAChB,AACD,wBACE,kBAAmB,AACnB,YAAa,AACb,eAAgB,AAChB,YAAa,AACb,YAAa,AACb,8BAAmC,AACnC,oCAA2C,AAC3C,YAAa,AACb,YAAc,CACf,AACD,iDACE,eAAgB,AAChB,WAAa,CACd,AACD,2DACE,aAAe,CAChB,AACD,iCACE,oBAAsB,CACvB,AACD,2CACE,YAAa,AACb,oBAAsB,CACvB,AACD,0FACE,YAAc,CACf,CACF,AAED,+DACE,WAAa,CACd,AACD,4BACE,UAAW,AACX,0BAA4B,CAC7B,AACD,0BACE,WAAY,AACZ,gBAAkB,CACnB,AACD,yBACE,WAAY,AACZ,eAAgB,AAChB,WAAY,AACZ,kBAAmB,AACnB,gBAAkB,CACnB,AACD,2DACE,6BAAsC,CACvC,AACD,mBACE,UAAY,CACb,AACD,qBACE,WAAY,AACZ,YAAa,AACb,oBAAsB,CACvB,AACD,uBACE,WAAY,AACZ,YAAa,AACb,oBAAsB,CACvB,AACD,6BACE,6BAAsC,CACvC,AACD,8BACE,6BAAsC,CACvC,AACD,0BACE,cAAe,AACf,gBAAiB,AACjB,WAAY,AACZ,YAAa,AACb,YAAa,AACb,cAAgB,CACjB,AACD,qCAIE,SAAU,AACV,UAAW,AACX,SAAW,CACZ,AACD,uEAPE,kBAAmB,AACnB,WAAY,AACZ,WAAa,CASd,AACD,4EACE,YAAc,CACf,AACD,6EACE,8BAAsC,CACvC,AACD,8EACE,8BAAsC,CACvC,AACD,kCACE,YAAa,AACb,WAAY,AACZ,kBAAmB,AACnB,oBAAsB,CACvB,AACD,+BACE,aAAc,AACd,eAAgB,AAChB,kBAAmB,AACnB,YAAa,AACb,6BAAkC,AAClC,oCAA2C,AAC3C,YAAa,AACb,0BAA4B,CAC7B,AACD,yBACE,WAAY,AACZ,YAAa,AACb,SAAU,AACV,iBAAmB,CACpB,AACD,2BACE,qBAAsB,AACtB,WAAa,CACd,AACD,+CACE,WAAa,CACd,AACD,4BACE,eAAgB,AAChB,WAAY,AACZ,cAAe,AACf,iBAAmB,CACpB,AACD,qDACE,YAAc,CACf,AACD,yBACE,4CACE,YAAc,CACf,AACD,qDACE,oBAAsB,CACvB,CACF","file":"taskbar.css","sourcesContent":[".taskbar {\r\n  display: flex;\r\n  position: fixed;\r\n  z-index: 9999998;\r\n  bottom: 0;\r\n  height: 40px;\r\n  width: 100%;\r\n  background: rgba(30, 37, 46, 0.85);\r\n}\r\n.tb-left, .tb-task {\r\n  display: flex;\r\n  flex: 1;\r\n}\r\n.tb-left, .tb-right{\r\n  height: inherit;\r\n}\r\n.tb-sys{\r\n  display: flex;\r\n}\r\n.tb-sys, .tb-task {\r\n  margin-right: 4px;\r\n}\r\n.item{\r\n  margin-right: 1px;\r\n  height: inherit;\r\n  display: inline-block;\r\n  width: 48px;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n.item:hover{\r\n  background: rgba(255, 255, 255, 0.08);\r\n}\r\n.item:active{\r\n  background: rgba(255, 255, 255, 0.03);\r\n}\r\n.item-cortana:active{\r\n  background: rgba(255, 255, 255, 0.13);\r\n}\r\n.item-menu, .item-cortana{\r\n  margin-right: 0;\r\n  width: 48px;\r\n}\r\n.item-task{\r\n  max-width: 48px;\r\n  min-width: 35px;\r\n  height: 100%;\r\n  flex: 1;\r\n  position: relative;\r\n}\r\n.item-task:before {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: 0px;\r\n  left: 50%;\r\n  transform: translate(-50%,0);\r\n  display: inline-block;\r\n  width: 88%;\r\n  height: 7.5%;\r\n  background-color: #8a9db6;\r\n  transition: width 0.2s;\r\n}\r\n.item-task:hover:before {\r\n  content: '';\r\n  width: 100%;\r\n}\r\n.icon-ct{\r\n  display: block;\r\n  position: relative;\r\n  width: 30px;\r\n  height: 100%;\r\n  overflow: hidden;\r\n  margin: auto;\r\n}\r\n\r\n:global(#start_menu_switch):hover~.taskbar .item-menu {\r\n  background: rgba(255, 255, 255, 0.08);\r\n}\r\n:global(#start_menu_switch):active~.taskbar .item-menu {\r\n  background: rgba(255, 255, 255, 0.03);\r\n}\r\n:global(#start_menu_switch):checked~.taskbar .item-menu {\r\n  background: rgba(255, 255, 255, 0.17);\r\n  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);\r\n}\r\n:global(#start_menu_switch):checked:active~.taskbar .icon-start-menu:before {\r\n  background: #515c6b;\r\n  color: #515c6b;\r\n}\r\n:global(#start_menu_switch):hover~.taskbar .icon-start-menu:before {\r\n  background: #6e7d91;\r\n  color: #6e7d91;\r\n}\r\n.task-switch{\r\n  display: none;\r\n  margin: 0;\r\n  opacity: 0;\r\n  position: absolute;\r\n  left: 0;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.switch-responser{\r\n  position: absolute;\r\n  z-index: -1;\r\n  left: 96px;\r\n  display: none;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n.switchAU{\r\n  left: 10px!important;\r\n}\r\n.tasks-ct{\r\n  display: flex;\r\n  flex: 1;\r\n  position: relative;\r\n  margin-right: 1px;\r\n}\r\n.task-switch:hover~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.12);\r\n}\r\n.task-switch:active~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.07);\r\n}\r\n.task-switch:checked~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.12);\r\n}\r\n.task-switch:checked:active~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.07)!important;\r\n}\r\n.task-switch:checked:hover~.switch-responser{\r\n  background: rgba(255, 255, 255, 0.18);\r\n}\r\n.tb-tasks{\r\n  display: block;\r\n}\r\n@media (max-width: 486px) {\r\n  .task-switch{\r\n    display: block;\r\n  }\r\n  .switch-responser{\r\n    display: block;\r\n  }\r\n  .tb-tasks {\r\n    position: absolute;\r\n    bottom: 40px;\r\n    flex-wrap: wrap;\r\n    width: 240px;\r\n    height: auto;\r\n    background: rgba(30, 37, 46, 0.85);\r\n    box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.5);;\r\n    z-index: -10;\r\n    display: none;\r\n  }\r\n  .tb-tasks>.item-task{\r\n    min-width: 40px;\r\n    height: 40px;\r\n  }\r\n  .task-switch:checked~.tb-tasks{\r\n    display: block;\r\n  }\r\n  #items-task-switch{\r\n    display: inline-block;\r\n  }\r\n  #act-hover-items-task-switch{\r\n    width: 200px;\r\n    display: inline-block;\r\n  }\r\n  #items-task-switch:checked~.tb-task.resp-pos486{\r\n    display: none;\r\n  }\r\n}\r\n\r\n.tb-right>.item, .tbg{\r\n  float: right;\r\n}\r\n.show-desktop{\r\n  width: 5px;\r\n  border-left: 1px solid #999;\r\n}\r\n.operations{\r\n  width: 42px;\r\n  margin-right: 8px;\r\n}\r\n.date-time{\r\n  height: 50%;\r\n  font-size: 12px;\r\n  color: #fff;\r\n  text-align: center;\r\n  line-height: 150%;\r\n}\r\n.dtp:active, .operations:active{\r\n  background: rgba(200, 200, 200, 0.18);\r\n}\r\n.dtp{\r\n  width: 76px;\r\n}\r\n.tb-bg{\r\n  width: auto;\r\n  height: 100%;\r\n  display: inline-block;\r\n}\r\n.item-bg{\r\n  width: 23px;\r\n  height: 100%;\r\n  display: inline-block;\r\n}\r\n.item-bg:hover{\r\n  background: rgba(200, 200, 200, 0.12);\r\n}\r\n.item-bg:active{\r\n  background: rgba(200, 200, 200, 0.07);\r\n}\r\n.icon-ct-bg{\r\n  display: block;\r\n  overflow: hidden;\r\n  width: 24px;\r\n  height: 24px;\r\n  margin: auto;\r\n  margin-top: 8px;\r\n}\r\n.item-bg-hidden-switch{\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  margin: 0;\r\n  opacity: 0;\r\n  z-index: 1;\r\n}\r\n.bg-switch-response{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n}\r\n.item-bg-hidden-switch:checked~.items-bg-hidden {\r\n  display: flex;\r\n}\r\n.item-bg-hidden-switch:hover~.bg-switch-response{\r\n  background: rgba(255, 255, 255, 0.12);\r\n}\r\n.item-bg-hidden-switch:active~.bg-switch-response{\r\n  background: rgba(255, 255, 255, 0.07);\r\n}\r\n.items-bg-hidden-ct{\r\n  height: 100%;\r\n  width: 23px;\r\n  position: relative;\r\n  display: inline-block;\r\n}\r\n.items-bg-hidden{\r\n  display: none;\r\n  flex-wrap: wrap;\r\n  position: absolute;\r\n  bottom: 40px;\r\n  background: rgba(52, 61, 73, 0.9);\r\n  box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.5);\r\n  width: 160px;\r\n  transform: translateX(-43%);\r\n}\r\n.item-bg-h{\r\n  width: 40px;\r\n  height: 40px;\r\n  margin: 0;\r\n  position: relative;\r\n}\r\n.items-bg-ct{\r\n  display: inline-block;\r\n  height: 100%;\r\n}\r\n.items-bg-ct>.item{\r\n  float: right;\r\n}\r\n.item-bg-lang{\r\n  font-size: 16px;\r\n  color: #fff;\r\n  display: block;\r\n  text-align: center;\r\n}\r\n.items-bg-hidden .shrink {\r\n  display: none;\r\n}\r\n@media (max-width: 640px) {\r\n  .shrink.item-bg {\r\n    display: none;\r\n  }\r\n  .items-bg-hidden .shrink {\r\n    display: inline-block;\r\n  }\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -2942,6 +3401,10 @@ exports.locals = {
 	"taskSwitch": "taskbar_task-switch_3CGgb",
 	"switch-responser": "taskbar_switch-responser_3Z2GJ",
 	"switchResponser": "taskbar_switch-responser_3Z2GJ",
+	"switchAU": "taskbar_switchAU_1cBFM",
+	"switchAu": "taskbar_switchAU_1cBFM",
+	"tasks-ct": "taskbar_tasks-ct_cOZKi",
+	"tasksCt": "taskbar_tasks-ct_cOZKi",
 	"tb-tasks": "taskbar_tb-tasks_hi9pa",
 	"tbTasks": "taskbar_tb-tasks_hi9pa",
 	"items-task-switch": "taskbar_items-task-switch_y5Qun",
@@ -2949,7 +3412,35 @@ exports.locals = {
 	"act-hover-items-task-switch": "taskbar_act-hover-items-task-switch_2j4hP",
 	"actHoverItemsTaskSwitch": "taskbar_act-hover-items-task-switch_2j4hP",
 	"resp-pos486": "taskbar_resp-pos486_1ydIk",
-	"respPos486": "taskbar_resp-pos486_1ydIk"
+	"respPos486": "taskbar_resp-pos486_1ydIk",
+	"tbg": "taskbar_tbg_Ghdr-",
+	"show-desktop": "taskbar_show-desktop_1n3Wx",
+	"showDesktop": "taskbar_show-desktop_1n3Wx",
+	"operations": "taskbar_operations_2Ir6d",
+	"date-time": "taskbar_date-time_3W13N",
+	"dateTime": "taskbar_date-time_3W13N",
+	"dtp": "taskbar_dtp_3FZu4",
+	"tb-bg": "taskbar_tb-bg_340TU",
+	"tbBg": "taskbar_tb-bg_340TU",
+	"item-bg": "taskbar_item-bg_gQ5oR",
+	"itemBg": "taskbar_item-bg_gQ5oR",
+	"icon-ct-bg": "taskbar_icon-ct-bg_gH6-4",
+	"iconCtBg": "taskbar_icon-ct-bg_gH6-4",
+	"item-bg-hidden-switch": "taskbar_item-bg-hidden-switch_3puHx",
+	"itemBgHiddenSwitch": "taskbar_item-bg-hidden-switch_3puHx",
+	"bg-switch-response": "taskbar_bg-switch-response_30opY",
+	"bgSwitchResponse": "taskbar_bg-switch-response_30opY",
+	"items-bg-hidden": "taskbar_items-bg-hidden_3BBz3",
+	"itemsBgHidden": "taskbar_items-bg-hidden_3BBz3",
+	"items-bg-hidden-ct": "taskbar_items-bg-hidden-ct_mgt9k",
+	"itemsBgHiddenCt": "taskbar_items-bg-hidden-ct_mgt9k",
+	"item-bg-h": "taskbar_item-bg-h_7kZFx",
+	"itemBgH": "taskbar_item-bg-h_7kZFx",
+	"items-bg-ct": "taskbar_items-bg-ct_3Kyrx",
+	"itemsBgCt": "taskbar_items-bg-ct_3Kyrx",
+	"item-bg-lang": "taskbar_item-bg-lang_dpmDV",
+	"itemBgLang": "taskbar_item-bg-lang_dpmDV",
+	"shrink": "taskbar_shrink_19PUx"
 };
 
 /***/ }),

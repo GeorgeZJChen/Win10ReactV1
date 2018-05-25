@@ -9,7 +9,7 @@ const innerHTML = {
   'weChat': (<span><span className={icon['weChat-inner1']}></span><span className={icon['weChat-inner2']}></span></span>)
 }
 let empty = [
-  "angle", "resource-manager", "unknown", "operations", "kugou"
+  "windows-logo", "angle", "resource-manager", "unknown", "operations", "kugou"
 ]
 for (var i = 0; i < empty.length; i++) {
   innerHTML[empty[i]] = ""
@@ -19,8 +19,9 @@ class Icon extends Component{
   constructor(props){
     super(props)
     this.className = props.className
-  }
-  getHtml(){
+
+    if(this.className==undefined) return
+
     const classes = this.className.split(/\s+/)
     let full_name = ''
     let first_name = ''
@@ -35,17 +36,27 @@ class Icon extends Component{
         full_name += classes[i] +' '
       }
     }
-    if(first_name.indexOf('weChat')!=-1){
-      console.log(full_name);
-    }
+    this.full_name = full_name
+    this.first_name = first_name
+  }
+  componentWillUnmount(){
+    console.log('unmount icon');
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    if(this.className == nextProps.className)
+      return false
+    return true
+  }
+  getHtml(){
+    if(this.className==undefined) return <span ></span>
     return (
-      <span className={full_name}>
-        {innerHTML[first_name]}
+      <span className={this.full_name}>
+        {innerHTML[this.first_name]}
       </span>
     )
   }
   render(){
-      return this.getHtml()
+    return this.getHtml()
   }
 
 }

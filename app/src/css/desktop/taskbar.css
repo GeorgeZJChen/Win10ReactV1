@@ -24,7 +24,7 @@
   margin-right: 1px;
   height: inherit;
   display: inline-block;
-  width: 46px;
+  width: 48px;
   overflow: hidden;
   position: relative;
 }
@@ -112,7 +112,7 @@
 .switchAU{
   left: 10px!important;
 }
-.hidden-tasks-ct{
+.tasks-ct{
   display: flex;
   flex: 1;
   position: relative;
@@ -216,10 +216,10 @@
 .icon-ct-bg{
   display: block;
   overflow: hidden;
-  position: absolute;
-  width: inherit;
+  width: 24px;
   height: 24px;
-  margin: 8px 0;
+  margin: auto;
+  margin-top: 8px;
 }
 .item-bg-hidden-switch{
   position: absolute;
@@ -278,14 +278,14 @@
   display: block;
   text-align: center;
 }
-.items-bg-hidden>.shrink {
+.items-bg-hidden .shrink {
   display: none;
 }
 @media (max-width: 640px) {
   .shrink.item-bg {
     display: none;
   }
-  .items-bg-hidden>.shrink {
+  .items-bg-hidden .shrink {
     display: inline-block;
   }
 }

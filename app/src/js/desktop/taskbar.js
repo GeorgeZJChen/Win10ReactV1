@@ -2,6 +2,9 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 import css from '../../css/desktop/taskbar.css'
+import Task from './task.js'
+import TaskItems from './taskItems.js'
+import Events from '../components/event.js'
 import Icon from '../components/icon.js'
 import DateSpan from '../components/date.js'
 import '../../css/system.css'
@@ -10,50 +13,17 @@ class Taskbar extends Component{
   constructor(props){
     super(props)
     this.state = {
-      test: 1,
-      date: '2018/12/30',
-      time: '00:00'
     }
   }
   componentDidMount() {
-    // let updateDate = ()=>{
-    //   let date = new Date()
-    //   let dateStr = date.getFullYear()+'/'+(date.getMonth()+1)+'/'+date.getDate()
-    //   this.setState({
-    //     date: dateStr,
-    //     time: (date.getHours()>9?date.getHours():'0'+date.getHours())+':'+(date.getMinutes()>9?date.getMinutes():'0'+date.getMinutes())
-    //   })
-    // }
-    // updateDate()
-    //   this.dateIntvId = setInterval(updateDate, 1000)
+    Events.on(Events.names.to_taskbar_add_new_task, (task)=>{
+      Events.emit(Events.names.to_task_items_add_new_task, task)
+    })
   }
   componentWillUnmount(){
     // clearInterval(this.dateIntvId)
   }
-  renderTasks(){
-    return(
-      <div className={css.tbTasks}>
-        <div className={css.item+' '+css.itemTask}><span className={css.iconCt}>
-          <Icon className="resource-manager"/>
-        </span></div>
-        <div className={css.item+' '+css.itemTask}><span className={css.iconCt}>
-          <Icon className="unknown"/>
-        </span></div>
-        {/*<div className='item item-task' onclick='desktop.createWindow(this)' data-url='DOM/windows/Kugou.json'><span className='item-task-icon-ct'><span className='icon-kugou' id='item-task-kugou-span'></span></span></div>
-        <div className='item item-task' onclick='desktop.createWindow(this)' data-url='DOM/windows/Atom.json'>
-        <span className='item-task-icon-ct'>
-        <span className='icon-atom' id='item-task-atom-span'>
-        <span className='icon-atom-oval'></span>
-        <span className='icon-atom-oval icon-atom-oval-1'></span>
-        <span className='icon-atom-oval icon-atom-oval-2'></span>
-        </span>
-        </span>
-        </div>
-        <div className='item item-task' onclick='desktop.createWindow(this)' data-url='DOM/windows/WeChat.json'><span className='item-task-icon-ct'><span className='icon-task icon-WeChat coloured-WeChat'><span className='icon-WeChat-sub1'></span><span className='icon-WeChat-sub2'></span></span></span></div>
-        */}
-      </div>
-    )
-  }
+
   changeLanguage(){
     const item = this.refs['item_lang']
     if(item.innerHTML=='英')
@@ -67,18 +37,20 @@ class Taskbar extends Component{
           <div className={css.tbLeft}>
             <div className={css.tbSys}>
               <div className={css.item+' '+css.itemMenu}>
-                <Icon className={'start-menu '+css.iconStartMenu}/>
+                <Icon className={'windows-logo '+css.iconStartMenu}/>
               </div>
               <div className={css.item+' '+css.itemCortana}>
-                <Icon className={'cortana'}/>
+                <Icon className='cortana'/>
               </div>
             </div>
-            <div className={css.hiddenTasksCt}>
+            <div className={css.tasksCt}>
               <input type='checkbox' className={css.item+' '+css.taskSwitch} defaultChecked/>
               <div className={css.item+' '+css.switchResponser}>
                 <Icon className={'angle up '+css.switchAU}/>
               </div>
-              {this.renderTasks()}
+              <div className={css.tbTasks}>
+                <TaskItems tasks={this.props.tasks} type={0}/>
+              </div>
             </div>
           </div>
           <div className={css.tbRight}>
@@ -94,23 +66,16 @@ class Taskbar extends Component{
               <div className={css.itemsBgHiddenCt}>
                 <input className={css.itemBgHiddenSwitch} type='checkbox'/>
                 <div className={css.bgSwitchResponse} id='act-hover-more-bg-switch'></div>
-                <span className={css.iconCtBg}><Icon className='angle up'/></span>
+                <span className={css.iconCtBg} style={{position:'absolute'}}><Icon className='angle up'/></span>
                 <div className={css.itemsBgHidden}>
-                  <div className={css.itemBg+' '+css.itemBgH+' '+css.item}><Icon className='teamviewer bg'/></div>
-                  <div className={css.itemBg+' '+css.itemBgH+' '+css.item}><Icon className='weChat bg coloured'/></div>
+                  <TaskItems tasks={this.props.tasks} type={1}/>
                   {/*duplicates of displaying items*/}
-                  <div className={css.itemBgH+' '+css.item+' '+css.itemBg+' '+css.shrink} onClick={()=>{this.changeLanguage()}}><span className={css.iconCtBg}><Icon className='kugou bg'/></span></div>
-                  <div className={css.itemBgH+' '+css.item+' '+css.itemBg+' '+css.shrink}><span className={css.iconCtBg}><Icon className='weChat bg'/></span></div>
-                  <div className={css.itemBgH+' '+css.item+' '+css.itemBg+' '+css.shrink}><span className={css.iconCtBg}><Icon className='WLAN-signal'/></span></div>
-                  <div className={css.itemBgH+' '+css.item+' '+css.itemBg+' '+css.shrink} onClick={()=>{this.changeLanguage()}}><span className={css.iconCtBg}><span className={css.itemBgLang} ref='item_lang'>英</span></span></div>
+                  <TaskItems tasks={this.props.tasks} type={2}/>
                 </div>
               </div>
               <div className={css.itemsBgCt} >
-                <div className={css.item+' '+css.itemBg+' '+css.shrink} onClick={()=>{this.changeLanguage()}}><span className={css.iconCtBg}><span className={css.itemBgLang} ref='item_lang'>英</span></span></div>
-                <div className={css.item+' '+css.itemBg+' '+css.shrink}><span className={css.iconCtBg}><Icon className='WLAN-signal'/></span></div>
-                <div className={css.item+' '+css.itemBg+' '+css.shrink}><span className={css.iconCtBg}><Icon className='weChat bg'/></span></div>
-                <div className={css.item+' '+css.itemBg+' '+css.shrink}><span className={css.iconCtBg}><Icon className='kugou bg'/></span></div>
-
+                <div className={css.item+' '+css.itemBg} onClick={()=>{this.changeLanguage()}}><span className={css.iconCtBg}><span className={css.itemBgLang} ref='item_lang'>英</span></span></div>
+                <TaskItems tasks={this.props.tasks} type={3}/>
               </div>
             </div>
           </div>

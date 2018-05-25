@@ -3,10 +3,13 @@ import {EventEmitter} from 'events'
 class MyEvents extends EventEmitter{}
 
 const myEvents =  new MyEvents()
-let eventsCount = 1000
+let ec = 1000
 
-myEvents.names = {
-  desktopReady:  eventsCount+++''
+myEvents.names = {  //tasks names
+  desktopReady:   ec+++'',
+  to_taskbar_add_new_task:   ec+++'',
+  to_task_items_add_new_task:    ec+++'',
+  handle_task_items_onclick:    ec+++'',
 }
 
 export default myEvents

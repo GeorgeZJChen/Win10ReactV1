@@ -1,0 +1,14 @@
+{
+  "id": "dundee_pEsnAYaw0",
+  "name": "University",
+  "isBackgroundTask": 0,
+  "backgroundIcon": {
+    "className":"",
+    "display": 0
+  },
+  "isTaskbarTask": 1,
+  "taskbarIcon": {
+    "className":"",
+    "URL":"https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"
+  }
+}

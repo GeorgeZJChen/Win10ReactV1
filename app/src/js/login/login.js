@@ -17,7 +17,8 @@ class Login extends Component{
       opacity: 1,
       imgURL: 'static/img/login_default.jpg',
       imgReady: 0,
-      usernameWidth: 0
+      usernameWidth: 0,
+      renderFlag: true
     }
     this.userInfo = {
       username: '',
@@ -25,11 +26,7 @@ class Login extends Component{
     }
   }
   componentDidMount() {
-    setTimeout(() =>{
-      this.setState({
-        pageReady : 1,
-      })
-    }, 10)
+
     this.dateIntvId = setInterval(()=>{
       let date = new Date()
       let dateStr = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][date.getDay()]+ ', '
@@ -41,12 +38,18 @@ class Login extends Component{
         time: (date.getHours()>9?date.getHours():'0'+date.getHours())+':'+(date.getMinutes()>9?date.getMinutes():'0'+date.getMinutes())
       })
     }, 1000)
-    this.loadUserInformation()
+    this.loadUserInformation(()=>{
+      setTimeout(() =>{
+        this.setState({
+          pageReady : 1,
+        })
+      }, 2000)
+    })
   }
   componentWillUnmount(){
     clearInterval(this.dateIntvId)
   }
-  loadUserInformation(){
+  loadUserInformation(cb){
     //shall get data from cookies or back end server
     axios({
       method: 'get',
@@ -57,6 +60,8 @@ class Login extends Component{
         this.userInfo = res.data
         this.refs.username.innerHTML = res.data.username
         this.refs.greetings.style.maxWidth = this.refs.username.offsetWidth +'px'
+
+        cb()
       } catch (e) {
         console.error('Data format error');
       }
@@ -127,7 +132,9 @@ class Login extends Component{
           </div>
         </div>
         <div className={css.dateCover+' '+css.fullScreen} onClick={()=>this.toLogin()}
-          style={{top: (this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))?'-50%':0, opacity: (this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))?0:1,zIndex:this.state.removeDateCover?0:2}}>
+          style={{top: (this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))?'-50%':0,
+                opacity: ((this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))||!(this.state.imgReady&&this.state.pageReady))?0:1,
+                zIndex:this.state.removeDateCover?0:2}}>
           <div className={css.date}>
             <div className={css.dateTime}><DateSpan format='hh:mm'/></div>
             <div className={css.dateDate}><DateSpan format='W, ~, d'/></div>

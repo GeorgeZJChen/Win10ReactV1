@@ -1,0 +1,8 @@
+{
+  "id": "teamviewer_i6oxuWOp4",
+  "name": "Teamviewer",
+  "isBackgroundTask": 1,
+  "backgroundIcon": {"className":"teamviewer bg", "display": 0},
+  "isTaskbarTask": 0,
+  "taskbarIcon": {"className":""}
+}
