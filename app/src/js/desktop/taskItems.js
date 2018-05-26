@@ -59,7 +59,7 @@ class Item extends Component{
       renderFlag: true
     }
     this.imgStyle ={
-      width: '80%',
+      width: 'auto',
       height: '70%',
       position: 'relative',
       left: '50%',
@@ -71,7 +71,6 @@ class Item extends Component{
       display: 'none'
     }
     this.index = props.index
-    this.setref = props.setref
   }
   imgOnload(){
     this.setState((prevState)=>{
@@ -113,7 +112,7 @@ class BackgroundItem extends Component{
       renderFlag: true
     }
     this.imgStyle ={
-      width: '90%',
+      width: 'auto',
       height: '90%',
       position: 'relative',
       left: '50%',

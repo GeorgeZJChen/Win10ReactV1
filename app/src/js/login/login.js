@@ -102,6 +102,7 @@ class Login extends Component{
     })
   }
   getPortrait(){
+    /// TODO: 
     if(this.userInfo.portraitURL){
       return (<img style={{width:'100%', height:'100%'}} src={this.userInfo.portraitURL}/>)
     }

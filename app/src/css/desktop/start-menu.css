@@ -1,3 +1,10 @@
+:global(#start_menu_switch_X7VIV):checked+.start-menu{
+  bottom: 40px;
+  height: 520px;
+  visibility: visible;
+  opacity: 1;
+}
+
 .start-menu{
   position: absolute;
   z-index: 9999900;
@@ -5,11 +12,114 @@
   height: 0;
   width: 950px;
   background: rgba(38, 47, 59, 0.98);
-  transition: height,bottom,opacity 0.05s,0.05s,0.02s;
-  transition-timing-function: cubic-bezier(0, 0, 1, 0);
+  transition: height,bottom,opacity,visibility 0.5s,0.5s,0.5s,0.5s;
+  transition-timing-function: cubic-bezier(0, 1, 0, 1);
   visibility: hidden;
   opacity: 0;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+}
+.item:hover{
+  background: rgba(255, 255, 255, 0.1);
+}
+.item:active{
+  background: rgba(255, 255, 255, 0.15);
+}
+.column-1{
+  height: 100%;
+  overflow: hidden;
+  width: 46px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 5px;
+  box-sizing: border-box;
+}
+.column-2{
+  height: 100%;
+  overflow: hidden;
+  width: 233px;
+  padding-right: 13px;
+  position: relative;
+}
+.column-3{
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  padding-right: 13px;
+}
+
+.item-c1{
+  width: 46px;
+  height: 46px;
+}
+.icon-ct-c1{
+  width: 25px;
+  height: 25px;
+  display: block;
+  position: relative;
+  margin: auto;
+  top: 50%;
+  transform: translate(0,-50%);
+  overflow: hidden;
+}
+.item-c2{
+  height: 34px;
+  box-sizing: border-box;
+  padding: 2px 5px 2px 16px;
+  position: relative;
+}
+.item-c2:not(.section-title):before{
+  content: attr(data-title);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 30px;
+  position: absolute;
+  width: 175px;
+  height: 30px;
+  left: 54px;
+}
+.item-c2.section-title:before{
+  content: attr(data-title);
+  font-size: 12px;
+  line-height: 35px;
+}
+.item-c2.section-title:active{
+  margin-left: 2px;
+  margin-right: 2px;
+}
+.item-c2:last-child{
+  margin-bottom: 60px;
+}
+.item-c2:first-child{
+  margin-top: 8px;
+}
+.icon-ct-c2{
+  height: 30px;
+  width: 30px;
+  background: #515c6b;
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+}
+.content-c2{
+  height: 100%;
+  width: 270px;
+  overflow: hidden;
+  overflow-y: visible;
+  padding-right: 20px;
+  margin-top: 8px;
+  box-sizing: border-box;
+}
+.scrollbar{
+  height: 100%;
+  width: 13px;
+  position: absolute;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  right: 0px;
 }

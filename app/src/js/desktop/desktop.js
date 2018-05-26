@@ -21,15 +21,16 @@ class Desktop extends Component{
       imgURL: 'static/img/desktop_default.jpg',
       pageReady: 0,
       imgReady: 0,
-      tasks: [],
+      tasks: []
     }
   }
 
   render(){
+    console.log('render desktop');
     return (
       <div className={css.desktop}>
         <img className={css.backgroundImg} src={this.state.imgURL} onLoad={()=>this.setState({imgReady:1})}/>
-        <input id='start_menu_switch' type='checkbox'/>
+        <input id='start_menu_switch_X7VIV' type='checkbox' ref='start_menu_switch'/>
         <StartMenu/>
         <Taskbar tasks={this.state.tasks}/>
       </div>
@@ -38,18 +39,22 @@ class Desktop extends Component{
   init(){
     this.addSystemTasks()
 
+    this.loadStartMenuData()
+
+
+
     setTimeout(()=>{
       this.addTask('wechat_W8kyt9KR')
       this.addTask('wechat_W8kyt9KR0')
-    }, 1000)
-
-    setTimeout(()=>{
-      this.addTask('dundee_pEsnAYaw0')
     }, 2000)
 
     setTimeout(()=>{
-      this.addTask('dundee_pEsnAYaw')
+      this.addTask('dundee_pEsnAYaw0')
     }, 3000)
+
+    setTimeout(()=>{
+      this.addTask('dundee_pEsnAYaw')
+    }, 4000)
 
 
     // TODO:
@@ -58,7 +63,6 @@ class Desktop extends Component{
       'teamviewer_i6oxuWOp4', 'rOYGH6M8', "WLAN_W8kyt9KR2", "kugou_W8kyt9KR"]
     for (var i = 0; i < init_tasks.length; i++) {
       this.addTask(init_tasks[i])
-
     }
   }
 
@@ -78,6 +82,7 @@ class Desktop extends Component{
         responseType: 'json'
       }).then((res)=>{
         try {
+          if(!res.data) throw new Error()
           this.renderNewTask(res.data)
         } catch (e) {
           console.error('Data format error');
@@ -96,6 +101,23 @@ class Desktop extends Component{
   renderNewTask(task){
     this.state.tasks.push(task)
     Events.emit(Events.names.to_taskbar_add_new_task, task)
+  }
+  loadStartMenuData(){
+    const url = 'static/data/start-menu.json'
+    axios({
+      method: 'get',
+      url: url,
+      responseType: 'json'
+    }).then((res)=>{
+      try {
+        if(!res.data) throw new Error()
+        Events.emit(Events.names.to_start_menu_loaded_data, res.data)
+      } catch (e) {
+        console.error('Data format error');
+      }
+    }).catch((err)=>{
+      console.warn(err);
+    })
   }
 
 

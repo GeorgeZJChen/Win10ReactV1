@@ -6,10 +6,13 @@ const innerHTML = {
   "lock": (<span className={icon.lockRing}></span>),
   "WLAN-signal": (<span className={icon['WLAN-signal-inner']}></span>),
   "teamviewer": (<span className={icon['teamviewer-inner']}></span>),
-  'weChat': (<span><span className={icon['weChat-inner1']}></span><span className={icon['weChat-inner2']}></span></span>)
+  'weChat': (<span><span className={icon['weChat-inner1']}></span><span className={icon['weChat-inner2']}></span></span>),
+  "portrait" : (<span className={icon['portrait-inner']}></span>),
+  "eclipse-neon": (<span className={icon['eclipse-neon-inner']}></span>)
 }
 let empty = [
-  "windows-logo", "angle", "resource-manager", "unknown", "operations", "kugou"
+  "windows-logo", "angle", "resource-manager", "unknown", "operations", "kugou", "setting",
+  "shutdown"
 ]
 for (var i = 0; i < empty.length; i++) {
   innerHTML[empty[i]] = ""

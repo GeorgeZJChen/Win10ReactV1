@@ -73,21 +73,21 @@
   margin: auto;
 }
 
-:global(#start_menu_switch):hover~.taskbar .item-menu {
+:global(#start_menu_switch_X7VIV):hover~.taskbar .item-menu {
   background: rgba(255, 255, 255, 0.08);
 }
-:global(#start_menu_switch):active~.taskbar .item-menu {
+:global(#start_menu_switch_X7VIV):active~.taskbar .item-menu {
   background: rgba(255, 255, 255, 0.03);
 }
-:global(#start_menu_switch):checked~.taskbar .item-menu {
+:global(#start_menu_switch_X7VIV):checked~.taskbar .item-menu {
   background: rgba(255, 255, 255, 0.17);
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);
 }
-:global(#start_menu_switch):checked:active~.taskbar .icon-start-menu:before {
+:global(#start_menu_switch_X7VIV):checked:active~.taskbar .icon-start-menu:before {
   background: #515c6b;
   color: #515c6b;
 }
-:global(#start_menu_switch):hover~.taskbar .icon-start-menu:before {
+:global(#start_menu_switch_X7VIV):hover~.taskbar .icon-start-menu:before {
   background: #6e7d91;
   color: #6e7d91;
 }
