@@ -1043,7 +1043,7 @@ var ItemsColumnTwo = function (_Component2) {
         'div',
         { className: _startMenu2.default.column2, onScroll: function onScroll(e) {
             return _this3.onScroll();
-          }, onMouseOver: this.onMouseOver.bind(this) },
+          }, onMouseEnter: this.onMouseOver.bind(this) },
         _react2.default.createElement(Scrollbar, { returnSelf: function returnSelf(self) {
             return _this3.scrollbar = self;
           }, parent: this, toScroll: this.refs.toScroll }),
@@ -1175,7 +1175,8 @@ var Scrollbar = function (_Component4) {
   }, {
     key: 'setUpScroll',
     value: function setUpScroll() {
-      var toScroll = this.props.toScroll;
+      var toScroll = this.props.toScroll; //|| this.props.parent.refs.toScroll
+      // if(!toScroll) toScroll=this.props.parent.refs.toScroll
 
       var _computeScroll = this.computeScroll(toScroll),
           _computeScroll2 = _slicedToArray(_computeScroll, 2),
@@ -1201,7 +1202,7 @@ var Scrollbar = function (_Component4) {
   }, {
     key: 'onScroll',
     value: function onScroll(toScroll) {
-      if (!toScroll) toScroll = this.props.toScroll;
+      toScroll = toScroll || this.props.toScroll; // || this.props.parent.refs.toScroll
 
       var _computeScroll3 = this.computeScroll(toScroll),
           _computeScroll4 = _slicedToArray(_computeScroll3, 2),

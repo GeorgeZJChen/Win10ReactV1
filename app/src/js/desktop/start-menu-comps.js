@@ -214,7 +214,8 @@ class Scrollbar extends Component {
     if(this.props.returnSelf)this.props.returnSelf(this)
   }
   setUpScroll(){
-    let toScroll = this.props.toScroll
+    let toScroll = this.props.toScroll //|| this.props.parent.refs.toScroll
+    // if(!toScroll) toScroll=this.props.parent.refs.toScroll
     let [u,m] = this.computeScroll(toScroll)
     this.refs.slotUp.style.height = u +'px'
     this.refs.slotMiddle.style.height = m +'px'
@@ -231,7 +232,7 @@ class Scrollbar extends Component {
     return [u,m]
   }
   onScroll(toScroll){
-    if(!toScroll) toScroll = this.props.toScroll
+    toScroll = toScroll || this.props.toScroll// || this.props.parent.refs.toScroll
     let [u,m] = this.computeScroll(toScroll)
     this.refs.slotUp.style.height = u +'px'
   }
