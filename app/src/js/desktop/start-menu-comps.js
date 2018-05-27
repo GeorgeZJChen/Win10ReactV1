@@ -77,7 +77,7 @@ class ItemsColumnTwo extends Component{
   onScroll(){
     this.scrollbar.onScroll()
   }
-  onMouseOver(){
+  onMouseEnter(){
     this.scrollbar.setUpScroll()
   }
   handleDragScroll(diff){
@@ -88,7 +88,7 @@ class ItemsColumnTwo extends Component{
   }
   render(){
     return (
-      <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseEnter={this.onMouseOver.bind(this)}>
+      <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseEnter={this.onMouseEnter.bind(this)}>
         <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this} toScroll={this.refs.toScroll}/>
         <div className={css.contentC2} ref='toScroll'>
           {
@@ -214,7 +214,7 @@ class Scrollbar extends Component {
     if(this.props.returnSelf)this.props.returnSelf(this)
   }
   setUpScroll(){
-    let toScroll = this.props.toScroll //|| this.props.parent.refs.toScroll
+    let toScroll = this.props.toScroll || this.props.parent.refs.toScroll
     // if(!toScroll) toScroll=this.props.parent.refs.toScroll
     let [u,m] = this.computeScroll(toScroll)
     this.refs.slotUp.style.height = u +'px'
@@ -232,7 +232,7 @@ class Scrollbar extends Component {
     return [u,m]
   }
   onScroll(toScroll){
-    toScroll = toScroll || this.props.toScroll// || this.props.parent.refs.toScroll
+    toScroll = toScroll || this.props.toScroll || this.props.parent.refs.toScroll
     let [u,m] = this.computeScroll(toScroll)
     this.refs.slotUp.style.height = u +'px'
   }
