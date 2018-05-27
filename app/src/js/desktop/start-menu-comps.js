@@ -69,24 +69,16 @@ class ItemsColumnTwo extends Component{
     })
     this.numericItems = numericItems
     alphabeticItems.sort(function(a, b){
-      return a.name > b.name
+      if(a.name==b.name) return 0
+      return a.name < b.name ? -1 : 1
     })
     this.alphabeticItems = alphabeticItems
   }
   onScroll(){
-    let target = this.refs.content
-    let h = this.scrollbar.getHeight()
-    h = h>70?h:494
-    let M = target.clientHeight
-    let U = target.scrollTop
-    let H = target.scrollHeight
-    let m = h*M/H
-    m = m>70?m:70
-    let u = U*(h-m)/(H-M)
-    this.scrollbar.setScroll(u, m)
+    this.scrollbar.onScroll()
   }
   onMouseOver(){
-    this.onScroll()
+    this.scrollbar.setUpScroll()
   }
   handleDragScroll(diff){
     let content = this.refs.content
@@ -97,8 +89,8 @@ class ItemsColumnTwo extends Component{
   render(){
     return (
       <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseOver={this.onMouseOver.bind(this)}>
-        <Scrollbar returnSelf={(self)=>this.scrollbar=self} handleDrag={this.handleDragScroll.bind(this)}/>
-        <div className={css.contentC2} ref='content'>
+        <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this} toScroll={this.refs.toScroll}/>
+        <div className={css.contentC2} ref='toScroll'>
           {
             this.latestItems.length>0 ?
             <Item key={'Latest_ZIJMJD8C'} title={'Latest'} index={'Latest_ZIJMJD8C'}/>  : ''
@@ -214,26 +206,84 @@ class Item extends Component{
 
 }
 class Scrollbar extends Component {
+  constructor(props){
+    super(props)
+    this.btnClass = 'scroll_HX2MMYZN'
+  }
   componentDidMount(){
     if(this.props.returnSelf)this.props.returnSelf(this)
   }
-  getHeight(){
-    let h = this.refs.getHeight.offsetHeight
-    return h//?h:494
+  setUpScroll(){
+    let toScroll = this.props.toScroll
+    let [u,m] = this.computeScroll(toScroll)
+    this.refs.slotUp.style.height = u +'px'
+    this.refs.slotMiddle.style.height = m +'px'
   }
-  setScroll(up, middle){
-    this.refs.slotUp.style.height = up +'px'
-    this.refs.slotMiddle.style.height = middle +'px'
+  computeScroll(toScroll){
+    let h = this.refs.getHeight.offsetHeight
+    h = h>70?h:494
+    let M = toScroll.clientHeight
+    let U = toScroll.scrollTop
+    let H = toScroll.scrollHeight
+    let m = h*M/H
+    m = m>70?m:70
+    let u = U*(h-m)/(H-M)
+    return [u,m]
+  }
+  onScroll(toScroll){
+    if(!toScroll) toScroll = this.props.toScroll
+    let [u,m] = this.computeScroll(toScroll)
+    this.refs.slotUp.style.height = u +'px'
+  }
+  btnScroll(e,sign, stride){
+    const toScroll = this.props.toScroll
+    stride = stride || toScroll.clientHeight
+    let source = e.target
+    while (!source.className.match(this.btnClass)) {
+      source = source.parentNode
+      if(!source) return
+    }
+    toScroll.scrollTop += sign*stride
+    let hover = true
+    const enter = ()=>{
+      hover = true
+    }
+    const leave = ()=>{
+      hover = false
+    }
+    const keepScrolling = ()=>{
+      if(hover){
+        toScroll.scrollTop += sign*stride *0.5
+        setTimeout(keepScrolling,50)
+      }
+    }
+    setTimeout(()=>{
+      if(hover) keepScrolling()
+    },600)
+    const middle = this.refs.slotMiddle
+    middle.addEventListener('mouseenter',leave,false)
+    source.addEventListener('mouseenter',enter,false)
+    source.addEventListener('mouseleave',leave,false)
+    const docUp = ()=>{
+      hover = false
+      middle.removeEventListener('mouseenter',leave,false)
+      source.removeEventListener('mouseenter',enter,false)
+      source.removeEventListener('mouseleave',leave,false)
+      document.removeEventListener('mouseup',docUp,false)
+    }
+    document.addEventListener('mouseup',docUp,false)
   }
   onDrag(e){
     if (e.button == 2) return
     let y = e.clientY || e.changedTouches[0].clientY
+    let toScroll = this.props.toScroll
+    let begin_top = toScroll.scrollTop
     this.refs.element.className += ' '+css.dragging
     const move = (e)=>{
       let my = e.clientY
       if(Math.abs(my-y)<4) return
-      if(this.props.handleDrag) this.props.handleDrag(my-y)
-      y = my
+      toScroll.scrollTop = begin_top + (my-y)*toScroll.scrollHeight/this.refs.getHeight.offsetHeight
+      this.onScroll(toScroll)
     }
     const up = (e)=>{
       document.removeEventListener('mousemove', move, false);
@@ -253,13 +303,15 @@ class Scrollbar extends Component {
   render(){
     return(
       <div className={css.scrollbar} ref='element'>
-        <div className={css.scrollBtn} ><Icon className={'angle up sm '+css.scrollAngle}/></div>
+        <div className={css.scrollBtn+' '+this.btnClass} onMouseDown={(e)=>this.btnScroll(e,-1, 20)}>
+                    <Icon className={'angle up sm '+css.scrollAngle}/></div>
         <div className={css.scrollControl} ref='getHeight'>
-          <div className={css.slotUp} ref='slotUp'></div>
+          <div className={css.slotUp+' '+this.btnClass} ref='slotUp' onMouseDown={(e)=>this.btnScroll(e,-1)}></div>
           <div className={css.slotMiddle} ref='slotMiddle' onMouseDown={(e)=>{this.onDrag(e)}}></div>
-          <div className={css.slotDown}></div>
+          <div className={css.slotDown+' '+this.btnClass} onMouseDown={(e)=>this.btnScroll(e,1)}></div>
         </div>
-        <div className={css.scrollBtn}><Icon className={'angle down sm '+css.scrollAngle}/></div>
+        <div className={css.scrollBtn+' '+this.btnClass} onMouseDown={(e)=>this.btnScroll(e,1, 20)}>
+                    <Icon className={'angle down sm '+css.scrollAngle}/></div>
       </div>
     )
   }

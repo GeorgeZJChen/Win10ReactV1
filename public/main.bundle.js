@@ -1016,6 +1016,7 @@ var ItemsColumnTwo = function (_Component2) {
   _createClass(ItemsColumnTwo, [{
     key: 'onScroll',
     value: function onScroll() {
+      this.scrollbar.onScroll(this.refs.toScroll);
       var target = this.refs.content;
       var h = this.scrollbar.getHeight();
       h = h > 70 ? h : 494;
@@ -1052,10 +1053,10 @@ var ItemsColumnTwo = function (_Component2) {
           }, onMouseOver: this.onMouseOver.bind(this) },
         _react2.default.createElement(Scrollbar, { returnSelf: function returnSelf(self) {
             return _this3.scrollbar = self;
-          }, handleDrag: this.handleDragScroll.bind(this) }),
+          }, parent: this, toScroll: this.refs.toScroll }),
         _react2.default.createElement(
           'div',
-          { className: _startMenu2.default.contentC2, ref: 'content' },
+          { className: _startMenu2.default.contentC2, ref: 'toScroll' },
           this.latestItems.length > 0 ? _react2.default.createElement(Item, { key: 'Latest_ZIJMJD8C', title: 'Latest', index: 'Latest_ZIJMJD8C' }) : '',
           this.latestItems.map(function (app, index) {
             return _react2.default.createElement(Item, { key: index, app: app, index: index });
@@ -1176,10 +1177,17 @@ var Scrollbar = function (_Component4) {
       if (this.props.returnSelf) this.props.returnSelf(this);
     }
   }, {
-    key: 'getHeight',
-    value: function getHeight() {
+    key: 'onScroll',
+    value: function onScroll(target) {
       var h = this.refs.getHeight.offsetHeight;
-      return h; //?h:494
+      h = h > 70 ? h : 494;
+      var M = target.clientHeight;
+      var U = target.scrollTop;
+      var H = target.scrollHeight;
+      var m = h * M / H;
+      m = m > 70 ? m : 70;
+      var u = U * (h - m) / (H - M);
+      this.setScroll(u, m);
     }
   }, {
     key: 'setScroll',
@@ -1194,6 +1202,9 @@ var Scrollbar = function (_Component4) {
 
       if (e.button == 2) return;
       var y = e.clientY || e.changedTouches[0].clientY;
+      var begin_top = this.props.toScroll.scrollTop;
+      console.log(begin_top);
+      return;
       this.refs.element.className += ' ' + _startMenu2.default.dragging;
       var move = function move(e) {
         var my = e.clientY;
@@ -2224,17 +2235,19 @@ var _login = __webpack_require__(/*! ./js/login/login.js */ "./app/src/js/login/
 
 var _login2 = _interopRequireDefault(_login);
 
+var _desktop = __webpack_require__(/*! ./js/desktop/desktop.js */ "./app/src/js/desktop/desktop.js");
+
+var _desktop2 = _interopRequireDefault(_desktop);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+(0, _reactDom.render)(_react2.default.createElement('div', null), document.getElementById('win10_login'));
 // import Loader from './js/components/loader.js'
-setTimeout(function functionName() {
-  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
-}, 500);
+// setTimeout(function functionName() {
+//   render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
+// }, 500)
 
-// import Desktop from './js/desktop/desktop.js';
-// render(<div></div>, document.getElementById('win10_login'));
-// render(<Desktop/>, document.getElementById('win10_main'))
-
+(0, _reactDom.render)(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
 
 console.log('Copyright (c) 2018 Zhuojun Chen All Rights Reserved.');
 
