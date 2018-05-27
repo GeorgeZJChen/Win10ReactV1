@@ -40,14 +40,14 @@
   height: 100%;
   overflow: hidden;
   width: 233px;
-  padding-right: 13px;
+  padding-right: 15px;
   position: relative;
 }
 .column-3{
   height: 100%;
   overflow: hidden;
   position: relative;
-  padding-right: 13px;
+  padding-right: 15px;
 }
 
 .item-c1{
@@ -91,12 +91,6 @@
   margin-left: 2px;
   margin-right: 2px;
 }
-.item-c2:last-child{
-  margin-bottom: 60px;
-}
-.item-c2:first-child{
-  margin-top: 8px;
-}
 .icon-ct-c2{
   height: 30px;
   width: 30px;
@@ -110,16 +104,106 @@
   width: 270px;
   overflow: hidden;
   overflow-y: visible;
-  padding-right: 20px;
-  margin-top: 8px;
+  padding: 8px 20px 60px 0;
   box-sizing: border-box;
+}
+.column-2:hover>.scrollbar{
+  opacity: 1;
+  transition: opacity 0.05s;
+}
+.scrollbar:hover .slot-up, .scrollbar:hover .slot-down{
+  opacity: 1;
+  margin-left: 0;
+  width: 100%;
+}
+.scrollbar:hover .slot-middle{
+  width: 100%;
+  margin-left: 0;
+  background: rgba(255,255,255,0.25);
+}
+.scrollbar:hover>.scroll-btn{
+  opacity: 1;
+}
+.scrollbar.dragging{
+  opacity: 1;
+}
+.scrollbar.dragging .slot-up, .scrollbar.dragging .slot-down{
+  opacity: 1;
+  margin-left: 0;
+  width: 100%;
+}
+.scrollbar.dragging .slot-middle{
+  width: 100%;
+  margin-left: 0;
+  background: rgba(255,255,255,0.25);
+}
+.scrollbar.dragging>.scroll-btn{
+  opacity: 1;
 }
 .scrollbar{
   height: 100%;
   width: 13px;
+  opacity: 0;
   position: absolute;
-  background: rgba(255,255,255,0.1);
   display: flex;
   flex-direction: column;
-  right: 0px;
+  right: 2px;
+  transition: opacity 0.2s;
+}
+.scroll-btn{
+  width: 13px;
+  height: 13px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.scroll-btn:hover{
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 0 1px 0px rgba(255,255,255,0.10);
+}
+.scroll-btn:active{
+  background: rgba(255,255,255,0.45);
+  box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);
+}
+.scroll-btn:active>.scroll-angle:before, .scroll-btn:active>.scroll-angle:after{
+  background-color: #262f3b;
+}
+.scroll-angle{
+  opacity: 0.7;
+}
+.scroll-control{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.slot-up{
+  width: 100%;
+  background: rgba(255,255,255,0.1);
+  transition: opacity 0.2s;
+  opacity: 0;
+  width: 2px;
+  margin-left: 11px;
+  transition: opacity,width,margin-left 0.15s,0.15s,0.15s;
+}
+.slot-down{
+  width: 100%;
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  opacity: 0;
+  width: 0;
+  margin-left: 100%;
+  transition: opacity,width,margin-left 0.15s,0.15s,0.15s;
+}
+.slot-middle{
+  height: 70px;
+  background: rgba(255,255,255,0.55);
+  box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);
+  width: 2px;
+  margin-left: 11px;
+  transition: width,margin-left 0.15s,0.15s;
+}
+.slot-middle:hover{
+  background: rgba(255,255,255,0.35)!important;
+}
+.slot-middle:active{
+  background: rgba(255,255,255,0.45)!important;
 }

@@ -73,11 +73,32 @@ class ItemsColumnTwo extends Component{
     })
     this.alphabeticItems = alphabeticItems
   }
+  onScroll(){
+    let target = this.refs.content
+    let h = this.scrollbar.getHeight()
+    h = h>70?h:494
+    let M = target.clientHeight
+    let U = target.scrollTop
+    let H = target.scrollHeight
+    let m = h*M/H
+    m = m>70?m:70
+    let u = U*(h-m)/(H-M)
+    this.scrollbar.setScroll(u, m)
+  }
+  onMouseOver(){
+    this.onScroll()
+  }
+  handleDragScroll(diff){
+    let content = this.refs.content
+    let h = this.scrollbar.getHeight()
+    let H = content.scrollHeight
+    content.scrollTop += diff*H/h
+  }
   render(){
     return (
-      <div className={css.column2}>
-        <Scrollbar/>
-        <div className={css.contentC2}>
+      <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseOver={this.onMouseOver.bind(this)}>
+        <Scrollbar returnSelf={(self)=>this.scrollbar=self} handleDrag={this.handleDragScroll.bind(this)}/>
+        <div className={css.contentC2} ref='content'>
           {
             this.latestItems.length>0 ?
             <Item key={'Latest_ZIJMJD8C'} title={'Latest'} index={'Latest_ZIJMJD8C'}/>  : ''
@@ -116,7 +137,7 @@ class ItemsColumnTwo extends Component{
           }
           {
             this.alphabeticItems.map((app, index)=>{
-              return <Item key={index} app={app} index={index} last={this.alphabeticItems[index-1]}/>
+              return <Item key={index} app={app} index={index} last={this.alphabeticItems[index-1]} alpha={1}/>
             })
           }
         </div>
@@ -159,7 +180,7 @@ class Item extends Component{
         <React.Fragment>
           {
             (()=>{
-              if(!this.props.last) return
+              if(!this.props.alpha) return
               let last_init_letter = this.props.last?this.props.last.name[0]:''
               let letter = app.name[0].toUpperCase()
               if(letter.match(/[A-Z]/)){
@@ -193,8 +214,54 @@ class Item extends Component{
 
 }
 class Scrollbar extends Component {
+  componentDidMount(){
+    if(this.props.returnSelf)this.props.returnSelf(this)
+  }
+  getHeight(){
+    let h = this.refs.getHeight.offsetHeight
+    return h//?h:494
+  }
+  setScroll(up, middle){
+    this.refs.slotUp.style.height = up +'px'
+    this.refs.slotMiddle.style.height = middle +'px'
+  }
+  onDrag(e){
+    if (e.button == 2) return
+    let y = e.clientY || e.changedTouches[0].clientY
+    this.refs.element.className += ' '+css.dragging
+    const move = (e)=>{
+      let my = e.clientY
+      if(Math.abs(my-y)<4) return
+      if(this.props.handleDrag) this.props.handleDrag(my-y)
+      y = my
+    }
+    const up = (e)=>{
+      document.removeEventListener('mousemove', move, false);
+      document.removeEventListener('mouseup', up, false);
+      document.removeEventListener("touchmove", move, false);
+      document.removeEventListener("touchend", up, false);
+      document.removeEventListener("touchcancel", up, false);
+      let ele = this.refs.element
+      ele.className = ele.className.replace(new RegExp(css.dragging, 'g'), '')
+    }
+    document.addEventListener('mousemove', move, false);
+    document.addEventListener('mouseup', up, false);
+    document.addEventListener("touchmove", move, false);
+    document.addEventListener("touchend", up, false);
+    document.addEventListener("touchcancel", up, false);
+  }
   render(){
-    return <div className={css.scrollbar}></div>
+    return(
+      <div className={css.scrollbar} ref='element'>
+        <div className={css.scrollBtn} ><Icon className={'angle up sm '+css.scrollAngle}/></div>
+        <div className={css.scrollControl} ref='getHeight'>
+          <div className={css.slotUp} ref='slotUp'></div>
+          <div className={css.slotMiddle} ref='slotMiddle' onMouseDown={(e)=>{this.onDrag(e)}}></div>
+          <div className={css.slotDown}></div>
+        </div>
+        <div className={css.scrollBtn}><Icon className={'angle down sm '+css.scrollAngle}/></div>
+      </div>
+    )
   }
 }
 class Box extends Component{

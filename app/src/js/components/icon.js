@@ -53,7 +53,7 @@ class Icon extends Component{
   getHtml(){
     if(this.className==undefined) return <span ></span>
     return (
-      <span className={this.full_name}>
+      <span className={this.full_name} style={this.props.style}>
         {innerHTML[this.first_name]}
       </span>
     )
