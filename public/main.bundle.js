@@ -1223,7 +1223,10 @@ var Scrollbar = function (_Component4) {
       toScroll.scrollTop += sign * stride;
       var hover = true;
       var enter = function enter() {
-        hover = true;
+        if (hover === false) {
+          hover = true;
+          keepScrolling();
+        }
       };
       var leave = function leave() {
         hover = false;

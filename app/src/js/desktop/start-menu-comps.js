@@ -88,7 +88,7 @@ class ItemsColumnTwo extends Component{
   }
   render(){
     return (
-      <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseOver={this.onMouseOver.bind(this)}>
+      <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseEnter={this.onMouseOver.bind(this)}>
         <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this} toScroll={this.refs.toScroll}/>
         <div className={css.contentC2} ref='toScroll'>
           {
@@ -246,7 +246,10 @@ class Scrollbar extends Component {
     toScroll.scrollTop += sign*stride
     let hover = true
     const enter = ()=>{
-      hover = true
+      if(hover===false) {
+        hover = true
+        keepScrolling()
+      }
     }
     const leave = ()=>{
       hover = false
