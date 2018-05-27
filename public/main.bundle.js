@@ -2224,19 +2224,17 @@ var _login = __webpack_require__(/*! ./js/login/login.js */ "./app/src/js/login/
 
 var _login2 = _interopRequireDefault(_login);
 
-var _desktop = __webpack_require__(/*! ./js/desktop/desktop.js */ "./app/src/js/desktop/desktop.js");
-
-var _desktop2 = _interopRequireDefault(_desktop);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(0, _reactDom.render)(_react2.default.createElement('div', null), document.getElementById('win10_login'));
 // import Loader from './js/components/loader.js'
-// setTimeout(function functionName() {
-//   render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
-// }, 500)
+setTimeout(function functionName() {
+  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
+}, 500);
 
-(0, _reactDom.render)(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
+// import Desktop from './js/desktop/desktop.js';
+// render(<div></div>, document.getElementById('win10_login'));
+// render(<Desktop/>, document.getElementById('win10_main'))
+
 
 console.log('Copyright (c) 2018 Zhuojun Chen All Rights Reserved.');
 
