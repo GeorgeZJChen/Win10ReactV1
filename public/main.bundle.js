@@ -883,6 +883,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ItemsColumnTwo = exports.ItemsColumnOne = undefined;
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
@@ -1007,7 +1009,8 @@ var ItemsColumnTwo = function (_Component2) {
     });
     _this2.numericItems = numericItems;
     alphabeticItems.sort(function (a, b) {
-      return a.name > b.name;
+      if (a.name == b.name) return 0;
+      return a.name < b.name ? -1 : 1;
     });
     _this2.alphabeticItems = alphabeticItems;
     return _this2;
@@ -1016,22 +1019,12 @@ var ItemsColumnTwo = function (_Component2) {
   _createClass(ItemsColumnTwo, [{
     key: 'onScroll',
     value: function onScroll() {
-      this.scrollbar.onScroll(this.refs.toScroll);
-      var target = this.refs.content;
-      var h = this.scrollbar.getHeight();
-      h = h > 70 ? h : 494;
-      var M = target.clientHeight;
-      var U = target.scrollTop;
-      var H = target.scrollHeight;
-      var m = h * M / H;
-      m = m > 70 ? m : 70;
-      var u = U * (h - m) / (H - M);
-      this.scrollbar.setScroll(u, m);
+      this.scrollbar.onScroll();
     }
   }, {
     key: 'onMouseOver',
     value: function onMouseOver() {
-      this.onScroll();
+      this.scrollbar.setUpScroll();
     }
   }, {
     key: 'handleDragScroll',
@@ -1165,10 +1158,13 @@ var Item = function (_Component3) {
 var Scrollbar = function (_Component4) {
   _inherits(Scrollbar, _Component4);
 
-  function Scrollbar() {
+  function Scrollbar(props) {
     _classCallCheck(this, Scrollbar);
 
-    return _possibleConstructorReturn(this, (Scrollbar.__proto__ || Object.getPrototypeOf(Scrollbar)).apply(this, arguments));
+    var _this6 = _possibleConstructorReturn(this, (Scrollbar.__proto__ || Object.getPrototypeOf(Scrollbar)).call(this, props));
+
+    _this6.btnClass = 'scroll_HX2MMYZN';
+    return _this6;
   }
 
   _createClass(Scrollbar, [{
@@ -1177,23 +1173,82 @@ var Scrollbar = function (_Component4) {
       if (this.props.returnSelf) this.props.returnSelf(this);
     }
   }, {
-    key: 'onScroll',
-    value: function onScroll(target) {
+    key: 'setUpScroll',
+    value: function setUpScroll() {
+      var toScroll = this.props.toScroll;
+
+      var _computeScroll = this.computeScroll(toScroll),
+          _computeScroll2 = _slicedToArray(_computeScroll, 2),
+          u = _computeScroll2[0],
+          m = _computeScroll2[1];
+
+      this.refs.slotUp.style.height = u + 'px';
+      this.refs.slotMiddle.style.height = m + 'px';
+    }
+  }, {
+    key: 'computeScroll',
+    value: function computeScroll(toScroll) {
       var h = this.refs.getHeight.offsetHeight;
       h = h > 70 ? h : 494;
-      var M = target.clientHeight;
-      var U = target.scrollTop;
-      var H = target.scrollHeight;
+      var M = toScroll.clientHeight;
+      var U = toScroll.scrollTop;
+      var H = toScroll.scrollHeight;
       var m = h * M / H;
       m = m > 70 ? m : 70;
       var u = U * (h - m) / (H - M);
-      this.setScroll(u, m);
+      return [u, m];
     }
   }, {
-    key: 'setScroll',
-    value: function setScroll(up, middle) {
-      this.refs.slotUp.style.height = up + 'px';
-      this.refs.slotMiddle.style.height = middle + 'px';
+    key: 'onScroll',
+    value: function onScroll(toScroll) {
+      if (!toScroll) toScroll = this.props.toScroll;
+
+      var _computeScroll3 = this.computeScroll(toScroll),
+          _computeScroll4 = _slicedToArray(_computeScroll3, 2),
+          u = _computeScroll4[0],
+          m = _computeScroll4[1];
+
+      this.refs.slotUp.style.height = u + 'px';
+    }
+  }, {
+    key: 'btnScroll',
+    value: function btnScroll(e, sign, stride) {
+      var toScroll = this.props.toScroll;
+      stride = stride || toScroll.clientHeight;
+      var source = e.target;
+      while (!source.className.match(this.btnClass)) {
+        source = source.parentNode;
+        if (!source) return;
+      }
+      toScroll.scrollTop += sign * stride;
+      var hover = true;
+      var enter = function enter() {
+        hover = true;
+      };
+      var leave = function leave() {
+        hover = false;
+      };
+      var keepScrolling = function keepScrolling() {
+        if (hover) {
+          toScroll.scrollTop += sign * stride * 0.5;
+          setTimeout(keepScrolling, 50);
+        }
+      };
+      setTimeout(function () {
+        if (hover) keepScrolling();
+      }, 600);
+      var middle = this.refs.slotMiddle;
+      middle.addEventListener('mouseenter', leave, false);
+      source.addEventListener('mouseenter', enter, false);
+      source.addEventListener('mouseleave', leave, false);
+      var docUp = function docUp() {
+        hover = false;
+        middle.removeEventListener('mouseenter', leave, false);
+        source.removeEventListener('mouseenter', enter, false);
+        source.removeEventListener('mouseleave', leave, false);
+        document.removeEventListener('mouseup', docUp, false);
+      };
+      document.addEventListener('mouseup', docUp, false);
     }
   }, {
     key: 'onDrag',
@@ -1202,15 +1257,14 @@ var Scrollbar = function (_Component4) {
 
       if (e.button == 2) return;
       var y = e.clientY || e.changedTouches[0].clientY;
-      var begin_top = this.props.toScroll.scrollTop;
-      console.log(begin_top);
-      return;
+      var toScroll = this.props.toScroll;
+      var begin_top = toScroll.scrollTop;
       this.refs.element.className += ' ' + _startMenu2.default.dragging;
       var move = function move(e) {
         var my = e.clientY;
         if (Math.abs(my - y) < 4) return;
-        if (_this7.props.handleDrag) _this7.props.handleDrag(my - y);
-        y = my;
+        toScroll.scrollTop = begin_top + (my - y) * toScroll.scrollHeight / _this7.refs.getHeight.offsetHeight;
+        _this7.onScroll(toScroll);
       };
       var up = function up(e) {
         document.removeEventListener('mousemove', move, false);
@@ -1237,21 +1291,29 @@ var Scrollbar = function (_Component4) {
         { className: _startMenu2.default.scrollbar, ref: 'element' },
         _react2.default.createElement(
           'div',
-          { className: _startMenu2.default.scrollBtn },
+          { className: _startMenu2.default.scrollBtn + ' ' + this.btnClass, onMouseDown: function onMouseDown(e) {
+              return _this8.btnScroll(e, -1, 20);
+            } },
           _react2.default.createElement(_icon2.default, { className: 'angle up sm ' + _startMenu2.default.scrollAngle })
         ),
         _react2.default.createElement(
           'div',
           { className: _startMenu2.default.scrollControl, ref: 'getHeight' },
-          _react2.default.createElement('div', { className: _startMenu2.default.slotUp, ref: 'slotUp' }),
+          _react2.default.createElement('div', { className: _startMenu2.default.slotUp + ' ' + this.btnClass, ref: 'slotUp', onMouseDown: function onMouseDown(e) {
+              return _this8.btnScroll(e, -1);
+            } }),
           _react2.default.createElement('div', { className: _startMenu2.default.slotMiddle, ref: 'slotMiddle', onMouseDown: function onMouseDown(e) {
               _this8.onDrag(e);
             } }),
-          _react2.default.createElement('div', { className: _startMenu2.default.slotDown })
+          _react2.default.createElement('div', { className: _startMenu2.default.slotDown + ' ' + this.btnClass, onMouseDown: function onMouseDown(e) {
+              return _this8.btnScroll(e, 1);
+            } })
         ),
         _react2.default.createElement(
           'div',
-          { className: _startMenu2.default.scrollBtn },
+          { className: _startMenu2.default.scrollBtn + ' ' + this.btnClass, onMouseDown: function onMouseDown(e) {
+              return _this8.btnScroll(e, 1, 20);
+            } },
           _react2.default.createElement(_icon2.default, { className: 'angle down sm ' + _startMenu2.default.scrollAngle })
         )
       );
@@ -2235,19 +2297,17 @@ var _login = __webpack_require__(/*! ./js/login/login.js */ "./app/src/js/login/
 
 var _login2 = _interopRequireDefault(_login);
 
-var _desktop = __webpack_require__(/*! ./js/desktop/desktop.js */ "./app/src/js/desktop/desktop.js");
-
-var _desktop2 = _interopRequireDefault(_desktop);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(0, _reactDom.render)(_react2.default.createElement('div', null), document.getElementById('win10_login'));
 // import Loader from './js/components/loader.js'
-// setTimeout(function functionName() {
-//   render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
-// }, 500)
+setTimeout(function functionName() {
+  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
+}, 500);
 
-(0, _reactDom.render)(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
+// import Desktop from './js/desktop/desktop.js';
+// render(<div></div>, document.getElementById('win10_login'));
+// render(<Desktop/>, document.getElementById('win10_main'))
+
 
 console.log('Copyright (c) 2018 Zhuojun Chen All Rights Reserved.');
 
