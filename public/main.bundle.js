@@ -1024,7 +1024,7 @@ var ItemsColumnTwo = function (_Component2) {
   }, {
     key: 'onMouseEnter',
     value: function onMouseEnter() {
-      this.scrollbar.setUpScroll();
+      this.scrollbar.setUpScroll(this.refs.toScroll);
     }
   }, {
     key: 'handleDragScroll',
@@ -1046,7 +1046,7 @@ var ItemsColumnTwo = function (_Component2) {
           }, onMouseEnter: this.onMouseEnter.bind(this) },
         _react2.default.createElement(Scrollbar, { returnSelf: function returnSelf(self) {
             return _this3.scrollbar = self;
-          }, parent: this, toScroll: this.refs.toScroll }),
+          }, parent: this }),
         _react2.default.createElement(
           'div',
           { className: _startMenu2.default.contentC2, ref: 'toScroll' },
@@ -1174,11 +1174,10 @@ var Scrollbar = function (_Component4) {
     }
   }, {
     key: 'setUpScroll',
-    value: function setUpScroll() {
-      var toScroll = this.props.toScroll || this.props.parent.refs.toScroll;
-      // if(!toScroll) toScroll=this.props.parent.refs.toScroll
+    value: function setUpScroll(toScroll) {
+      this.toScroll = toScroll;
 
-      var _computeScroll = this.computeScroll(toScroll),
+      var _computeScroll = this.computeScroll(this.toScroll),
           _computeScroll2 = _slicedToArray(_computeScroll, 2),
           u = _computeScroll2[0],
           m = _computeScroll2[1];
@@ -1202,7 +1201,7 @@ var Scrollbar = function (_Component4) {
   }, {
     key: 'onScroll',
     value: function onScroll(toScroll) {
-      toScroll = toScroll || this.props.toScroll || this.props.parent.refs.toScroll;
+      toScroll = toScroll || this.toScroll;
 
       var _computeScroll3 = this.computeScroll(toScroll),
           _computeScroll4 = _slicedToArray(_computeScroll3, 2),
@@ -1214,7 +1213,7 @@ var Scrollbar = function (_Component4) {
   }, {
     key: 'btnScroll',
     value: function btnScroll(e, sign, stride) {
-      var toScroll = this.props.toScroll;
+      var toScroll = this.toScroll;
       stride = stride || toScroll.clientHeight;
       var source = e.target;
       while (!source.className.match(this.btnClass)) {
@@ -1261,7 +1260,7 @@ var Scrollbar = function (_Component4) {
 
       if (e.button == 2) return;
       var y = e.clientY || e.changedTouches[0].clientY;
-      var toScroll = this.props.toScroll;
+      var toScroll = this.toScroll;
       var begin_top = toScroll.scrollTop;
       this.refs.element.className += ' ' + _startMenu2.default.dragging;
       var move = function move(e) {

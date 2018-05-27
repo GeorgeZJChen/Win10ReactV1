@@ -78,7 +78,7 @@ class ItemsColumnTwo extends Component{
     this.scrollbar.onScroll()
   }
   onMouseEnter(){
-    this.scrollbar.setUpScroll()
+    this.scrollbar.setUpScroll(this.refs.toScroll)
   }
   handleDragScroll(diff){
     let content = this.refs.content
@@ -89,7 +89,7 @@ class ItemsColumnTwo extends Component{
   render(){
     return (
       <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseEnter={this.onMouseEnter.bind(this)}>
-        <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this} toScroll={this.refs.toScroll}/>
+        <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this}/>
         <div className={css.contentC2} ref='toScroll'>
           {
             this.latestItems.length>0 ?
@@ -213,10 +213,9 @@ class Scrollbar extends Component {
   componentDidMount(){
     if(this.props.returnSelf)this.props.returnSelf(this)
   }
-  setUpScroll(){
-    let toScroll = this.props.toScroll || this.props.parent.refs.toScroll
-    // if(!toScroll) toScroll=this.props.parent.refs.toScroll
-    let [u,m] = this.computeScroll(toScroll)
+  setUpScroll(toScroll){
+    this.toScroll = toScroll
+    let [u,m] = this.computeScroll(this.toScroll)
     this.refs.slotUp.style.height = u +'px'
     this.refs.slotMiddle.style.height = m +'px'
   }
@@ -232,12 +231,12 @@ class Scrollbar extends Component {
     return [u,m]
   }
   onScroll(toScroll){
-    toScroll = toScroll || this.props.toScroll || this.props.parent.refs.toScroll
+    toScroll = toScroll || this.toScroll
     let [u,m] = this.computeScroll(toScroll)
     this.refs.slotUp.style.height = u +'px'
   }
   btnScroll(e,sign, stride){
-    const toScroll = this.props.toScroll
+    const toScroll = this.toScroll
     stride = stride || toScroll.clientHeight
     let source = e.target
     while (!source.className.match(this.btnClass)) {
@@ -280,7 +279,7 @@ class Scrollbar extends Component {
   onDrag(e){
     if (e.button == 2) return
     let y = e.clientY || e.changedTouches[0].clientY
-    let toScroll = this.props.toScroll
+    let toScroll = this.toScroll
     let begin_top = toScroll.scrollTop
     this.refs.element.className += ' '+css.dragging
     const move = (e)=>{
