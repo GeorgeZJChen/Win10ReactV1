@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 
-import {ItemsColumnOne, ItemsColumnTwo} from './start-menu-comps.js'
+import {ItemsColumnOne, ItemsColumnTwo, ItemsColumnThree} from './start-menu-comps.js'
 import Events from '../components/event.js'
 
 import css from '../../css/desktop/start-menu.css'
@@ -26,11 +26,16 @@ class StartMenu extends Component{
   render(){
     return(
       <div className={css.startMenu}>
+        <input className={css.columnSwitch+' '+css.switch1} type='radio' name={'HydAxYn8'} defaultChecked/>
+        <div className={css.switchResponser}></div>
+        <input className={css.columnSwitch+' '+css.switch2} type='radio' name={'HydAxYn8'}/>
+        <div className={css.switchResponser}></div>
       {
         this.state.data?
         ( <React.Fragment>
             <ItemsColumnOne/>
             <ItemsColumnTwo appList = {this.state.data.appList}/>
+            <ItemsColumnThree boxView = {this.state.data.boxView}/>
           </React.Fragment>  ):''
       }
       </div>

@@ -80,12 +80,6 @@ class ItemsColumnTwo extends Component{
   onMouseEnter(){
     this.scrollbar.setUpScroll(this.refs.toScroll)
   }
-  handleDragScroll(diff){
-    let content = this.refs.content
-    let h = this.scrollbar.getHeight()
-    let H = content.scrollHeight
-    content.scrollTop += diff*H/h
-  }
   render(){
     return (
       <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseEnter={this.onMouseEnter.bind(this)}>
@@ -136,6 +130,95 @@ class ItemsColumnTwo extends Component{
       </div>
     )
   }
+}
+class ItemsColumnThree extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+
+    }
+  }
+  onScroll(){
+    this.scrollbar.onScroll()
+  }
+  onMouseEnter(){
+    this.scrollbar.setUpScroll(this.refs.toScroll)
+  }
+  render(){
+    return (
+      <div className={css.column3} onScroll={(e)=>this.onScroll()} onMouseEnter={(e)=>this.onMouseEnter()}>
+        <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this}/>
+        <div className={css.contentC3} ref={'toScroll'}>
+          <div className={css.c3Column}>
+            <BoxGroup/>
+          </div>
+          <div className={css.c3Column}>
+            <BoxGroup/><BoxGroup/>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+class BoxGroup extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+
+    }
+  }
+  render(){
+    return (
+      <div className={css.boxGroup}>
+        <div className={css.groupTitle}>Title</div>
+        <div className={css.groupContent}>
+          <div className={css.box+' '+css['box4']} data-title={'box-4 title'}></div>
+          <div className={css.box+' '+css['box8']}>
+            <div className={css.boxR} data-title={'box-8 title'}></div>
+            <div className={css.boxH}></div>
+            <div className={css.boxH}></div>
+          </div>
+          <div className={css.box+' '+css['box4']} data-title={'box-4 title'}></div>
+          <div className={css.box+' '+css['box4']+' '+css.boxCt}>
+            <div className={css.boxR}>
+              <div className={css.box+' '+css['box1']}></div>
+              <div className={css.box+' '+css['box1']}></div>
+              <div className={css.box+' '+css['box1']}></div>
+              <div className={css.box+' '+css['box1']+' '+css.boxNull}></div>
+            </div>
+          </div>
+          <div className={css.box+' '+css['box4']+' '+css.boxNull}></div>
+          <div className={css.box+' '+css['box4']} data-title={'box-4 title'}></div>
+          <div className={css.box+' '+css['box4']} data-title={'box-4 title'}></div>
+          <div className={css.box+' '+css['box4']+' '+css.boxNull}></div>
+          <div className={css.box+' '+css['box4']+' '+css.boxNull}></div>
+          <div className={css.box+' '+css['box8']}>
+            <div className={css.boxR} data-title={'box-8 title'}></div>
+            <div className={css.boxH}></div>
+            <div className={css.boxH}></div>
+          </div>
+          {/*<Box type={4}/><Box type={8}/>
+
+          */}
+        </div>
+      </div>
+    )
+  }
+
+}
+class Box extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+
+    }
+  }
+  render(){
+    return (
+      <div className={css.box+' '+css['box'+this.props.type]}></div>
+    )
+  }
+
 }
 class Item extends Component{
   constructor(props){
@@ -234,6 +317,7 @@ class Scrollbar extends Component {
     toScroll = toScroll || this.toScroll
     let [u,m] = this.computeScroll(toScroll)
     this.refs.slotUp.style.height = u +'px'
+    this.refs.slotMiddle.style.height = m +'px'
   }
   btnScroll(e,sign, stride){
     const toScroll = this.toScroll
@@ -280,6 +364,7 @@ class Scrollbar extends Component {
     if (e.button == 2) return
     let y = e.clientY || e.changedTouches[0].clientY
     let toScroll = this.toScroll
+    if(!toScroll) return
     let begin_top = toScroll.scrollTop
     this.refs.element.className += ' '+css.dragging
     const move = (e)=>{
@@ -319,17 +404,5 @@ class Scrollbar extends Component {
     )
   }
 }
-class Box extends Component{
-  constructor(props){
-    super(props)
-    this.state = {
 
-    }
-  }
-  render(){
-    return
-  }
-
-}
-
-export {ItemsColumnOne, ItemsColumnTwo}
+export {ItemsColumnOne, ItemsColumnTwo, ItemsColumnThree}

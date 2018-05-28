@@ -881,7 +881,7 @@ _event2.default.on(_event2.default.names.handle_task_items_onclick, function (e,
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ItemsColumnTwo = exports.ItemsColumnOne = undefined;
+exports.ItemsColumnThree = exports.ItemsColumnTwo = exports.ItemsColumnOne = undefined;
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
@@ -1027,14 +1027,6 @@ var ItemsColumnTwo = function (_Component2) {
       this.scrollbar.setUpScroll(this.refs.toScroll);
     }
   }, {
-    key: 'handleDragScroll',
-    value: function handleDragScroll(diff) {
-      var content = this.refs.content;
-      var h = this.scrollbar.getHeight();
-      var H = content.scrollHeight;
-      content.scrollTop += diff * H / h;
-    }
-  }, {
     key: 'render',
     value: function render() {
       var _this3 = this;
@@ -1077,18 +1069,166 @@ var ItemsColumnTwo = function (_Component2) {
   return ItemsColumnTwo;
 }(_react.Component);
 
-var Item = function (_Component3) {
-  _inherits(Item, _Component3);
+var ItemsColumnThree = function (_Component3) {
+  _inherits(ItemsColumnThree, _Component3);
+
+  function ItemsColumnThree(props) {
+    _classCallCheck(this, ItemsColumnThree);
+
+    var _this4 = _possibleConstructorReturn(this, (ItemsColumnThree.__proto__ || Object.getPrototypeOf(ItemsColumnThree)).call(this, props));
+
+    _this4.state = {};
+    return _this4;
+  }
+
+  _createClass(ItemsColumnThree, [{
+    key: 'onScroll',
+    value: function onScroll() {
+      this.scrollbar.onScroll();
+    }
+  }, {
+    key: 'onMouseEnter',
+    value: function onMouseEnter() {
+      this.scrollbar.setUpScroll(this.refs.toScroll);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this5 = this;
+
+      return _react2.default.createElement(
+        'div',
+        { className: _startMenu2.default.column3, onScroll: function onScroll(e) {
+            return _this5.onScroll();
+          }, onMouseEnter: function onMouseEnter(e) {
+            return _this5.onMouseEnter();
+          } },
+        _react2.default.createElement(Scrollbar, { returnSelf: function returnSelf(self) {
+            return _this5.scrollbar = self;
+          }, parent: this }),
+        _react2.default.createElement(
+          'div',
+          { className: _startMenu2.default.contentC3, ref: 'toScroll' },
+          _react2.default.createElement(
+            'div',
+            { className: _startMenu2.default.c3Column },
+            _react2.default.createElement(BoxGroup, null)
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: _startMenu2.default.c3Column },
+            _react2.default.createElement(BoxGroup, null),
+            _react2.default.createElement(BoxGroup, null)
+          )
+        )
+      );
+    }
+  }]);
+
+  return ItemsColumnThree;
+}(_react.Component);
+
+var BoxGroup = function (_Component4) {
+  _inherits(BoxGroup, _Component4);
+
+  function BoxGroup(props) {
+    _classCallCheck(this, BoxGroup);
+
+    var _this6 = _possibleConstructorReturn(this, (BoxGroup.__proto__ || Object.getPrototypeOf(BoxGroup)).call(this, props));
+
+    _this6.state = {};
+    return _this6;
+  }
+
+  _createClass(BoxGroup, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: _startMenu2.default.boxGroup },
+        _react2.default.createElement(
+          'div',
+          { className: _startMenu2.default.groupTitle },
+          'Title'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: _startMenu2.default.groupContent },
+          _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box4'], 'data-title': 'box-4 title' }),
+          _react2.default.createElement(
+            'div',
+            { className: _startMenu2.default.box + ' ' + _startMenu2.default['box8'] },
+            _react2.default.createElement('div', { className: _startMenu2.default.boxR, 'data-title': 'box-8 title' }),
+            _react2.default.createElement('div', { className: _startMenu2.default.boxH }),
+            _react2.default.createElement('div', { className: _startMenu2.default.boxH })
+          ),
+          _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box4'], 'data-title': 'box-4 title' }),
+          _react2.default.createElement(
+            'div',
+            { className: _startMenu2.default.box + ' ' + _startMenu2.default['box4'] + ' ' + _startMenu2.default.boxCt },
+            _react2.default.createElement(
+              'div',
+              { className: _startMenu2.default.boxR },
+              _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box1'] }),
+              _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box1'] }),
+              _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box1'] }),
+              _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box1'] + ' ' + _startMenu2.default.boxNull })
+            )
+          ),
+          _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box4'] + ' ' + _startMenu2.default.boxNull }),
+          _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box4'], 'data-title': 'box-4 title' }),
+          _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box4'], 'data-title': 'box-4 title' }),
+          _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box4'] + ' ' + _startMenu2.default.boxNull }),
+          _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box4'] + ' ' + _startMenu2.default.boxNull }),
+          _react2.default.createElement(
+            'div',
+            { className: _startMenu2.default.box + ' ' + _startMenu2.default['box8'] },
+            _react2.default.createElement('div', { className: _startMenu2.default.boxR, 'data-title': 'box-8 title' }),
+            _react2.default.createElement('div', { className: _startMenu2.default.boxH }),
+            _react2.default.createElement('div', { className: _startMenu2.default.boxH })
+          )
+        )
+      );
+    }
+  }]);
+
+  return BoxGroup;
+}(_react.Component);
+
+var Box = function (_Component5) {
+  _inherits(Box, _Component5);
+
+  function Box(props) {
+    _classCallCheck(this, Box);
+
+    var _this7 = _possibleConstructorReturn(this, (Box.__proto__ || Object.getPrototypeOf(Box)).call(this, props));
+
+    _this7.state = {};
+    return _this7;
+  }
+
+  _createClass(Box, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement('div', { className: _startMenu2.default.box + ' ' + _startMenu2.default['box' + this.props.type] });
+    }
+  }]);
+
+  return Box;
+}(_react.Component);
+
+var Item = function (_Component6) {
+  _inherits(Item, _Component6);
 
   function Item(props) {
     _classCallCheck(this, Item);
 
-    var _this4 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
+    var _this8 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
 
-    _this4.state = {
+    _this8.state = {
       imgReady: 0
     };
-    _this4.imgStyle = {
+    _this8.imgStyle = {
       width: 'auto',
       height: '70%',
       position: 'relative',
@@ -1097,10 +1237,10 @@ var Item = function (_Component3) {
       transform: 'translate(-50%,-50%)',
       display: 'block'
     };
-    _this4.imgStyleNotReady = {
+    _this8.imgStyleNotReady = {
       display: 'none'
     };
-    return _this4;
+    return _this8;
   }
 
   _createClass(Item, [{
@@ -1113,7 +1253,7 @@ var Item = function (_Component3) {
   }, {
     key: 'render',
     value: function render() {
-      var _this5 = this;
+      var _this9 = this;
 
       if (this.props.title) {
         return _react2.default.createElement('div', { className: _startMenu2.default.item + ' ' + _startMenu2.default.itemC2 + ' ' + _startMenu2.default.sectionTitle, 'data-title': this.props.title });
@@ -1123,8 +1263,8 @@ var Item = function (_Component3) {
           _react2.default.Fragment,
           null,
           function () {
-            if (!_this5.props.alpha) return;
-            var last_init_letter = _this5.props.last ? _this5.props.last.name[0] : '';
+            if (!_this9.props.alpha) return;
+            var last_init_letter = _this9.props.last ? _this9.props.last.name[0] : '';
             var letter = app.name[0].toUpperCase();
             if (letter.match(/[A-Z]/)) {
               if (letter != last_init_letter) {
@@ -1143,7 +1283,7 @@ var Item = function (_Component3) {
               app.icon.URL ? this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: "unknown stm" }) : _react2.default.createElement(_icon2.default, { className: app.icon.className }),
               app.icon.URL ? _react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady,
                 src: app.icon.URL, onLoad: function onLoad() {
-                  return _this5.imgOnload();
+                  return _this9.imgOnload();
                 } }) : ''
             )
           )
@@ -1155,16 +1295,16 @@ var Item = function (_Component3) {
   return Item;
 }(_react.Component);
 
-var Scrollbar = function (_Component4) {
-  _inherits(Scrollbar, _Component4);
+var Scrollbar = function (_Component7) {
+  _inherits(Scrollbar, _Component7);
 
   function Scrollbar(props) {
     _classCallCheck(this, Scrollbar);
 
-    var _this6 = _possibleConstructorReturn(this, (Scrollbar.__proto__ || Object.getPrototypeOf(Scrollbar)).call(this, props));
+    var _this10 = _possibleConstructorReturn(this, (Scrollbar.__proto__ || Object.getPrototypeOf(Scrollbar)).call(this, props));
 
-    _this6.btnClass = 'scroll_HX2MMYZN';
-    return _this6;
+    _this10.btnClass = 'scroll_HX2MMYZN';
+    return _this10;
   }
 
   _createClass(Scrollbar, [{
@@ -1209,6 +1349,7 @@ var Scrollbar = function (_Component4) {
           m = _computeScroll4[1];
 
       this.refs.slotUp.style.height = u + 'px';
+      this.refs.slotMiddle.style.height = m + 'px';
     }
   }, {
     key: 'btnScroll',
@@ -1256,18 +1397,19 @@ var Scrollbar = function (_Component4) {
   }, {
     key: 'onDrag',
     value: function onDrag(e) {
-      var _this7 = this;
+      var _this11 = this;
 
       if (e.button == 2) return;
       var y = e.clientY || e.changedTouches[0].clientY;
       var toScroll = this.toScroll;
+      if (!toScroll) return;
       var begin_top = toScroll.scrollTop;
       this.refs.element.className += ' ' + _startMenu2.default.dragging;
       var move = function move(e) {
         var my = e.clientY;
         if (Math.abs(my - y) < 4) return;
-        toScroll.scrollTop = begin_top + (my - y) * toScroll.scrollHeight / _this7.refs.getHeight.offsetHeight;
-        _this7.onScroll(toScroll);
+        toScroll.scrollTop = begin_top + (my - y) * toScroll.scrollHeight / _this11.refs.getHeight.offsetHeight;
+        _this11.onScroll(toScroll);
       };
       var up = function up(e) {
         document.removeEventListener('mousemove', move, false);
@@ -1275,7 +1417,7 @@ var Scrollbar = function (_Component4) {
         document.removeEventListener("touchmove", move, false);
         document.removeEventListener("touchend", up, false);
         document.removeEventListener("touchcancel", up, false);
-        var ele = _this7.refs.element;
+        var ele = _this11.refs.element;
         ele.className = ele.className.replace(new RegExp(_startMenu2.default.dragging, 'g'), '');
       };
       document.addEventListener('mousemove', move, false);
@@ -1287,7 +1429,7 @@ var Scrollbar = function (_Component4) {
   }, {
     key: 'render',
     value: function render() {
-      var _this8 = this;
+      var _this12 = this;
 
       return _react2.default.createElement(
         'div',
@@ -1295,7 +1437,7 @@ var Scrollbar = function (_Component4) {
         _react2.default.createElement(
           'div',
           { className: _startMenu2.default.scrollBtn + ' ' + this.btnClass, onMouseDown: function onMouseDown(e) {
-              return _this8.btnScroll(e, -1, 20);
+              return _this12.btnScroll(e, -1, 20);
             } },
           _react2.default.createElement(_icon2.default, { className: 'angle up sm ' + _startMenu2.default.scrollAngle })
         ),
@@ -1303,19 +1445,19 @@ var Scrollbar = function (_Component4) {
           'div',
           { className: _startMenu2.default.scrollControl, ref: 'getHeight' },
           _react2.default.createElement('div', { className: _startMenu2.default.slotUp + ' ' + this.btnClass, ref: 'slotUp', onMouseDown: function onMouseDown(e) {
-              return _this8.btnScroll(e, -1);
+              return _this12.btnScroll(e, -1);
             } }),
           _react2.default.createElement('div', { className: _startMenu2.default.slotMiddle, ref: 'slotMiddle', onMouseDown: function onMouseDown(e) {
-              _this8.onDrag(e);
+              _this12.onDrag(e);
             } }),
           _react2.default.createElement('div', { className: _startMenu2.default.slotDown + ' ' + this.btnClass, onMouseDown: function onMouseDown(e) {
-              return _this8.btnScroll(e, 1);
+              return _this12.btnScroll(e, 1);
             } })
         ),
         _react2.default.createElement(
           'div',
           { className: _startMenu2.default.scrollBtn + ' ' + this.btnClass, onMouseDown: function onMouseDown(e) {
-              return _this8.btnScroll(e, 1, 20);
+              return _this12.btnScroll(e, 1, 20);
             } },
           _react2.default.createElement(_icon2.default, { className: 'angle down sm ' + _startMenu2.default.scrollAngle })
         )
@@ -1326,30 +1468,9 @@ var Scrollbar = function (_Component4) {
   return Scrollbar;
 }(_react.Component);
 
-var Box = function (_Component5) {
-  _inherits(Box, _Component5);
-
-  function Box(props) {
-    _classCallCheck(this, Box);
-
-    var _this9 = _possibleConstructorReturn(this, (Box.__proto__ || Object.getPrototypeOf(Box)).call(this, props));
-
-    _this9.state = {};
-    return _this9;
-  }
-
-  _createClass(Box, [{
-    key: 'render',
-    value: function render() {
-      return;
-    }
-  }]);
-
-  return Box;
-}(_react.Component);
-
 exports.ItemsColumnOne = ItemsColumnOne;
 exports.ItemsColumnTwo = ItemsColumnTwo;
+exports.ItemsColumnThree = ItemsColumnThree;
 
 /***/ }),
 
@@ -1432,11 +1553,16 @@ var StartMenu = function (_Component) {
       return _react2.default.createElement(
         'div',
         { className: _startMenu2.default.startMenu },
+        _react2.default.createElement('input', { className: _startMenu2.default.columnSwitch + ' ' + _startMenu2.default.switch1, type: 'radio', name: 'HydAxYn8', defaultChecked: true }),
+        _react2.default.createElement('div', { className: _startMenu2.default.switchResponser }),
+        _react2.default.createElement('input', { className: _startMenu2.default.columnSwitch + ' ' + _startMenu2.default.switch2, type: 'radio', name: 'HydAxYn8' }),
+        _react2.default.createElement('div', { className: _startMenu2.default.switchResponser }),
         this.state.data ? _react2.default.createElement(
           _react2.default.Fragment,
           null,
           _react2.default.createElement(_startMenuComps.ItemsColumnOne, null),
-          _react2.default.createElement(_startMenuComps.ItemsColumnTwo, { appList: this.state.data.appList })
+          _react2.default.createElement(_startMenuComps.ItemsColumnTwo, { appList: this.state.data.appList }),
+          _react2.default.createElement(_startMenuComps.ItemsColumnThree, { boxView: this.state.data.boxView })
         ) : ''
       );
     }
@@ -4110,7 +4236,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "#start_menu_switch_X7VIV:checked+.start-menu_start-menu_RLS6c{bottom:40px;height:520px;visibility:visible;opacity:1}.start-menu_start-menu_RLS6c{position:absolute;z-index:9999900;bottom:35px;height:0;width:950px;background:rgba(38,47,59,.98);transition:height,bottom,opacity,visibility .5s,.5s,.5s,.5s;transition-timing-function:cubic-bezier(0,1,0,1);visibility:hidden;opacity:0;display:flex;flex-wrap:wrap;flex-direction:row}.start-menu_item_21AHz:hover{background:hsla(0,0%,100%,.1)}.start-menu_item_21AHz:active{background:hsla(0,0%,100%,.15)}.start-menu_column-1_1JSVm{height:100%;overflow:hidden;width:46px;display:flex;flex-direction:column;justify-content:space-between;padding-top:5px;box-sizing:border-box}.start-menu_column-2_1u85a{width:233px}.start-menu_column-2_1u85a,.start-menu_column-3_2AJes{height:100%;overflow:hidden;padding-right:15px;position:relative}.start-menu_item-c1_3OGCV{width:46px;height:46px}.start-menu_icon-ct-c1_1D5p4{width:25px;height:25px;display:block;position:relative;margin:auto;top:50%;transform:translateY(-50%);overflow:hidden}.start-menu_item-c2_1LmG4{height:34px;box-sizing:border-box;padding:2px 5px 2px 16px;position:relative}.start-menu_item-c2_1LmG4:not(.start-menu_section-title_1lXOD):before{content:attr(data-title);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:30px;position:absolute;width:175px;height:30px;left:54px}.start-menu_item-c2_1LmG4.start-menu_section-title_1lXOD:before{content:attr(data-title);font-size:12px;line-height:35px}.start-menu_item-c2_1LmG4.start-menu_section-title_1lXOD:active{margin-left:2px;margin-right:2px}.start-menu_icon-ct-c2_3leM4{height:30px;width:30px;background:#515c6b;display:inline-block;overflow:hidden;position:relative}.start-menu_content-c2_1xhdq{height:100%;width:270px;overflow:hidden;overflow-y:visible;padding:8px 20px 60px 0;box-sizing:border-box}.start-menu_column-2_1u85a:hover>.start-menu_scrollbar_1i3sa{opacity:1;transition:opacity .05s}.start-menu_scrollbar_1i3sa:hover .start-menu_slot-down_3cc9x,.start-menu_scrollbar_1i3sa:hover .start-menu_slot-up_1YrSG{opacity:1;margin-left:0;width:100%}.start-menu_scrollbar_1i3sa:hover .start-menu_slot-middle_dC3Id{width:100%;margin-left:0;background:hsla(0,0%,100%,.25)}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD,.start-menu_scrollbar_1i3sa:hover>.start-menu_scroll-btn_rA7kG{opacity:1}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-down_3cc9x,.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-up_1YrSG{opacity:1;margin-left:0;width:100%}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-middle_dC3Id{width:100%;margin-left:0;background:hsla(0,0%,100%,.25)}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD>.start-menu_scroll-btn_rA7kG{opacity:1}.start-menu_scrollbar_1i3sa{height:100%;width:13px;opacity:0;position:absolute;display:flex;flex-direction:column;right:2px;transition:opacity .2s}.start-menu_scroll-btn_rA7kG{width:13px;height:13px;opacity:0;transition:opacity .2s}.start-menu_scroll-btn_rA7kG:hover{background:hsla(0,0%,100%,.15);box-shadow:0 0 1px 0 hsla(0,0%,100%,.1)}.start-menu_scroll-btn_rA7kG:active{background:hsla(0,0%,100%,.45);box-shadow:0 0 1px 0 hsla(0,0%,100%,.35)}.start-menu_scroll-btn_rA7kG:active>.start-menu_scroll-angle_23McV:after,.start-menu_scroll-btn_rA7kG:active>.start-menu_scroll-angle_23McV:before{background-color:#262f3b}.start-menu_scroll-angle_23McV{opacity:.7}.start-menu_scroll-control_1-jL7{flex:1;display:flex;flex-direction:column}.start-menu_slot-up_1YrSG{width:100%;background:hsla(0,0%,100%,.1);transition:opacity .2s;opacity:0;width:2px;margin-left:11px;transition:opacity,width,margin-left .15s,.15s,.15s}.start-menu_slot-down_3cc9x{width:100%;flex:1;background:hsla(0,0%,100%,.1);opacity:0;width:0;margin-left:100%;transition:opacity,width,margin-left .15s,.15s,.15s}.start-menu_slot-middle_dC3Id{height:70px;background:hsla(0,0%,100%,.55);box-shadow:0 0 1px 0 hsla(0,0%,100%,.35);width:2px;margin-left:11px;transition:width,margin-left .15s,.15s}.start-menu_slot-middle_dC3Id:hover{background:hsla(0,0%,100%,.35)!important}.start-menu_slot-middle_dC3Id:active{background:hsla(0,0%,100%,.45)!important}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/start-menu.css"],"names":[],"mappings":"AAAA,8DACE,YAAa,AACb,aAAc,AACd,mBAAoB,AACpB,SAAW,CACZ,AAED,6BACE,kBAAmB,AACnB,gBAAiB,AACjB,YAAa,AACb,SAAU,AACV,YAAa,AACb,8BAAmC,AACnC,4DAAiE,AACjE,iDAAqD,AACrD,kBAAmB,AACnB,UAAW,AACX,aAAc,AACd,eAAgB,AAChB,kBAAoB,CACrB,AACD,6BACE,6BAAqC,CACtC,AACD,8BACE,8BAAsC,CACvC,AACD,2BACE,YAAa,AACb,gBAAiB,AACjB,WAAY,AACZ,aAAc,AACd,sBAAuB,AACvB,8BAA+B,AAC/B,gBAAiB,AACjB,qBAAuB,CACxB,AACD,2BAGE,WAAa,CAGd,AACD,sDANE,YAAa,AACb,gBAAiB,AAEjB,mBAAoB,AACpB,iBAAmB,CAOpB,AAED,0BACE,WAAY,AACZ,WAAa,CACd,AACD,6BACE,WAAY,AACZ,YAAa,AACb,cAAe,AACf,kBAAmB,AACnB,YAAa,AACb,QAAS,AACT,2BAA6B,AAC7B,eAAiB,CAClB,AACD,0BACE,YAAa,AACb,sBAAuB,AACvB,yBAA0B,AAC1B,iBAAmB,CACpB,AACD,sEACE,yBAA0B,AAC1B,eAAgB,AAChB,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,iBAAkB,AAClB,kBAAmB,AACnB,YAAa,AACb,YAAa,AACb,SAAW,CACZ,AACD,gEACE,yBAA0B,AAC1B,eAAgB,AAChB,gBAAkB,CACnB,AACD,gEACE,gBAAiB,AACjB,gBAAkB,CACnB,AACD,6BACE,YAAa,AACb,WAAY,AACZ,mBAAoB,AACpB,qBAAsB,AACtB,gBAAiB,AACjB,iBAAmB,CACpB,AACD,6BACE,YAAa,AACb,YAAa,AACb,gBAAiB,AACjB,mBAAoB,AACpB,wBAAyB,AACzB,qBAAuB,CACxB,AACD,6DACE,UAAW,AACX,uBAA0B,CAC3B,AACD,0HACE,UAAW,AACX,cAAe,AACf,UAAY,CACb,AACD,gEACE,WAAY,AACZ,cAAe,AACf,8BAAmC,CACpC,AAID,qHACE,SAAW,CACZ,AACD,kKACE,UAAW,AACX,cAAe,AACf,UAAY,CACb,AACD,oFACE,WAAY,AACZ,cAAe,AACf,8BAAmC,CACpC,AACD,mFACE,SAAW,CACZ,AACD,4BACE,YAAa,AACb,WAAY,AACZ,UAAW,AACX,kBAAmB,AACnB,aAAc,AACd,sBAAuB,AACvB,UAAW,AACX,sBAAyB,CAC1B,AACD,6BACE,WAAY,AACZ,YAAa,AACb,UAAW,AACX,sBAAyB,CAC1B,AACD,mCACE,+BAAmC,AACnC,uCAA+C,CAChD,AACD,oCACE,+BAAmC,AACnC,wCAA+C,CAChD,AACD,mJACE,wBAA0B,CAC3B,AACD,+BACE,UAAa,CACd,AACD,iCACE,OAAQ,AACR,aAAc,AACd,qBAAuB,CACxB,AACD,0BACE,WAAY,AACZ,8BAAkC,AAClC,uBAAyB,AACzB,UAAW,AACX,UAAW,AACX,iBAAkB,AAClB,mDAAwD,CACzD,AACD,4BACE,WAAY,AACZ,OAAQ,AACR,8BAAkC,AAClC,UAAW,AACX,QAAS,AACT,iBAAkB,AAClB,mDAAwD,CACzD,AACD,8BACE,YAAa,AACb,+BAAmC,AACnC,yCAA+C,AAC/C,UAAW,AACX,iBAAkB,AAClB,sCAA0C,CAC3C,AACD,oCACE,wCAA6C,CAC9C,AACD,qCACE,wCAA6C,CAC9C","file":"start-menu.css","sourcesContent":[":global(#start_menu_switch_X7VIV):checked+.start-menu{\r\n  bottom: 40px;\r\n  height: 520px;\r\n  visibility: visible;\r\n  opacity: 1;\r\n}\r\n\r\n.start-menu{\r\n  position: absolute;\r\n  z-index: 9999900;\r\n  bottom: 35px;\r\n  height: 0;\r\n  width: 950px;\r\n  background: rgba(38, 47, 59, 0.98);\r\n  transition: height,bottom,opacity,visibility 0.5s,0.5s,0.5s,0.5s;\r\n  transition-timing-function: cubic-bezier(0, 1, 0, 1);\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n  flex-direction: row;\r\n}\r\n.item:hover{\r\n  background: rgba(255, 255, 255, 0.1);\r\n}\r\n.item:active{\r\n  background: rgba(255, 255, 255, 0.15);\r\n}\r\n.column-1{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  width: 46px;\r\n  display: flex;\r\n  flex-direction: column;\r\n  justify-content: space-between;\r\n  padding-top: 5px;\r\n  box-sizing: border-box;\r\n}\r\n.column-2{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  width: 233px;\r\n  padding-right: 15px;\r\n  position: relative;\r\n}\r\n.column-3{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  position: relative;\r\n  padding-right: 15px;\r\n}\r\n\r\n.item-c1{\r\n  width: 46px;\r\n  height: 46px;\r\n}\r\n.icon-ct-c1{\r\n  width: 25px;\r\n  height: 25px;\r\n  display: block;\r\n  position: relative;\r\n  margin: auto;\r\n  top: 50%;\r\n  transform: translate(0,-50%);\r\n  overflow: hidden;\r\n}\r\n.item-c2{\r\n  height: 34px;\r\n  box-sizing: border-box;\r\n  padding: 2px 5px 2px 16px;\r\n  position: relative;\r\n}\r\n.item-c2:not(.section-title):before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  line-height: 30px;\r\n  position: absolute;\r\n  width: 175px;\r\n  height: 30px;\r\n  left: 54px;\r\n}\r\n.item-c2.section-title:before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  line-height: 35px;\r\n}\r\n.item-c2.section-title:active{\r\n  margin-left: 2px;\r\n  margin-right: 2px;\r\n}\r\n.icon-ct-c2{\r\n  height: 30px;\r\n  width: 30px;\r\n  background: #515c6b;\r\n  display: inline-block;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n.content-c2{\r\n  height: 100%;\r\n  width: 270px;\r\n  overflow: hidden;\r\n  overflow-y: visible;\r\n  padding: 8px 20px 60px 0;\r\n  box-sizing: border-box;\r\n}\r\n.column-2:hover>.scrollbar{\r\n  opacity: 1;\r\n  transition: opacity 0.05s;\r\n}\r\n.scrollbar:hover .slot-up, .scrollbar:hover .slot-down{\r\n  opacity: 1;\r\n  margin-left: 0;\r\n  width: 100%;\r\n}\r\n.scrollbar:hover .slot-middle{\r\n  width: 100%;\r\n  margin-left: 0;\r\n  background: rgba(255,255,255,0.25);\r\n}\r\n.scrollbar:hover>.scroll-btn{\r\n  opacity: 1;\r\n}\r\n.scrollbar.dragging{\r\n  opacity: 1;\r\n}\r\n.scrollbar.dragging .slot-up, .scrollbar.dragging .slot-down{\r\n  opacity: 1;\r\n  margin-left: 0;\r\n  width: 100%;\r\n}\r\n.scrollbar.dragging .slot-middle{\r\n  width: 100%;\r\n  margin-left: 0;\r\n  background: rgba(255,255,255,0.25);\r\n}\r\n.scrollbar.dragging>.scroll-btn{\r\n  opacity: 1;\r\n}\r\n.scrollbar{\r\n  height: 100%;\r\n  width: 13px;\r\n  opacity: 0;\r\n  position: absolute;\r\n  display: flex;\r\n  flex-direction: column;\r\n  right: 2px;\r\n  transition: opacity 0.2s;\r\n}\r\n.scroll-btn{\r\n  width: 13px;\r\n  height: 13px;\r\n  opacity: 0;\r\n  transition: opacity 0.2s;\r\n}\r\n.scroll-btn:hover{\r\n  background: rgba(255,255,255,0.15);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.10);\r\n}\r\n.scroll-btn:active{\r\n  background: rgba(255,255,255,0.45);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);\r\n}\r\n.scroll-btn:active>.scroll-angle:before, .scroll-btn:active>.scroll-angle:after{\r\n  background-color: #262f3b;\r\n}\r\n.scroll-angle{\r\n  opacity: 0.7;\r\n}\r\n.scroll-control{\r\n  flex: 1;\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.slot-up{\r\n  width: 100%;\r\n  background: rgba(255,255,255,0.1);\r\n  transition: opacity 0.2s;\r\n  opacity: 0;\r\n  width: 2px;\r\n  margin-left: 11px;\r\n  transition: opacity,width,margin-left 0.15s,0.15s,0.15s;\r\n}\r\n.slot-down{\r\n  width: 100%;\r\n  flex: 1;\r\n  background: rgba(255,255,255,0.1);\r\n  opacity: 0;\r\n  width: 0;\r\n  margin-left: 100%;\r\n  transition: opacity,width,margin-left 0.15s,0.15s,0.15s;\r\n}\r\n.slot-middle{\r\n  height: 70px;\r\n  background: rgba(255,255,255,0.55);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);\r\n  width: 2px;\r\n  margin-left: 11px;\r\n  transition: width,margin-left 0.15s,0.15s;\r\n}\r\n.slot-middle:hover{\r\n  background: rgba(255,255,255,0.35)!important;\r\n}\r\n.slot-middle:active{\r\n  background: rgba(255,255,255,0.45)!important;\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, "#start_menu_switch_X7VIV:checked+.start-menu_start-menu_RLS6c{bottom:40px;height:520px;visibility:visible;opacity:1}.start-menu_start-menu_RLS6c{position:absolute;z-index:9999900;bottom:35px;height:0;width:950px;background:rgba(38,47,59,.98);transition:height,bottom,opacity,visibility .5s,.5s,.5s,.5s;transition-timing-function:cubic-bezier(0,1,0,1);visibility:hidden;overflow:hidden;opacity:0;display:flex;flex-wrap:wrap;flex-direction:row}.start-menu_item_21AHz:hover{background:hsla(0,0%,100%,.1)}.start-menu_item_21AHz:active{background:hsla(0,0%,100%,.15)}.start-menu_column-1_1JSVm{height:100%;overflow:hidden;width:46px;display:flex;flex-direction:column;justify-content:space-between;padding-top:5px;box-sizing:border-box}.start-menu_column-2_1u85a{width:233px}.start-menu_column-2_1u85a,.start-menu_column-3_2AJes{height:100%;overflow:hidden;padding-right:15px;position:relative}.start-menu_column-3_2AJes{padding-top:12px;box-sizing:border-box;flex:1}.start-menu_item-c1_3OGCV{width:46px;height:46px}.start-menu_icon-ct-c1_1D5p4{width:25px;height:25px;display:block;position:relative;margin:auto;top:50%;transform:translateY(-50%);overflow:hidden}.start-menu_item-c2_1LmG4{height:34px;box-sizing:border-box;padding:2px 5px 2px 16px;position:relative}.start-menu_item-c2_1LmG4:not(.start-menu_section-title_1lXOD):before{content:attr(data-title);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:30px;position:absolute;width:175px;height:30px;left:54px}.start-menu_item-c2_1LmG4.start-menu_section-title_1lXOD:before{content:attr(data-title);font-size:12px;line-height:35px}.start-menu_item-c2_1LmG4.start-menu_section-title_1lXOD:active{margin-left:2px;margin-right:2px}.start-menu_icon-ct-c2_3leM4{height:30px;width:30px;background:#515c6b;display:inline-block;overflow:hidden;position:relative}.start-menu_content-c2_1xhdq{height:100%;width:270px;overflow:hidden;overflow-y:scroll;padding:8px 20px 60px 0;box-sizing:border-box}.start-menu_content-c3_3-GiE{height:100%;width:110%;padding-right:50px;overflow:hidden;overflow-y:scroll}.start-menu_c3-column_2CxD_{width:322px;display:inline-block;box-sizing:border-box;padding:0 5px 10px;vertical-align:top}.start-menu_box-group_LmzHl{display:inline-block;margin-bottom:20px}.start-menu_group-title_3kENJ{width:100%;height:30px;line-height:30px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box;padding-left:2px}.start-menu_group-content_14orD{display:flex;flex-wrap:wrap}.start-menu_box_I77kG{display:inline-block;background:#515c6b;margin:2px;box-sizing:border-box;position:relative;overflow:hidden}.start-menu_box_I77kG:not(.start-menu_box-ct_2zMKJ):hover{outline:2px solid hsla(0,0%,100%,.5);outline-offset:-2px}.start-menu_box_I77kG:not(.start-menu_box-ct_2zMKJ):active{outline:unset;transform:scale(.98)}.start-menu_box-ct_2zMKJ{background:transparent!important;position:relative}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02{position:absolute;display:flex;flex-wrap:wrap;width:100%;height:100%;z-index:1;top:0}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:first-child{margin:0 2px 2px 0}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:nth-child(2){margin:0 0 2px 2px}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:nth-child(3){margin:2px 2px 0 0}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:nth-child(4){margin:2px 0 0 2px}.start-menu_box-null_29fW6{background:transparent!important;pointer-events:none}.start-menu_box-1_3zHU2{width:48px}.start-menu_box-4_3zImJ{width:100px}.start-menu_box-8_Tigl8{width:204px}.start-menu_box-8_Tigl8>.start-menu_box-r_2-b02{position:absolute;width:100%;height:100%;z-index:1;top:0}.start-menu_box-8_Tigl8>.start-menu_box-h_2-zkg{width:50%;display:inline-block}.start-menu_box-1_3zHU2:before,.start-menu_box-4_3zImJ:before,.start-menu_box-8_Tigl8>.start-menu_box-h_2-zkg:before,.start-menu_box-ct_2zMKJ:before{content:\"\";display:inline-block;padding-bottom:100%;vertical-align:middle}.start-menu_box-4_3zImJ:after,.start-menu_box-8_Tigl8>.start-menu_box-r_2-b02:after{content:attr(data-title);font-size:12px;position:absolute;bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;padding:0 6px;box-sizing:border-box}.start-menu_column-switch_1joLV,.start-menu_switch-responser_1rW-8{position:absolute;display:none;margin:0;width:50%;height:35px;top:0;z-index:4;transition:all .15s}.start-menu_column-switch_1joLV{opacity:0}.start-menu_switch-responser_1rW-8{background:#262f3b;opacity:.5;z-index:3}.start-menu_column-switch_1joLV:checked+.start-menu_switch-responser_1rW-8{background:#313b48;box-shadow:inset 0 0 4px 0 hsla(0,0%,100%,.7)}.start-menu_column-switch_1joLV:hover+.start-menu_switch-responser_1rW-8{background:hsla(0,0%,100%,.15)}.start-menu_switch-2_17EgF,.start-menu_switch-2_17EgF+.start-menu_switch-responser_1rW-8{left:50%}@media (max-width:930px){.start-menu_start-menu_RLS6c{width:627px}}@media (max-width:590px){.start-menu_column-switch_1joLV,.start-menu_switch-responser_1rW-8{display:block}.start-menu_start-menu_RLS6c{width:340px}.start-menu_column-1_1JSVm,.start-menu_column-2_1u85a,.start-menu_column-3_2AJes{position:absolute;transition:left .2s ease-out;padding-top:38px}.start-menu_column-1_1JSVm{left:-279px}.start-menu_column-2_1u85a{left:-233px}.start-menu_column-3_2AJes{left:340px}.start-menu_switch-1_36-9k:checked~.start-menu_column-1_1JSVm{left:0}.start-menu_switch-1_36-9k:checked~.start-menu_column-2_1u85a>.start-menu_scrollbar_1i3sa,.start-menu_switch-2_17EgF:checked~.start-menu_column-3_2AJes>.start-menu_scrollbar_1i3sa{left:2px}.start-menu_switch-1_36-9k:checked~.start-menu_column-2_1u85a{left:64px;padding-left:18px}.start-menu_switch-2_17EgF:checked~.start-menu_column-3_2AJes{left:0;padding-left:18px}}.start-menu_column-2_1u85a:hover>.start-menu_scrollbar_1i3sa,.start-menu_column-3_2AJes:hover>.start-menu_scrollbar_1i3sa{opacity:1;transition:opacity .05s}.start-menu_scrollbar_1i3sa:hover .start-menu_slot-down_3cc9x,.start-menu_scrollbar_1i3sa:hover .start-menu_slot-up_1YrSG{opacity:1;margin-left:0;width:100%}.start-menu_scrollbar_1i3sa:hover .start-menu_slot-middle_dC3Id{width:100%;margin-left:0;background:hsla(0,0%,100%,.25)}.start-menu_scrollbar_1i3sa:hover>.start-menu_scroll-btn_rA7kG{opacity:1}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD{opacity:1;transition:none}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-down_3cc9x,.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-up_1YrSG{opacity:1;margin-left:0;width:100%;transition:none}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-middle_dC3Id{width:100%;margin-left:0;background:hsla(0,0%,100%,.25);transition:none}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD>.start-menu_scroll-btn_rA7kG{opacity:1;transition:none}.start-menu_scrollbar_1i3sa{height:100%;width:13px;opacity:0;position:absolute;display:flex;flex-direction:column;right:2px;transition:opacity .2s}.start-menu_scroll-btn_rA7kG{width:13px;height:13px;opacity:0;transition:opacity .2s}.start-menu_scroll-btn_rA7kG:hover{background:hsla(0,0%,100%,.15);box-shadow:0 0 1px 0 hsla(0,0%,100%,.1)}.start-menu_scroll-btn_rA7kG:active{background:hsla(0,0%,100%,.45);box-shadow:0 0 1px 0 hsla(0,0%,100%,.35)}.start-menu_scroll-btn_rA7kG:active>.start-menu_scroll-angle_23McV:after,.start-menu_scroll-btn_rA7kG:active>.start-menu_scroll-angle_23McV:before{background-color:#262f3b}.start-menu_scroll-angle_23McV{opacity:.7}.start-menu_scroll-control_1-jL7{flex:1;display:flex;flex-direction:column}.start-menu_slot-up_1YrSG{width:100%;background:hsla(0,0%,100%,.1);transition:opacity .2s;opacity:0;width:2px;margin-left:11px;transition:opacity,width,margin-left .15s,.15s,.15s}.start-menu_slot-down_3cc9x{width:100%;flex:1;background:hsla(0,0%,100%,.1);opacity:0;width:0;margin-left:100%;transition:opacity,width,margin-left .15s,.15s,.15s}.start-menu_slot-middle_dC3Id{height:70px;background:hsla(0,0%,100%,.55);box-shadow:0 0 1px 0 hsla(0,0%,100%,.35);width:2px;margin-left:11px;transition:width,margin-left .15s,.15s}.start-menu_slot-middle_dC3Id:hover{background:hsla(0,0%,100%,.35)!important}.start-menu_slot-middle_dC3Id:active{background:hsla(0,0%,100%,.45)!important}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/start-menu.css"],"names":[],"mappings":"AAAA,8DACE,YAAa,AACb,aAAc,AACd,mBAAoB,AACpB,SAAW,CACZ,AAED,6BACE,kBAAmB,AACnB,gBAAiB,AACjB,YAAa,AACb,SAAU,AACV,YAAa,AACb,8BAAmC,AACnC,4DAAiE,AACjE,iDAAqD,AACrD,kBAAmB,AACnB,gBAAiB,AACjB,UAAW,AACX,aAAc,AACd,eAAgB,AAChB,kBAAoB,CACrB,AACD,6BACE,6BAAqC,CACtC,AACD,8BACE,8BAAsC,CACvC,AACD,2BACE,YAAa,AACb,gBAAiB,AACjB,WAAY,AACZ,aAAc,AACd,sBAAuB,AACvB,8BAA+B,AAC/B,gBAAiB,AACjB,qBAAuB,CACxB,AACD,2BAGE,WAAa,CAGd,AACD,sDANE,YAAa,AACb,gBAAiB,AAEjB,mBAAoB,AACpB,iBAAmB,CAUpB,AARD,2BAKE,iBAAkB,AAClB,sBAAuB,AACvB,MAAQ,CACT,AACD,0BACE,WAAY,AACZ,WAAa,CACd,AACD,6BACE,WAAY,AACZ,YAAa,AACb,cAAe,AACf,kBAAmB,AACnB,YAAa,AACb,QAAS,AACT,2BAA6B,AAC7B,eAAiB,CAClB,AACD,0BACE,YAAa,AACb,sBAAuB,AACvB,yBAA0B,AAC1B,iBAAmB,CACpB,AACD,sEACE,yBAA0B,AAC1B,eAAgB,AAChB,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,iBAAkB,AAClB,kBAAmB,AACnB,YAAa,AACb,YAAa,AACb,SAAW,CACZ,AACD,gEACE,yBAA0B,AAC1B,eAAgB,AAChB,gBAAkB,CACnB,AACD,gEACE,gBAAiB,AACjB,gBAAkB,CACnB,AACD,6BACE,YAAa,AACb,WAAY,AACZ,mBAAoB,AACpB,qBAAsB,AACtB,gBAAiB,AACjB,iBAAmB,CACpB,AACD,6BACE,YAAa,AACb,YAAa,AACb,gBAAiB,AACjB,kBAAmB,AACnB,wBAAyB,AACzB,qBAAuB,CACxB,AACD,6BACE,YAAa,AACb,WAAY,AACZ,mBAAoB,AACpB,gBAAiB,AACjB,iBAAmB,CACpB,AACD,4BACE,YAAa,AACb,qBAAsB,AACtB,sBAAuB,AACvB,mBAAwB,AACxB,kBAAoB,CACrB,AACD,4BACE,qBAAsB,AACtB,kBAAoB,CACrB,AACD,8BACE,WAAY,AACZ,YAAa,AACb,iBAAkB,AAClB,eAAgB,AAChB,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,sBAAuB,AACvB,gBAAkB,CACnB,AACD,gCACE,aAAc,AACd,cAAgB,CACjB,AACD,sBACE,qBAAsB,AACtB,mBAAoB,AACpB,WAAY,AACZ,sBAAuB,AACvB,kBAAmB,AACnB,eAAiB,CAClB,AACD,0DACE,qCAAyC,AACzC,mBAAqB,CACtB,AACD,2DACE,cAAe,AACf,oBAAuB,CACxB,AACD,yBACE,iCAAkC,AAClC,iBAAmB,CACpB,AACD,iDACE,kBAAmB,AACnB,aAAc,AACd,eAAgB,AAChB,WAAY,AACZ,YAAa,AACb,UAAW,AACX,KAAO,CACR,AACD,qFACE,kBAAoB,CACrB,AACD,sFACE,kBAAoB,CACrB,AACD,sFACE,kBAAoB,CACrB,AACD,sFACE,kBAAoB,CACrB,AACD,2BACE,iCAAkC,AAClC,mBAAqB,CACtB,AACD,wBACE,UAAY,CACb,AACD,wBACE,WAAa,CACd,AACD,wBACE,WAAY,CACb,AACD,gDACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,UAAW,AACX,KAAO,CACR,AACD,gDACE,UAAW,AACX,oBAAsB,CACvB,AACD,qJACE,WAAY,AACZ,qBAAsB,AACtB,oBAAqB,AACrB,qBAAuB,CACxB,AACD,oFACE,yBAA0B,AAC1B,eAAgB,AAChB,kBAAmB,AACnB,WAAY,AACZ,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,WAAY,AACZ,cAAe,AACf,qBAAuB,CACxB,AACD,mEACE,kBAAmB,AACnB,aAAc,AACd,SAAU,AACV,UAAW,AACX,YAAa,AACb,MAAO,AACP,UAAW,AACX,mBAAsB,CACvB,AACD,gCACE,SAAW,CACZ,AACD,mCACE,mBAA4B,AAC5B,WAAa,AACb,SAAW,CACZ,AACD,2EACE,mBAA4B,AAC5B,6CAAqD,CACtD,AACD,yEACE,8BAAsC,CACvC,AACD,yFACE,QAAU,CACX,AACD,yBACE,6BACE,WAAa,CACd,CACF,AACD,yBACE,mEACE,aAAe,CAChB,AACD,6BACE,WAAa,CACd,AACD,iFACE,kBAAmB,AACnB,6BAA+B,AAC/B,gBAAkB,CACnB,AACD,2BACE,WAAa,CACd,AACD,2BACE,WAAa,CACd,AACD,2BACE,UAAY,CACb,AACD,8DACE,MAAQ,CACT,AACD,oLACE,QAAU,CACX,AACD,8DACE,UAAW,AACX,iBAAmB,CACpB,AACD,8DACE,OAAQ,AACR,iBAAmB,CACpB,CAEF,AAID,0HACE,UAAW,AACX,uBAA0B,CAC3B,AACD,0HACE,UAAW,AACX,cAAe,AACf,UAAY,CACb,AACD,gEACE,WAAY,AACZ,cAAe,AACf,8BAAmC,CACpC,AACD,+DACE,SAAW,CACZ,AACD,sDACE,UAAW,AACX,eAAiB,CAClB,AACD,kKACE,UAAW,AACX,cAAe,AACf,WAAY,AACZ,eAAiB,CAClB,AACD,oFACE,WAAY,AACZ,cAAe,AACf,+BAAmC,AACnC,eAAiB,CAClB,AACD,mFACE,UAAW,AACX,eAAiB,CAClB,AACD,4BACE,YAAa,AACb,WAAY,AACZ,UAAW,AACX,kBAAmB,AACnB,aAAc,AACd,sBAAuB,AACvB,UAAW,AACX,sBAAyB,CAC1B,AACD,6BACE,WAAY,AACZ,YAAa,AACb,UAAW,AACX,sBAAyB,CAC1B,AACD,mCACE,+BAAmC,AACnC,uCAA+C,CAChD,AACD,oCACE,+BAAmC,AACnC,wCAA+C,CAChD,AACD,mJACE,wBAA0B,CAC3B,AACD,+BACE,UAAa,CACd,AACD,iCACE,OAAQ,AACR,aAAc,AACd,qBAAuB,CACxB,AACD,0BACE,WAAY,AACZ,8BAAkC,AAClC,uBAAyB,AACzB,UAAW,AACX,UAAW,AACX,iBAAkB,AAClB,mDAAwD,CACzD,AACD,4BACE,WAAY,AACZ,OAAQ,AACR,8BAAkC,AAClC,UAAW,AACX,QAAS,AACT,iBAAkB,AAClB,mDAAwD,CACzD,AACD,8BACE,YAAa,AACb,+BAAmC,AACnC,yCAA+C,AAC/C,UAAW,AACX,iBAAkB,AAClB,sCAA0C,CAC3C,AACD,oCACE,wCAA6C,CAC9C,AACD,qCACE,wCAA6C,CAC9C","file":"start-menu.css","sourcesContent":[":global(#start_menu_switch_X7VIV):checked+.start-menu{\r\n  bottom: 40px;\r\n  height: 520px;\r\n  visibility: visible;\r\n  opacity: 1;\r\n}\r\n\r\n.start-menu{\r\n  position: absolute;\r\n  z-index: 9999900;\r\n  bottom: 35px;\r\n  height: 0;\r\n  width: 950px;\r\n  background: rgba(38, 47, 59, 0.98);\r\n  transition: height,bottom,opacity,visibility 0.5s,0.5s,0.5s,0.5s;\r\n  transition-timing-function: cubic-bezier(0, 1, 0, 1);\r\n  visibility: hidden;\r\n  overflow: hidden;\r\n  opacity: 0;\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n  flex-direction: row;\r\n}\r\n.item:hover{\r\n  background: rgba(255, 255, 255, 0.1);\r\n}\r\n.item:active{\r\n  background: rgba(255, 255, 255, 0.15);\r\n}\r\n.column-1{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  width: 46px;\r\n  display: flex;\r\n  flex-direction: column;\r\n  justify-content: space-between;\r\n  padding-top: 5px;\r\n  box-sizing: border-box;\r\n}\r\n.column-2{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  width: 233px;\r\n  padding-right: 15px;\r\n  position: relative;\r\n}\r\n.column-3{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  position: relative;\r\n  padding-right: 15px;\r\n  padding-top: 12px;\r\n  box-sizing: border-box;\r\n  flex: 1;\r\n}\r\n.item-c1{\r\n  width: 46px;\r\n  height: 46px;\r\n}\r\n.icon-ct-c1{\r\n  width: 25px;\r\n  height: 25px;\r\n  display: block;\r\n  position: relative;\r\n  margin: auto;\r\n  top: 50%;\r\n  transform: translate(0,-50%);\r\n  overflow: hidden;\r\n}\r\n.item-c2{\r\n  height: 34px;\r\n  box-sizing: border-box;\r\n  padding: 2px 5px 2px 16px;\r\n  position: relative;\r\n}\r\n.item-c2:not(.section-title):before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  line-height: 30px;\r\n  position: absolute;\r\n  width: 175px;\r\n  height: 30px;\r\n  left: 54px;\r\n}\r\n.item-c2.section-title:before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  line-height: 35px;\r\n}\r\n.item-c2.section-title:active{\r\n  margin-left: 2px;\r\n  margin-right: 2px;\r\n}\r\n.icon-ct-c2{\r\n  height: 30px;\r\n  width: 30px;\r\n  background: #515c6b;\r\n  display: inline-block;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n.content-c2{\r\n  height: 100%;\r\n  width: 270px;\r\n  overflow: hidden;\r\n  overflow-y: scroll;\r\n  padding: 8px 20px 60px 0;\r\n  box-sizing: border-box;\r\n}\r\n.content-c3{\r\n  height: 100%;\r\n  width: 110%;\r\n  padding-right: 50px;\r\n  overflow: hidden;\r\n  overflow-y: scroll;\r\n}\r\n.c3-column{\r\n  width: 322px;\r\n  display: inline-block;\r\n  box-sizing: border-box;\r\n  padding: 0 5px 10px 5px;\r\n  vertical-align: top;\r\n}\r\n.box-group{\r\n  display: inline-block;\r\n  margin-bottom: 20px;\r\n}\r\n.group-title{\r\n  width: 100%;\r\n  height: 30px;\r\n  line-height: 30px;\r\n  font-size: 12px;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  box-sizing: border-box;\r\n  padding-left: 2px;\r\n}\r\n.group-content{\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n}\r\n.box{\r\n  display: inline-block;\r\n  background: #515c6b;\r\n  margin: 2px;\r\n  box-sizing: border-box;\r\n  position: relative;\r\n  overflow: hidden;\r\n}\r\n.box:not(.box-ct):hover{\r\n  outline: 2px solid rgba(255,255,255,0.5);\r\n  outline-offset: -2px;\r\n}\r\n.box:not(.box-ct):active{\r\n  outline: unset;\r\n  transform: scale(0.98);\r\n}\r\n.box-ct{\r\n  background: transparent!important;\r\n  position: relative;\r\n}\r\n.box-ct>.box-r{\r\n  position: absolute;\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 1;\r\n  top: 0;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(1){\r\n  margin: 0 2px 2px 0;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(2){\r\n  margin: 0 0 2px 2px;;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(3){\r\n  margin: 2px 2px 0 0;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(4){\r\n  margin: 2px 0 0 2px;\r\n}\r\n.box-null{\r\n  background: transparent!important;\r\n  pointer-events: none;\r\n}\r\n.box-1{\r\n  width: 48px;\r\n}\r\n.box-4{\r\n  width: 100px;\r\n}\r\n.box-8{\r\n  width: 204px\r\n}\r\n.box-8>.box-r{\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 1;\r\n  top: 0;\r\n}\r\n.box-8>.box-h{\r\n  width: 50%;\r\n  display: inline-block;\r\n}\r\n.box-4:before, .box-8>.box-h:before, .box-ct:before, .box-1:before{\r\n  content: \"\";\r\n  display: inline-block;\r\n  padding-bottom: 100%;\r\n  vertical-align: middle;\r\n}\r\n.box-4:after, .box-8>.box-r:after{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  position: absolute;\r\n  bottom: 5px;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  width: 100%;\r\n  padding: 0 6px;\r\n  box-sizing: border-box;\r\n}\r\n.column-switch, .switch-responser{\r\n  position: absolute;\r\n  display: none;\r\n  margin: 0;\r\n  width: 50%;\r\n  height: 35px;\r\n  top: 0;\r\n  z-index: 4;\r\n  transition: all 0.15s;\r\n}\r\n.column-switch{\r\n  opacity: 0;\r\n}\r\n.switch-responser{\r\n  background: rgb(38, 47, 59);\r\n  opacity: 0.5;\r\n  z-index: 3;\r\n}\r\n.column-switch:checked+.switch-responser{\r\n  background: rgb(49, 59, 72);\r\n  box-shadow: 0 0 4px 0 rgba(255, 255, 255, 0.7) inset;\r\n}\r\n.column-switch:hover+.switch-responser{\r\n  background: rgba(255, 255, 255, 0.15);\r\n}\r\n.switch-2, .switch-2+.switch-responser{\r\n  left: 50%;\r\n}\r\n@media (max-width: 930px) {\r\n  .start-menu{\r\n    width: 627px;\r\n  }\r\n}\r\n@media (max-width: 590px){\r\n  .column-switch, .switch-responser{\r\n    display: block;\r\n  }\r\n  .start-menu{\r\n    width: 340px;\r\n  }\r\n  .column-1, .column-2, .column-3{\r\n    position: absolute;\r\n    transition: left 0.2s ease-out;\r\n    padding-top: 38px;\r\n  }\r\n  .column-1{\r\n    left: -279px;\r\n  }\r\n  .column-2{\r\n    left: -233px;\r\n  }\r\n  .column-3{\r\n    left: 340px;\r\n  }\r\n  .switch-1:checked~.column-1{\r\n    left: 0;\r\n  }\r\n  .switch-1:checked~.column-2>.scrollbar, .switch-2:checked~.column-3>.scrollbar{\r\n    left: 2px;\r\n  }\r\n  .switch-1:checked~.column-2{\r\n    left: 64px;\r\n    padding-left: 18px;\r\n  }\r\n  .switch-2:checked~.column-3{\r\n    left: 0;\r\n    padding-left: 18px;\r\n  }\r\n\r\n}\r\n\r\n\r\n\r\n.column-2:hover>.scrollbar, .column-3:hover>.scrollbar{\r\n  opacity: 1;\r\n  transition: opacity 0.05s;\r\n}\r\n.scrollbar:hover .slot-up, .scrollbar:hover .slot-down{\r\n  opacity: 1;\r\n  margin-left: 0;\r\n  width: 100%;\r\n}\r\n.scrollbar:hover .slot-middle{\r\n  width: 100%;\r\n  margin-left: 0;\r\n  background: rgba(255,255,255,0.25);\r\n}\r\n.scrollbar:hover>.scroll-btn{\r\n  opacity: 1;\r\n}\r\n.scrollbar.dragging{\r\n  opacity: 1;\r\n  transition: none;\r\n}\r\n.scrollbar.dragging .slot-up, .scrollbar.dragging .slot-down{\r\n  opacity: 1;\r\n  margin-left: 0;\r\n  width: 100%;\r\n  transition: none;\r\n}\r\n.scrollbar.dragging .slot-middle{\r\n  width: 100%;\r\n  margin-left: 0;\r\n  background: rgba(255,255,255,0.25);\r\n  transition: none;\r\n}\r\n.scrollbar.dragging>.scroll-btn{\r\n  opacity: 1;\r\n  transition: none;\r\n}\r\n.scrollbar{\r\n  height: 100%;\r\n  width: 13px;\r\n  opacity: 0;\r\n  position: absolute;\r\n  display: flex;\r\n  flex-direction: column;\r\n  right: 2px;\r\n  transition: opacity 0.2s;\r\n}\r\n.scroll-btn{\r\n  width: 13px;\r\n  height: 13px;\r\n  opacity: 0;\r\n  transition: opacity 0.2s;\r\n}\r\n.scroll-btn:hover{\r\n  background: rgba(255,255,255,0.15);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.10);\r\n}\r\n.scroll-btn:active{\r\n  background: rgba(255,255,255,0.45);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);\r\n}\r\n.scroll-btn:active>.scroll-angle:before, .scroll-btn:active>.scroll-angle:after{\r\n  background-color: #262f3b;\r\n}\r\n.scroll-angle{\r\n  opacity: 0.7;\r\n}\r\n.scroll-control{\r\n  flex: 1;\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.slot-up{\r\n  width: 100%;\r\n  background: rgba(255,255,255,0.1);\r\n  transition: opacity 0.2s;\r\n  opacity: 0;\r\n  width: 2px;\r\n  margin-left: 11px;\r\n  transition: opacity,width,margin-left 0.15s,0.15s,0.15s;\r\n}\r\n.slot-down{\r\n  width: 100%;\r\n  flex: 1;\r\n  background: rgba(255,255,255,0.1);\r\n  opacity: 0;\r\n  width: 0;\r\n  margin-left: 100%;\r\n  transition: opacity,width,margin-left 0.15s,0.15s,0.15s;\r\n}\r\n.slot-middle{\r\n  height: 70px;\r\n  background: rgba(255,255,255,0.55);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);\r\n  width: 2px;\r\n  margin-left: 11px;\r\n  transition: width,margin-left 0.15s,0.15s;\r\n}\r\n.slot-middle:hover{\r\n  background: rgba(255,255,255,0.35)!important;\r\n}\r\n.slot-middle:active{\r\n  background: rgba(255,255,255,0.45)!important;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -4135,6 +4261,39 @@ exports.locals = {
 	"iconCtC2": "start-menu_icon-ct-c2_3leM4",
 	"content-c2": "start-menu_content-c2_1xhdq",
 	"contentC2": "start-menu_content-c2_1xhdq",
+	"content-c3": "start-menu_content-c3_3-GiE",
+	"contentC3": "start-menu_content-c3_3-GiE",
+	"c3-column": "start-menu_c3-column_2CxD_",
+	"c3Column": "start-menu_c3-column_2CxD_",
+	"box-group": "start-menu_box-group_LmzHl",
+	"boxGroup": "start-menu_box-group_LmzHl",
+	"group-title": "start-menu_group-title_3kENJ",
+	"groupTitle": "start-menu_group-title_3kENJ",
+	"group-content": "start-menu_group-content_14orD",
+	"groupContent": "start-menu_group-content_14orD",
+	"box": "start-menu_box_I77kG",
+	"box-ct": "start-menu_box-ct_2zMKJ",
+	"boxCt": "start-menu_box-ct_2zMKJ",
+	"box-r": "start-menu_box-r_2-b02",
+	"boxR": "start-menu_box-r_2-b02",
+	"box-1": "start-menu_box-1_3zHU2",
+	"box1": "start-menu_box-1_3zHU2",
+	"box-null": "start-menu_box-null_29fW6",
+	"boxNull": "start-menu_box-null_29fW6",
+	"box-4": "start-menu_box-4_3zImJ",
+	"box4": "start-menu_box-4_3zImJ",
+	"box-8": "start-menu_box-8_Tigl8",
+	"box8": "start-menu_box-8_Tigl8",
+	"box-h": "start-menu_box-h_2-zkg",
+	"boxH": "start-menu_box-h_2-zkg",
+	"column-switch": "start-menu_column-switch_1joLV",
+	"columnSwitch": "start-menu_column-switch_1joLV",
+	"switch-responser": "start-menu_switch-responser_1rW-8",
+	"switchResponser": "start-menu_switch-responser_1rW-8",
+	"switch-2": "start-menu_switch-2_17EgF",
+	"switch2": "start-menu_switch-2_17EgF",
+	"switch-1": "start-menu_switch-1_36-9k",
+	"switch1": "start-menu_switch-1_36-9k",
 	"scrollbar": "start-menu_scrollbar_1i3sa",
 	"slot-up": "start-menu_slot-up_1YrSG",
 	"slotUp": "start-menu_slot-up_1YrSG",
