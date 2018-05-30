@@ -61,11 +61,13 @@ class Item extends Component{
     this.imgStyle ={
       width: 'auto',
       height: '70%',
+      maxWidth: '85%',
       position: 'relative',
       left: '50%',
       top: '50%',
       transform: 'translate(-50%,-50%)',
-      display: 'block'
+      display: 'block',
+      pointerEvents: 'none'
     }
     this.imgStyleNotReady = {
       display: 'none'
@@ -113,12 +115,14 @@ class BackgroundItem extends Component{
     }
     this.imgStyle ={
       width: 'auto',
-      height: '90%',
+      height: '85%',
+      maxWidth: '90%',
       position: 'relative',
       left: '50%',
       top: '50%',
       transform: 'translate(-50%,-50%)',
-      display: 'block'
+      display: 'block',
+      pointerEvents: 'none'
     }
     this.imgStyleNotReady = {
       display: 'none'

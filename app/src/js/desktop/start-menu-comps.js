@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
+import Utils from '../components/Utils.js'
+
 import Icon from '../components/icon.js'
 
 import css from '../../css/desktop/start-menu.css'
@@ -137,6 +139,7 @@ class ItemsColumnThree extends Component{
     this.state = {
 
     }
+    this.columns()
   }
   onScroll(){
     this.scrollbar.onScroll()
@@ -144,17 +147,93 @@ class ItemsColumnThree extends Component{
   onMouseEnter(){
     this.scrollbar.setUpScroll(this.refs.toScroll)
   }
+  columns(){
+    const groups = this.props.boxGroups
+    let column1 = []
+    let column2 = []
+    column1.depth = column2.depth = 0
+    for (let i = 0; i < groups.length; i++) {
+      let boxes = groups[i].boxes
+      let depth = 1
+      let layer_size = 0
+      let was_box1 = 0
+      let layers = []
+      let layer = []
+      for (let i = 0; i < boxes.length; i++) {
+        let box = boxes[i]
+        let size = box.size
+        if(12-layer_size >= size){
+          if(was_box1){
+            if(size == 1){
+              layer_size += 1
+              layer[layer.length-1].push(box)
+            }
+            else{
+              was_box1 = 0
+              let supp = 4 - layer_size%4
+              layer_size += size + supp
+              layer.push(box)
+            }
+          }else{
+            if(size == 1){
+              was_box1 = 1
+              layer.push([box])
+            }else{
+              layer.push(box)
+            }
+            layer_size += size
+          }
+          if(layer_size==12){
+            depth ++
+            layers.push(layer)
+            layer_size = 0
+            layer = []
+          }else if(i==boxes.length-1){
+            layers.push(layer)
+          }
+        }else{
+          depth++
+          layers.push(layer)
+          layer_size = size
+          layer = []
+          if(size==1){
+            was_box1 = 1
+            layer.push([box])
+          }else{
+            was_box1 = 0
+            layer.push(box)
+          }
+          if(i==boxes.length-1){
+            layers.push(layer)
+          }
+        }
+      }
+      groups[i].layers = layers
+      if(column1.depth<=column2.depth){
+        column1.push(groups[i])
+        column1.depth += depth
+      }else {
+        column2.push(groups[i])
+        column2.depth += depth
+      }
+    }
+    let groups1 =  column1.map((group, index)=>{
+      return <BoxGroup data={group} key={'groups1'+index}/>
+    })
+    let groups2 =  column2.map((group, index)=>{
+      return <BoxGroup data={group} key={'groups2'+index}/>
+    })
+    this.columns = [
+      <div className={css.c3Column} key='column1'>{groups1}</div>,
+      <div className={css.c3Column} key='column2'>{groups2}</div>,
+    ]
+  }
   render(){
     return (
       <div className={css.column3} onScroll={(e)=>this.onScroll()} onMouseEnter={(e)=>this.onMouseEnter()}>
         <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this}/>
         <div className={css.contentC3} ref={'toScroll'}>
-          <div className={css.c3Column}>
-            <BoxGroup/>
-          </div>
-          <div className={css.c3Column}>
-            <BoxGroup/><BoxGroup/>
-          </div>
+          {this.columns}
         </div>
       </div>
     )
@@ -166,40 +245,75 @@ class BoxGroup extends Component{
     this.state = {
 
     }
+    this.boxes = this.parseLayers(this.props.data.layers)
+  }
+  parseLayers(layers){
+    let boxes = []
+    for (let i = 0; i < layers.length; i++) {
+      let layer = layers[i]
+      let layer_size = 0
+      for (let j = 0; j < layer.length; j++) {
+        let boxx = layer[j]
+        if(boxx instanceof Array){
+          let box1s = []
+          for (let k = 0; k < boxx.length; k++) {
+            box1s.push(
+              <div className={css.box+' '+css['box1']} key={j+'_box1_'+k+''+i}>
+                <Box data={boxx[k]}/>
+              </div>
+            )
+          }
+          while(box1s.length<4){
+            box1s.push(
+              <div className={css.box+' '+css['box1']+' '+css.boxNull} key={j+'_box1_null_'+box1s.length+''+i}></div>
+            )
+          }
+          boxes.push(
+            <div className={css.box+' '+css['box4']+' '+css.boxCt} key={j+'_box1_ct_'+i}>
+              <div className={css.boxR}>
+                {box1s}
+              </div>
+            </div>
+          )
+          layer_size += 4
+        }else{
+          if(boxx.size==4){
+            boxes.push(
+              <div className={css.box+' '+css['box4']} data-title={boxx.name} key={j+'_box4_'+i}>
+                <Box data={boxx}/>
+              </div>
+            )
+            layer_size += 4
+          }else if (boxx.size==8) {
+            boxes.push(
+              <div className={css.box+' '+css['box8']} key={j+'_box8_'+i}>
+                <div className={css.boxR} data-title={boxx.name}>
+                  <Box data={boxx}/>
+                </div>
+                <div className={css.boxH}></div>
+                <div className={css.boxH}></div>
+              </div>
+            )
+            layer_size += 8
+          }
+        }
+      }
+      let _key = 0
+      while(layer_size<12){
+        boxes.push(
+          <div className={css.box+' '+css['box4']+' '+css.boxNull} key={_key+++'_box_null_'+i}></div>
+        )
+        layer_size += 4
+      }
+    }
+    return boxes
   }
   render(){
     return (
       <div className={css.boxGroup}>
-        <div className={css.groupTitle}>Title</div>
+        <div className={css.groupTitle}>{this.props.data.name}</div>
         <div className={css.groupContent}>
-          <div className={css.box+' '+css['box4']} data-title={'box-4 title'}></div>
-          <div className={css.box+' '+css['box8']}>
-            <div className={css.boxR} data-title={'box-8 title'}></div>
-            <div className={css.boxH}></div>
-            <div className={css.boxH}></div>
-          </div>
-          <div className={css.box+' '+css['box4']} data-title={'box-4 title'}></div>
-          <div className={css.box+' '+css['box4']+' '+css.boxCt}>
-            <div className={css.boxR}>
-              <div className={css.box+' '+css['box1']}></div>
-              <div className={css.box+' '+css['box1']}></div>
-              <div className={css.box+' '+css['box1']}></div>
-              <div className={css.box+' '+css['box1']+' '+css.boxNull}></div>
-            </div>
-          </div>
-          <div className={css.box+' '+css['box4']+' '+css.boxNull}></div>
-          <div className={css.box+' '+css['box4']} data-title={'box-4 title'}></div>
-          <div className={css.box+' '+css['box4']} data-title={'box-4 title'}></div>
-          <div className={css.box+' '+css['box4']+' '+css.boxNull}></div>
-          <div className={css.box+' '+css['box4']+' '+css.boxNull}></div>
-          <div className={css.box+' '+css['box8']}>
-            <div className={css.boxR} data-title={'box-8 title'}></div>
-            <div className={css.boxH}></div>
-            <div className={css.boxH}></div>
-          </div>
-          {/*<Box type={4}/><Box type={8}/>
-
-          */}
+          {this.boxes}
         </div>
       </div>
     )
@@ -210,15 +324,173 @@ class Box extends Component{
   constructor(props){
     super(props)
     this.state = {
-
+      imgReady: 0
     }
+    this.imgStyle ={
+      width: 'auto',
+      height: '65%',
+      maxWidth: '80%',
+      position: 'relative',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%,-50%)',
+      display: 'block',
+      pointerEvents: 'none'
+    }
+    this.imgStyleNotReady = {
+      display: 'none'
+    }
+    if(this.props.data.faces){
+      if(this.props.data.roll)
+        this.createRollAnimation()
+      else
+        this.createSlideAnimation()
+    }
+    if(this.props.data.icon.text)
+      setTimeout(()=>{
+        this.refs.self.parentNode.style.color = this.props.data.icon.text
+      }, 10)
+  }
+  createRollAnimation(){
+    let faces = this.props.data.faces
+    if(!(faces.length>1)) return
+    const length = faces.length
+    const transition_time = this.props.data.transition?this.props.data.transition:0.5
+    const display_time = this.props.data.display?this.props.data.display:8
+    const animation_name = this.props.data.id + '_box_animation'
+    let whole_time = (display_time+transition_time)*length
+    for (let i = 0; i < faces.length; i++) {
+      faces[i].animation = {}
+      faces[i].animation.delay = i*display_time +i*transition_time +'s'
+      faces[i].animation.name = animation_name
+      faces[i].animation.time = whole_time + 's'
+    }
+    let p = display_time/whole_time *100
+    let tp = transition_time/whole_time *100
+    Utils.addKeyFrames(animation_name,
+      '0%{transform:rotateX(-120deg);visibility:visible;}'+
+      tp+'%{transform:rotateX(0);visibility:visible;}'+
+      (p+tp)+'%{transform:rotateX(0);visibility:visible;}'+
+      (p+tp+tp)+'%{transform:rotateX(120deg);visibility:visible;}'+
+      (p+tp+tp+0.001)+'%{transform:rotateX(120deg);visibility:hidden;}'+
+      '99.999%{transform:rotateX(120deg);visibility:hidden;}'+
+      '100%{transform:rotateX(120deg);visibility:visible;}'
+    )
+
+  }
+  createSlideAnimation(){
+
+  }
+  imgOnload(){
+    this.setState({
+      imgReady: 1
+    })
   }
   render(){
     return (
-      <div className={css.box+' '+css['box'+this.props.type]}></div>
+      <div className={css.boxContent+' '+(this.props.data.roll?css.box3D:'')} ref='self'
+            style={!this.props.data.faces?
+                {backgroundColor:this.props.data.icon.background}:{}}>
+        {
+          this.props.data.faces?this.props.data.faces.map((face, index)=>{
+            if(index==0){
+              return <BoxFace face={face} key={index} icon={this.props.data.icon} size={this.props.data.size}/>
+            }
+            return <BoxFace face={face} key={index} size={this.props.data.size}/>
+          })
+          :
+          (
+            this.props.data.icon.URL?
+              [
+                <img style={this.state.imgReady?this.imgStyle:this.imgStyleNotReady}
+                src={this.props.data.icon.URL} onLoad={()=>this.imgOnload()} key='uWA13NQJIMG'/>
+                ,
+                this.state.imgReady?'':<Icon className={"unknown box"+this.props.data.size} key='NIWA13NQJ'/>
+              ]
+            :
+            <Icon className={this.props.data.icon.className+' box'+this.props.data.size}/>
+          )
+
+        }
+      </div>
     )
   }
-
+}
+class BoxFace extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      imgReady: 0
+    }
+    this.imgStyle ={
+      width: 'auto',
+      height: '65%',
+      maxWidth: '80%',
+      position: 'relative',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%,-50%)',
+      display: 'block',
+      pointerEvents: 'none'
+    }
+    this.imgStyleNotReady = {
+      display: 'none'
+    }
+    this.imgStyleFace = {
+      width: 'auto',
+      width: '100%',
+      position: 'relative',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%,-50%)',
+      display: 'block',
+      pointerEvents: 'none',
+      zIndex: -1,
+      overflow: 'hidden'
+    }
+  }
+  imgOnload(){
+    this.setState({
+      imgReady: 1
+    })
+  }
+  render(){
+    let animation = this.props.face.animation
+    if(this.props.icon)
+      return(
+        <div className={css.boxFace}
+            style={{animationName:animation.name,animationDuration:animation.time,
+              animationDelay:animation.delay, backgroundColor:this.props.icon.background}}>
+          {
+            this.props.icon.URL?
+              [
+                <img style={this.state.imgReady?this.imgStyle:this.imgStyleNotReady}
+                src={this.props.icon.URL} onLoad={()=>this.imgOnload()} key='1DgALBRVIMG'/>
+                ,
+                this.state.imgReady?'':<Icon className={"unknown box"+this.props.size} key='1DgALBRV'/>
+              ]
+            :
+            <Icon className={this.props.icon.className+' box'+this.props.size}/>
+          }
+        </div>
+      )
+    else
+    return (
+      <div className={css.boxFace}
+        style={{animationName:animation.name,
+          animationDuration:animation.time,
+          animationDelay:animation.delay}}>
+        {
+          [
+            <img style={this.state.imgReady?this.imgStyleFace:this.imgStyleNotReady}
+            src={this.props.face.URL} onLoad={()=>this.imgOnload()} key='1DgALBRVIMG2'/>
+            ,
+            this.state.imgReady?'':<Icon className={"unknown box"+this.props.size} key='1DgALBRV2'/>
+          ]
+        }
+      </div>
+    )
+  }
 }
 class Item extends Component{
   constructor(props){
@@ -229,11 +501,13 @@ class Item extends Component{
     this.imgStyle ={
       width: 'auto',
       height: '70%',
+      maxWidth: '85%',
       position: 'relative',
       left: '50%',
       top: '50%',
       transform: 'translate(-50%,-50%)',
-      display: 'block'
+      display: 'block',
+      pointerEvents: 'none'
     }
     this.imgStyleNotReady = {
       display: 'none'

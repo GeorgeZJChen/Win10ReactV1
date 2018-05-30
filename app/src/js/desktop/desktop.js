@@ -26,7 +26,6 @@ class Desktop extends Component{
   }
 
   render(){
-    console.log('render desktop');
     return (
       <div className={css.desktop}>
         <img className={css.backgroundImg} src={this.state.imgURL} onLoad={()=>this.setState({imgReady:1})}/>

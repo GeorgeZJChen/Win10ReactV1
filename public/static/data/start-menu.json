@@ -253,5 +253,173 @@
       "latest": 0,
       "often": 0
     }
+  ],
+  "boxGroups": [
+    {
+      "name": "Create",
+      "boxes": [
+        {
+          "name": "UoD",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown", "URL": "https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"}
+        },
+        {
+          "name": "Box 8",
+          "size": 8,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 1",
+          "size": 1,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 1",
+          "size": 1,
+          "icon": {"background": "", "className": "unknown", "URL": ""}
+        },
+        {
+          "name": "Box 1",
+          "size": 1,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Espresso",
+          "size": 8,
+          "icon": {"background": "rgb(0,120,215)", "URL": "https://espressoapp.com/air/images/logo.svg"},
+          "id": "NBkAOIaib",
+          "roll": 1,
+          "faces": [
+            {
+              "URL": "/static/img/login_1.jpg"
+            },
+            {
+              "URL": "/static/img/desktop_1.jpg"
+            },
+            {
+              "URL": "/static/img/desktop_2.jpg"
+            },
+            {
+              "URL": "/static/img/login_1.jpg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Play",
+      "boxes": [
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Google",
+          "size": 4,
+          "icon": {"background": "#fff", "text":"#333", "URL": "https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"}
+        },
+        {
+          "name": "Youtube",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown", "URL": "https://upload.wikimedia.org/wikipedia/commons/4/40/Youtube_icon.svg"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        }
+      ]
+    },
+    {
+      "name": "Browse",
+      "boxes": [
+        {
+          "name": "Google",
+          "size": 8,
+          "icon": {"background": "#fff",  "className": "unknown", "URL": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Microsoft",
+          "size": 8,
+          "icon": {"background": "#8794b0", "className": "unknown", "URL": "https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg"}
+        }
+      ]
+    },
+    {
+      "name": "Study",
+      "boxes": [
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 8",
+          "size": 8,
+          "icon": {"background": "", "className": "unknown"}
+        }
+      ]
+    }
   ]
 }

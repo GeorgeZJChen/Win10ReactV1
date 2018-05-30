@@ -35,7 +35,7 @@ class StartMenu extends Component{
         ( <React.Fragment>
             <ItemsColumnOne/>
             <ItemsColumnTwo appList = {this.state.data.appList}/>
-            <ItemsColumnThree boxView = {this.state.data.boxView}/>
+            <ItemsColumnThree boxGroups = {this.state.data.boxGroups}/>
           </React.Fragment>  ):''
       }
       </div>

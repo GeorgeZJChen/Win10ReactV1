@@ -4,7 +4,6 @@ class MyEvents extends EventEmitter{}
 
 const myEvents =  new MyEvents()
 let ec = 1000
-
 myEvents.names = {  //register names
   desktopReady:   ec+++'',
   to_taskbar_add_new_task:   ec+++'',
