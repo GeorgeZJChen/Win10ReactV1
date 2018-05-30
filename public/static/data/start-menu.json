@@ -301,16 +301,16 @@
           "roll": 1,
           "faces": [
             {
-              "URL": "/static/img/login_1.jpg"
+              "URL": "static/img/login_1.jpg"
             },
             {
-              "URL": "/static/img/desktop_1.jpg"
+              "URL": "static/img/desktop_1.jpg"
             },
             {
-              "URL": "/static/img/desktop_2.jpg"
+              "URL": "static/img/desktop_2.jpg"
             },
             {
-              "URL": "/static/img/login_1.jpg"
+              "URL": "static/img/login_1.jpg"
             }
           ]
         }
