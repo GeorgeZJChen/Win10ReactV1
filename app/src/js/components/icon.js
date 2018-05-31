@@ -6,13 +6,25 @@ const innerHTML = {
   "lock": (<span className={icon.lockRing}></span>),
   "WLAN-signal": (<span className={icon['WLAN-signal-inner']}></span>),
   "teamviewer": (<span className={icon['teamviewer-inner']}></span>),
-  'weChat': (<span><span className={icon['weChat-inner1']}></span><span className={icon['weChat-inner2']}></span></span>),
+  'wechat': (<span><span className={icon['wechat-inner1']}></span><span className={icon['wechat-inner2']}></span></span>),
   "portrait" : (<span className={icon['portrait-inner']}></span>),
-  "eclipse-neon": (<span className={icon['eclipse-neon-inner']}></span>)
+  "eclipse-neon": (<span className={icon['eclipse-neon-inner']}></span>),
+  "word": <span className={icon['word-inner']}>W</span> ,
+  "powerpoint": <span className={icon['powerpoint-inner']}>P<span className={icon['powerpoint-inner-inner']}>L</span></span> ,
+  "excel": <span className={icon['excel-inner']}>X</span> ,
+  "onenote": <span className={icon['onenote-inner']}>N</span>,
+  "qq": <span className={icon['qq-inner']}>N</span>,
+  "atom": (
+    <React.Fragment>
+      <span className={icon['atom-oval']}></span>
+      <span className={icon['atom-oval']+' '+icon['atom-oval-1']}></span>
+      <span className={icon['atom-oval']+' '+icon['atom-oval-2']}></span>
+    </React.Fragment>
+  )
 }
 let empty = [
   "windows-logo", "angle", "resource-manager", "unknown", "operations", "kugou", "setting",
-  "shutdown"
+  "shutdown", "mailbox", "skype"
 ]
 for (var i = 0; i < empty.length; i++) {
   innerHTML[empty[i]] = ""
@@ -28,7 +40,7 @@ class Icon extends Component{
     const classes = this.className.split(/\s+/)
     let full_name = ''
     let first_name = ''
-    for (let i = 0; i < classes.length; i++) {
+    for (let i = 0; i < classes.length; i++){
       if(i==0){
         first_name = classes[i]
       }

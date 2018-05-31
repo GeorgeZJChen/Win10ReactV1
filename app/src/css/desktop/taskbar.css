@@ -5,7 +5,7 @@
   bottom: 0;
   height: 40px;
   width: 100%;
-  background: rgba(30, 37, 46, 0.85);
+  background-color: rgba(30, 37, 46, 0.85);
 }
 .tb-left, .tb-task {
   display: flex;
@@ -29,13 +29,13 @@
   position: relative;
 }
 .item:hover{
-  background: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 .item:active{
-  background: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 .item-cortana:active{
-  background: rgba(255, 255, 255, 0.13);
+  background-color: rgba(255, 255, 255, 0.13);
 }
 .item-menu, .item-cortana{
   margin-right: 0;
@@ -74,21 +74,21 @@
 }
 
 :global(#start_menu_switch_X7VIV):hover~.taskbar .item-menu {
-  background: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 :global(#start_menu_switch_X7VIV):active~.taskbar .item-menu {
-  background: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 :global(#start_menu_switch_X7VIV):checked~.taskbar .item-menu {
-  background: rgba(255, 255, 255, 0.17);
+  background-color: rgba(255, 255, 255, 0.17);
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);
 }
 :global(#start_menu_switch_X7VIV):checked:active~.taskbar .icon-start-menu:before {
-  background: #515c6b;
+  background-color: #515c6b;
   color: #515c6b;
 }
 :global(#start_menu_switch_X7VIV):hover~.taskbar .icon-start-menu:before {
-  background: #6e7d91;
+  background-color: #6e7d91;
   color: #6e7d91;
 }
 .task-switch{
@@ -119,19 +119,19 @@
   margin-right: 1px;
 }
 .task-switch:hover~.switch-responser{
-  background: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.12);
 }
 .task-switch:active~.switch-responser{
-  background: rgba(255, 255, 255, 0.07);
+  background-color: rgba(255, 255, 255, 0.07);
 }
 .task-switch:checked~.switch-responser{
-  background: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.12);
 }
 .task-switch:checked:active~.switch-responser{
-  background: rgba(255, 255, 255, 0.07)!important;
+  background-color: rgba(255, 255, 255, 0.07)!important;
 }
 .task-switch:checked:hover~.switch-responser{
-  background: rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.18);
 }
 .tb-tasks{
   display: block;
@@ -149,7 +149,7 @@
     flex-wrap: wrap;
     width: 240px;
     height: auto;
-    background: rgba(30, 37, 46, 0.85);
+    background-color: rgba(30, 37, 46, 0.85);
     box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.5);;
     z-index: -10;
     display: none;
@@ -192,7 +192,7 @@
   line-height: 150%;
 }
 .dtp:active, .operations:active{
-  background: rgba(200, 200, 200, 0.18);
+  background-color: rgba(200, 200, 200, 0.18);
 }
 .dtp{
   width: 76px;
@@ -208,10 +208,10 @@
   display: inline-block;
 }
 .item-bg:hover{
-  background: rgba(200, 200, 200, 0.12);
+  background-color: rgba(200, 200, 200, 0.12);
 }
 .item-bg:active{
-  background: rgba(200, 200, 200, 0.07);
+  background-color: rgba(200, 200, 200, 0.07);
 }
 .icon-ct-bg{
   display: block;
@@ -238,10 +238,10 @@
   display: flex;
 }
 .item-bg-hidden-switch:hover~.bg-switch-response{
-  background: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.12);
 }
 .item-bg-hidden-switch:active~.bg-switch-response{
-  background: rgba(255, 255, 255, 0.07);
+  background-color: rgba(255, 255, 255, 0.07);
 }
 .items-bg-hidden-ct{
   height: 100%;
@@ -254,7 +254,7 @@
   flex-wrap: wrap;
   position: absolute;
   bottom: 40px;
-  background: rgba(52, 61, 73, 0.9);
+  background-color: rgba(52, 61, 73, 0.9);
   box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.5);
   width: 160px;
   transform: translateX(-43%);

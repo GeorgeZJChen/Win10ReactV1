@@ -1,19 +1,21 @@
 :global(#start_menu_switch_X7VIV):checked+.start-menu{
-  bottom: 40px;
-  height: 520px;
+  height: 85%;
   visibility: visible;
+  min-height: 400px;
   opacity: 1;
+  transition: height,opacity,visibility 0.5s,0.5s,0.5s,0.5s;
+  transition-timing-function: cubic-bezier(0, 1, 0, 1);
 }
-
 .start-menu{
   position: absolute;
   z-index: 9999900;
-  bottom: 35px;
+  bottom: 40px;
   height: 0;
+  max-height: 900px;
   width: 950px;
-  background: rgba(38, 47, 59, 0.98);
-  transition: height,bottom,opacity,visibility 0.5s,0.5s,0.5s,0.5s;
-  transition-timing-function: cubic-bezier(0, 1, 0, 1);
+  background-color: rgba(38, 47, 59, 0.98);
+  transition: height,opacity,visibility 0.1s,0.1s,0.1s,0.1s;
+  transition-timing-function: cubic-bezier(1, 0, 1, 0);
   visibility: hidden;
   overflow: hidden;
   opacity: 0;
@@ -22,10 +24,10 @@
   flex-direction: row;
 }
 .item:hover{
-  background: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 .item:active{
-  background: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
 }
 .column-1{
   height: 100%;
@@ -68,6 +70,7 @@
 }
 .item-c2{
   height: 34px;
+  width: 233px;
   box-sizing: border-box;
   padding: 2px 5px 2px 16px;
   position: relative;
@@ -96,14 +99,14 @@
 .icon-ct-c2{
   height: 30px;
   width: 30px;
-  background: #515c6b;
+  background-color: #515c6b;
   display: inline-block;
   overflow: hidden;
   position: relative;
 }
 .content-c2{
   height: 100%;
-  width: 270px;
+  width: 300px;
   overflow: hidden;
   overflow-y: scroll;
   padding: 8px 20px 60px 0;
@@ -144,11 +147,10 @@
 }
 .box{
   display: inline-block;
-  background: #515c6b;
   margin: 2px;
   box-sizing: border-box;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 .box-content:hover, .box-face:hover{
   outline: 2px solid #bdbdbd;
@@ -161,7 +163,7 @@
   transform: scale(0.98);
 }
 .box-ct{
-  background: transparent!important;
+  background-color: transparent!important;
   position: relative;
 }
 .box-ct>.box-r{
@@ -186,7 +188,7 @@
   margin: 2px 0 0 2px;
 }
 .box-null{
-  background: transparent!important;
+  background-color: transparent!important;
   pointer-events: none;
 }
 .box-1{
@@ -217,7 +219,7 @@
 }
 .box-4:after, .box-8>.box-r:after{
   content: attr(data-title);
-  font-size: 12px;
+  font-size: 11px;
   position: absolute;
   bottom: 5px;
   overflow: hidden;
@@ -226,6 +228,8 @@
   width: 100%;
   padding: 0 6px;
   box-sizing: border-box;
+  pointer-events: none;
+  z-index: 100;
 }
 .box-face, .box-content{
   position: absolute;
@@ -233,12 +237,24 @@
   left: 0;
   width: 100%;
   height: 100%;
+  background-repeat: no-repeat;
+  background-position:center;
+  background-size: auto 100%;
+}
+.box-8 .box-face, .box-8 .box-content{
+  background-size: 100% auto;
+}
+.box-content:not(.box-3D){
+  background-color: #515c6b;
+  overflow: hidden;
 }
 .box-face{
+  overflow: hidden;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
 .box-3D{
+  background-color: transparent;
   transform-style: preserve-3d;
   perspective: 500px;
 }
@@ -263,16 +279,16 @@
   opacity: 0;
 }
 .switch-responser{
-  background: rgb(38, 47, 59);
+  background-color: rgb(38, 47, 59);
   opacity: 0.5;
   z-index: 3;
 }
 .column-switch:checked+.switch-responser{
-  background: rgb(49, 59, 72);
+  background-color: rgb(49, 59, 72);
   box-shadow: 0 0 4px 0 rgba(255, 255, 255, 0.7) inset;
 }
 .column-switch:hover+.switch-responser{
-  background: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
 }
 .switch-2, .switch-2+.switch-responser{
   left: 50%;
@@ -330,7 +346,7 @@
 .scrollbar:hover .slot-middle{
   width: 100%;
   margin-left: 0;
-  background: rgba(255,255,255,0.25);
+  background-color: rgba(255,255,255,0.25);
 }
 .scrollbar:hover>.scroll-btn{
   opacity: 1;
@@ -348,7 +364,7 @@
 .scrollbar.dragging .slot-middle{
   width: 100%;
   margin-left: 0;
-  background: rgba(255,255,255,0.25);
+  background-color: rgba(255,255,255,0.25);
   transition: none;
 }
 .scrollbar.dragging>.scroll-btn{
@@ -372,11 +388,11 @@
   transition: opacity 0.2s;
 }
 .scroll-btn:hover{
-  background: rgba(255,255,255,0.15);
+  background-color: rgba(255,255,255,0.15);
   box-shadow: 0 0 1px 0px rgba(255,255,255,0.10);
 }
 .scroll-btn:active{
-  background: rgba(255,255,255,0.45);
+  background-color: rgba(255,255,255,0.45);
   box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);
 }
 .scroll-btn:active>.scroll-angle:before, .scroll-btn:active>.scroll-angle:after{
@@ -392,7 +408,7 @@
 }
 .slot-up{
   width: 100%;
-  background: rgba(255,255,255,0.1);
+  background-color: rgba(255,255,255,0.1);
   transition: opacity 0.2s;
   opacity: 0;
   width: 2px;
@@ -402,7 +418,7 @@
 .slot-down{
   width: 100%;
   flex: 1;
-  background: rgba(255,255,255,0.1);
+  background-color: rgba(255,255,255,0.1);
   opacity: 0;
   width: 0;
   margin-left: 100%;
@@ -410,15 +426,15 @@
 }
 .slot-middle{
   height: 70px;
-  background: rgba(255,255,255,0.55);
+  background-color: rgba(255,255,255,0.55);
   box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);
   width: 2px;
   margin-left: 11px;
   transition: width,margin-left 0.15s,0.15s;
 }
 .slot-middle:hover{
-  background: rgba(255,255,255,0.35)!important;
+  background-color: rgba(255,255,255,0.35)!important;
 }
 .slot-middle:active{
-  background: rgba(255,255,255,0.45)!important;
+  background-color: rgba(255,255,255,0.45)!important;
 }

@@ -337,49 +337,64 @@ class Box extends Component{
       display: 'block',
       pointerEvents: 'none'
     }
+    if(this.props.data.icon&&this.props.data.icon.small){
+      this.imgStyle.height = '35%'
+      this.imgStyle.height = '38%'
+    }
     this.imgStyleNotReady = {
       display: 'none'
     }
     if(this.props.data.faces){
-      if(this.props.data.roll)
-        this.createRollAnimation()
-      else
-        this.createSlideAnimation()
+      this.createAnimation()
     }
-    if(this.props.data.icon.text)
+    if(this.props.data.icon&&this.props.data.icon.text)
       setTimeout(()=>{
         this.refs.self.parentNode.style.color = this.props.data.icon.text
       }, 10)
   }
-  createRollAnimation(){
+  createAnimation(){
     let faces = this.props.data.faces
-    if(!(faces.length>1)) return
-    const length = faces.length
-    const transition_time = this.props.data.transition?this.props.data.transition:0.5
-    const display_time = this.props.data.display?this.props.data.display:8
-    const animation_name = this.props.data.id + '_box_animation'
+    if(!(faces.length>0)) return
+    const default_transition = this.props.data.roll?0.5:1.5
+    const default_display = this.props.data.roll?8:5
+    let length = faces.length
+    let transition_time = this.props.data.transition?this.props.data.transition:default_transition
+    let display_time = this.props.data.display?this.props.data.display:default_display
+    let animation_name = this.props.data.id + '_box_animation_roll'
+    transition_time += transition_time*(Math.random()-0.5)/5
+    let stoch_delay = Math.random()*Math.min(display_time, 5) - transition_time
     let whole_time = (display_time+transition_time)*length
     for (let i = 0; i < faces.length; i++) {
       faces[i].animation = {}
-      faces[i].animation.delay = i*display_time +i*transition_time +'s'
+      faces[i].animation.delay = i*(display_time +transition_time) +stoch_delay +'s'
       faces[i].animation.name = animation_name
       faces[i].animation.time = whole_time + 's'
+      if(this.props.data.slide)
+        faces[i].animation.timingFunction = 'cubic-bezier(0.85, 0, 0.15, 1)'
     }
     let p = display_time/whole_time *100
     let tp = transition_time/whole_time *100
-    Utils.addKeyFrames(animation_name,
-      '0%{transform:rotateX(-120deg);visibility:visible;}'+
-      tp+'%{transform:rotateX(0);visibility:visible;}'+
-      (p+tp)+'%{transform:rotateX(0);visibility:visible;}'+
-      (p+tp+tp)+'%{transform:rotateX(120deg);visibility:visible;}'+
-      (p+tp+tp+0.001)+'%{transform:rotateX(120deg);visibility:hidden;}'+
-      '99.999%{transform:rotateX(120deg);visibility:hidden;}'+
-      '100%{transform:rotateX(120deg);visibility:visible;}'
-    )
-
-  }
-  createSlideAnimation(){
-
+    if(this.props.data.roll)
+      Utils.addKeyFrames(animation_name,
+        '0%{transform:rotateX(-120deg);visibility:visible;}'+
+        tp+'%{transform:rotateX(0);visibility:visible;}'+
+        (p+tp)+'%{transform:rotateX(0);visibility:visible;}'+
+        (p+tp+tp)+'%{transform:rotateX(120deg);visibility:visible;}'+
+        (p+tp+tp+0.01)+'%{transform:rotateX(120deg);visibility:hidden;}'+
+        '99.999%{transform:rotateX(120deg);visibility:hidden;}'+
+        '100%{transform:rotateX(120deg);visibility:visible;}'
+      )
+    else
+      Utils.addKeyFrames(animation_name,
+        '0%{top:100%;visibility:visible;z-index:5;}'+
+        tp+'%{top:0;visibility:visible;z-index:4;}'+
+        (p+tp)+'%{top:0;visibility:visible;z-index:4;}'+
+        (p+tp+tp)+'%{top:0;visibility:visible;z-index:3;}'+
+        (p+tp+tp+0.01)+'%{top:0%;visibility:visible;z-index:2}'+
+        '99.9%{top:0%;;visibility:visible;z-index:1}'+
+        '99.999%{top:100%;;visibility:hidden;z-index:1}'+
+        '100%{top:100%;;visibility:visible;z-index:5;}'
+      )
   }
   imgOnload(){
     this.setState({
@@ -387,10 +402,15 @@ class Box extends Component{
     })
   }
   render(){
+    let style
+    if(!this.props.data.faces){
+      style = {}
+      if(this.props.data.icon.background) style.backgroundColor = this.props.data.icon.background
+      if(this.props.data.icon.backgroundURL) style.backgroundImage = 'url('+this.props.data.icon.backgroundURL+')'
+    }
     return (
       <div className={css.boxContent+' '+(this.props.data.roll?css.box3D:'')} ref='self'
-            style={!this.props.data.faces?
-                {backgroundColor:this.props.data.icon.background}:{}}>
+            style={style}>
         {
           this.props.data.faces?this.props.data.faces.map((face, index)=>{
             if(index==0){
@@ -438,7 +458,7 @@ class BoxFace extends Component {
     }
     this.imgStyleFace = {
       width: 'auto',
-      width: '100%',
+      height: '100%',
       position: 'relative',
       left: '50%',
       top: '50%',
@@ -448,6 +468,10 @@ class BoxFace extends Component {
       zIndex: -1,
       overflow: 'hidden'
     }
+    if(this.props.size == 8){
+      this.imgStyleFace.width = '100%'
+      this.imgStyleFace.height = 'auto'
+    }
   }
   imgOnload(){
     this.setState({
@@ -456,30 +480,40 @@ class BoxFace extends Component {
   }
   render(){
     let animation = this.props.face.animation
-    if(this.props.icon)
+    let style = {}
+    if(animation){
+      style = {
+        animationName:animation.name,
+        animationDuration:animation.time,
+        animationDelay:animation.delay,
+      }
+      if(animation.timingFunction)
+        style.animationTimingFunction = animation.timingFunction
+    }
+    if(this.props.icon){
+      if(this.props.icon.background) style.backgroundColor = this.props.icon.background
+      if(this.props.icon.backgroundURL) style.backgroundImage = 'url('+this.props.icon.backgroundURL+')'
       return(
         <div className={css.boxFace}
-            style={{animationName:animation.name,animationDuration:animation.time,
-              animationDelay:animation.delay, backgroundColor:this.props.icon.background}}>
+        style={style}>
           {
             this.props.icon.URL?
-              [
-                <img style={this.state.imgReady?this.imgStyle:this.imgStyleNotReady}
-                src={this.props.icon.URL} onLoad={()=>this.imgOnload()} key='1DgALBRVIMG'/>
-                ,
-                this.state.imgReady?'':<Icon className={"unknown box"+this.props.size} key='1DgALBRV'/>
-              ]
+            [
+              <img style={this.state.imgReady?this.imgStyle:this.imgStyleNotReady}
+              src={this.props.icon.URL} onLoad={()=>this.imgOnload()} key='1DgALBRVIMG'/>
+              ,
+              this.state.imgReady?'':<Icon className={"unknown box"+this.props.size} key='1DgALBRV'/>
+            ]
             :
             <Icon className={this.props.icon.className+' box'+this.props.size}/>
           }
-        </div>
-      )
+          </div>
+        )
+    }
     else
     return (
       <div className={css.boxFace}
-        style={{animationName:animation.name,
-          animationDuration:animation.time,
-          animationDelay:animation.delay}}>
+        style={style}>
         {
           [
             <img style={this.state.imgReady?this.imgStyleFace:this.imgStyleNotReady}

@@ -87,6 +87,16 @@ class Login extends Component{
 
     Events.once(Events.names.desktopReady, (message)=>{
       setTimeout(()=>{
+        //speed up render: when user opens startmenu, it will not be the first time of render
+        let smsw = document.getElementById('start_menu_switch_X7VIV')
+        if(!smsw) return
+        smsw.click()
+        setTimeout(()=>{
+          smsw.click()
+        },100)
+      },500)
+
+      setTimeout(()=>{
         this.setState({
           opacity: 0
         })
@@ -102,7 +112,7 @@ class Login extends Component{
     })
   }
   getPortrait(){
-    /// TODO: 
+    /// TODO:
     if(this.userInfo.portraitURL){
       return (<img style={{width:'100%', height:'100%'}} src={this.userInfo.portraitURL}/>)
     }

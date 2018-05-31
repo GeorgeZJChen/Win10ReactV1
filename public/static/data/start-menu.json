@@ -264,42 +264,43 @@
           "icon": {"background": "", "className": "unknown", "URL": "https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"}
         },
         {
-          "name": "Box 8",
+          "name": "Mailbox",
           "size": 8,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "", "className": "mailbox"}
         },
         {
-          "name": "Box 4",
+          "name": "Tencent QQ",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "", "className": "qq"}
         },
         {
-          "name": "Box 4",
+          "name": "OneNote",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "#80397b", "className": "onenote"}
         },
         {
-          "name": "Box 1",
+          "name": "word",
           "size": 1,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "#4269a5", "className": "word"}
         },
         {
-          "name": "Box 1",
+          "name": "PowerPoint",
           "size": 1,
-          "icon": {"background": "", "className": "unknown", "URL": ""}
+          "icon": {"background": "#dc6141", "className": "powerpoint", "URL": ""}
         },
         {
-          "name": "Box 1",
+          "name": "Excel",
           "size": 1,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "#39825a", "className": "excel"}
         },
         {
-          "name": "Espresso",
+          "name": "Photos",
           "size": 8,
           "icon": {"background": "rgb(0,120,215)", "URL": "https://espressoapp.com/air/images/logo.svg"},
           "id": "NBkAOIaib",
           "roll": 1,
           "faces": [
+            {"TheFirstFaceDenotesIcon":""},
             {
               "URL": "static/img/login_1.jpg"
             },
@@ -320,14 +321,14 @@
       "name": "Play",
       "boxes": [
         {
-          "name": "Box 4",
+          "name": "Minesweeper",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "", "backgroundURL": "https://www.arkadium.com/wp-content/uploads/2015/12/windows-minesweeper.jpg"}
         },
         {
-          "name": "Box 4",
+          "name": "Films & TV",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "", "className": "films"}
         },
         {
           "name": "Google",
@@ -340,9 +341,9 @@
           "icon": {"background": "", "className": "unknown", "URL": "https://upload.wikimedia.org/wikipedia/commons/4/40/Youtube_icon.svg"}
         },
         {
-          "name": "Box 4",
+          "name": "GIPHY",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "#000", "backgroundURL": "https://media.giphy.com/media/K5kfQExKk731K/giphy.gif"}
         }
       ]
     },
@@ -350,39 +351,49 @@
       "name": "Browse",
       "boxes": [
         {
-          "name": "Google",
-          "size": 8,
-          "icon": {"background": "#fff",  "className": "unknown", "URL": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"}
-        },
-        {
-          "name": "Box 4",
-          "size": 4,
-          "icon": {"background": "", "className": "unknown"}
-        },
-        {
-          "name": "Box 4",
-          "size": 4,
-          "icon": {"background": "", "className": "unknown"}
-        },
-        {
-          "name": "Box 4",
-          "size": 4,
-          "icon": {"background": "", "className": "unknown"}
-        },
-        {
-          "name": "Box 4",
-          "size": 4,
-          "icon": {"background": "", "className": "unknown"}
-        },
-        {
-          "name": "Box 4",
-          "size": 4,
-          "icon": {"background": "", "className": "unknown"}
-        },
-        {
           "name": "Microsoft",
           "size": 8,
-          "icon": {"background": "#8794b0", "className": "unknown", "URL": "https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg"}
+          "icon": {"background": "#8794b0", "backgroundURL": "https://pangolin.com/wp-content/uploads/2015/07/WIN10HERO.jpg",
+             "URL": "https://live.asp.net/images/Microsoft_logo.svg"}
+        },
+        {
+          "name": "WeChat",
+          "size": 4,
+          "icon": {"background": "", "className": "wechat"}
+        },
+        {
+          "name": "Google Chrome",
+          "size": 4,
+          "icon": {"background": "#212121", "small":1, "URL": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/2000px-Google_Chrome_icon_%28September_2014%29.svg.png"}
+        },
+        {
+          "name": "Atom",
+          "size": 4,
+          "icon": {"background": "", "className": "atom atom-outline"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Box 4",
+          "size": 4,
+          "icon": {"background": "", "className": "unknown"}
+        },
+        {
+          "name": "Google DeepMind",
+          "size": 8,
+          "icon": {"background": "#fff",  "className": "unknown",
+             "URL": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"},
+          "slide": 1,
+          "id": "fcHHJ14O",
+          "display": 2,
+          "faces": [
+            {"TheFirstFaceDenotesIcon":""},
+            {"URL": "https://cdn-images-1.medium.com/max/1600/1*d90LegUfcHHJ14Ox4MtqKw.png"},
+            {"URL": "http://gaia.adage.com/images/bin/image/starcraft_deepmind.gif"}
+          ]
         }
       ]
     },
@@ -390,29 +401,46 @@
       "name": "Study",
       "boxes": [
         {
-          "name": "Box 4",
+          "name": "Amazon Web Service",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "", "URL": "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg"}
         },
         {
-          "name": "Box 4",
+          "name": "Weather",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "slide": 1,
+          "id": "VzrugK7d",
+          "faces": [
+            {"URL": "static/img/weather_sunny.jpg"},
+            {"URL": "static/img/weather_cloudy.jpg"},
+            {"URL": "static/img/weather_sunny.jpg"},
+            {"URL": "static/img/weather_sunny.jpg"},
+            {"URL": "static/img/weather_fair.jpg"}
+          ]
         },
         {
-          "name": "Box 4",
+          "name": "Weather",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "slide": 1,
+          "id": "BJHyK2iX",
+          "faces": [
+            {"URL": "static/img/weather_rain_showers.jpg"},
+            {"URL": "static/img/weather_clear.jpg"},
+            {"URL": "static/img/weather_light_rain.jpg"},
+            {"URL": "static/img/weather_light_rain.jpg"},
+            {"URL": "static/img/weather_sunny.jpg"},
+            {"URL": "static/img/weather_fair.jpg"}
+          ]
         },
         {
-          "name": "Box 4",
+          "name": "Firefox",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "#000f40", "URL": "https://upload.wikimedia.org/wikipedia/commons/6/67/Firefox_Logo%2C_2017.svg"}
         },
         {
-          "name": "Box 4",
+          "name": "Skype",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "#0078d7", "className": "skype"}
         },
         {
           "name": "Box 8",
