@@ -328,7 +328,7 @@ class Box extends Component{
     }
     this.imgStyle ={
       width: 'auto',
-      height: '65%',
+      maxHeight: '65%',
       maxWidth: '80%',
       position: 'relative',
       left: '50%',
@@ -444,7 +444,7 @@ class BoxFace extends Component {
     }
     this.imgStyle ={
       width: 'auto',
-      height: '65%',
+      maxHeight: '65%',
       maxWidth: '80%',
       position: 'relative',
       left: '50%',
@@ -471,6 +471,10 @@ class BoxFace extends Component {
     if(this.props.size == 8){
       this.imgStyleFace.width = '100%'
       this.imgStyleFace.height = 'auto'
+    }
+    if(this.props.face.fitHeight){
+      this.imgStyleFace.width = 'auto'
+      this.imgStyleFace.height = '100%'
     }
   }
   imgOnload(){
@@ -510,9 +514,10 @@ class BoxFace extends Component {
           </div>
         )
     }
-    else
-    return (
-      <div className={css.boxFace}
+    else{
+      if(this.props.face.background) style.backgroundColor = this.props.face.background
+      return (
+        <div className={css.boxFace}
         style={style}>
         {
           [
@@ -522,8 +527,9 @@ class BoxFace extends Component {
             this.state.imgReady?'':<Icon className={"unknown box"+this.props.size} key='1DgALBRV2'/>
           ]
         }
-      </div>
-    )
+        </div>
+      )
+    }
   }
 }
 class Item extends Component{
@@ -534,7 +540,7 @@ class Item extends Component{
     }
     this.imgStyle ={
       width: 'auto',
-      height: '70%',
+      maxHeight: '70%',
       maxWidth: '85%',
       position: 'relative',
       left: '50%',

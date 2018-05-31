@@ -1,7 +1,7 @@
 .taskbar {
   display: flex;
   position: fixed;
-  z-index: 9999998;
+  z-index: 999990;
   bottom: 0;
   height: 40px;
   width: 100%;

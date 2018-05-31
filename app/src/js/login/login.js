@@ -27,17 +27,6 @@ class Login extends Component{
   }
   componentDidMount() {
 
-    this.dateIntvId = setInterval(()=>{
-      let date = new Date()
-      let dateStr = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][date.getDay()]+ ', '
-      + ["January","February","March","April","May","June","July","August"
-        ,"September","October", "November","December"][date.getMonth()] + ', '
-      + date.getDate()
-      this.setState({
-        date: dateStr,
-        time: (date.getHours()>9?date.getHours():'0'+date.getHours())+':'+(date.getMinutes()>9?date.getMinutes():'0'+date.getMinutes())
-      })
-    }, 1000)
     this.loadUserInformation(()=>{
       setTimeout(() =>{
         this.setState({
@@ -47,7 +36,6 @@ class Login extends Component{
     })
   }
   componentWillUnmount(){
-    clearInterval(this.dateIntvId)
   }
   loadUserInformation(cb){
     //shall get data from cookies or back end server
@@ -87,7 +75,7 @@ class Login extends Component{
 
     Events.once(Events.names.desktopReady, (message)=>{
       setTimeout(()=>{
-        //speed up render: when user opens startmenu, it will not be the first time of render
+        // To speed up render: when user opens startmenu, it will not be the first time of rendering
         let smsw = document.getElementById('start_menu_switch_X7VIV')
         if(!smsw) return
         smsw.click()

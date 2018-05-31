@@ -8,6 +8,7 @@ import Taskbar from './taskbar.js'
 import Task from './task.js'
 import './event-handler.js'
 import StartMenu from './start-menu.js'
+import DesktopContainer from './desktop-container.js'
 
 import css from '../../css/desktop/desktop.css'
 import icon from '../../css/components/icon.css'
@@ -28,10 +29,11 @@ class Desktop extends Component{
   render(){
     return (
       <div className={css.desktop}>
-        <img className={css.backgroundImg} src={this.state.imgURL} onLoad={()=>this.setState({imgReady:1})}/>
+        <img className={css.wallpaper} src={this.state.imgURL} onLoad={()=>this.setState({imgReady:1})}/>
         <input id='start_menu_switch_X7VIV' type='checkbox' ref='start_menu_switch'/>
         <StartMenu/>
         <Taskbar tasks={this.state.tasks}/>
+        <DesktopContainer/>
       </div>
     )
   }
@@ -39,8 +41,6 @@ class Desktop extends Component{
     this.addSystemTasks()
 
     this.loadStartMenuData()
-
-
 
     setTimeout(()=>{
       this.addTask('wechat_W8kyt9KR')

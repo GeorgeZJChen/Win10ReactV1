@@ -353,7 +353,7 @@
         {
           "name": "Microsoft",
           "size": 8,
-          "icon": {"background": "#8794b0", "backgroundURL": "https://pangolin.com/wp-content/uploads/2015/07/WIN10HERO.jpg",
+          "icon": {"background": "#8794b0", "backgroundURL": "http://slashgenie.com/wp-content/uploads/2015/06/Top-Windows-10-Wallpapers-Hero.jpg",
              "URL": "https://live.asp.net/images/Microsoft_logo.svg"}
         },
         {
@@ -372,14 +372,14 @@
           "icon": {"background": "", "className": "atom atom-outline"}
         },
         {
-          "name": "Box 4",
+          "name": "Eclipse Neon",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "", "className": "eclipse-neon"}
         },
         {
-          "name": "Box 4",
+          "name": "Visual Studio",
           "size": 4,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "rgb(45,45,48)", "small":1, "URL": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Visual_Studio_2017_Logo.svg"}
         },
         {
           "name": "Google DeepMind",
@@ -443,9 +443,18 @@
           "icon": {"background": "#0078d7", "className": "skype"}
         },
         {
-          "name": "Box 8",
+          "name": "Tesla (ad)",
           "size": 8,
-          "icon": {"background": "", "className": "unknown"}
+          "icon": {"background": "#fff", "URL": "http://cdn.onlinewebfonts.com/svg/img_219916.png"},
+          "slide": 1,
+          "display": 3,
+          "transition": 1,
+          "faces": [
+            {},
+            {"URL": "https://c.slashgear.com/wp-content/uploads/2014/08/tesla_model_s-820x420.jpg"},
+            {"URL": "http://www.siliconbeat.com/wp-content/uploads/2012/11/tesla2.jpg"},
+            {"URL": "https://j.gifs.com/gJ2z8k.gif"}
+          ]
         }
       ]
     }
