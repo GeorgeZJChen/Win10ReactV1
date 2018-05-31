@@ -257,6 +257,11 @@
   background-color: transparent;
   transform-style: preserve-3d;
   perspective: 500px;
+  visibility: hidden;
+}
+:global(#start_menu_switch_X7VIV):checked+.start-menu .box-3D{
+  visibility: visible;
+  transition: visibility 0.2s;
 }
 .box-3D .box-face{
   transform-origin: 50px 50px -28.68px;
