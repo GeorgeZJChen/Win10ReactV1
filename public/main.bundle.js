@@ -1520,6 +1520,8 @@ var ItemsColumnThree = function (_Component3) {
             return _this5.onScroll();
           }, onMouseEnter: function onMouseEnter(e) {
             return _this5.onMouseEnter();
+          }, onTouchStart: function onTouchStart(e) {
+            return _this5.onMouseEnter();
           } },
         _react2.default.createElement(Scrollbar, { returnSelf: function returnSelf(self) {
             return _this5.scrollbar = self;
@@ -2069,6 +2071,8 @@ var Scrollbar = function (_Component8) {
               return _this15.btnScroll(e, -1);
             } }),
           _react2.default.createElement('div', { className: _startMenu2.default.slotMiddle, ref: 'slotMiddle', onMouseDown: function onMouseDown(e) {
+              _this15.onDrag(e);
+            }, onTouchStart: function onTouchStart(e) {
               _this15.onDrag(e);
             } }),
           _react2.default.createElement('div', { className: _startMenu2.default.slotDown + ' ' + this.btnClass, onMouseDown: function onMouseDown(e) {

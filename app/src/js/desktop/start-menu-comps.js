@@ -230,7 +230,7 @@ class ItemsColumnThree extends Component{
   }
   render(){
     return (
-      <div className={css.column3} onScroll={(e)=>this.onScroll()} onMouseEnter={(e)=>this.onMouseEnter()}>
+      <div className={css.column3} onScroll={(e)=>this.onScroll()} onMouseEnter={(e)=>this.onMouseEnter()} onTouchStart={(e)=>this.onMouseEnter()}>
         <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this}/>
         <div className={css.contentC3} ref={'toScroll'}>
           {this.columns}
@@ -709,7 +709,7 @@ class Scrollbar extends Component {
                     <Icon className={'angle up sm '+css.scrollAngle}/></div>
         <div className={css.scrollControl} ref='getHeight'>
           <div className={css.slotUp+' '+this.btnClass} ref='slotUp' onMouseDown={(e)=>this.btnScroll(e,-1)}></div>
-          <div className={css.slotMiddle} ref='slotMiddle' onMouseDown={(e)=>{this.onDrag(e)}}></div>
+          <div className={css.slotMiddle} ref='slotMiddle' onMouseDown={(e)=>{this.onDrag(e)}} onTouchStart={(e)=>{this.onDrag(e)}}></div>
           <div className={css.slotDown+' '+this.btnClass} onMouseDown={(e)=>this.btnScroll(e,1)}></div>
         </div>
         <div className={css.scrollBtn+' '+this.btnClass} onMouseDown={(e)=>this.btnScroll(e,1, 20)}>
