@@ -3636,16 +3636,20 @@ var _login2 = _interopRequireDefault(_login);
 
 __webpack_require__(/*! ./js/components/event-handler.js */ "./app/src/js/components/event-handler.js");
 
+var _desktop = __webpack_require__(/*! ./js/desktop/desktop.js */ "./app/src/js/desktop/desktop.js");
+
+var _desktop2 = _interopRequireDefault(_desktop);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-setTimeout(function functionName() {
-    (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
-}, 500);
+(0, _reactDom.render)(_react2.default.createElement('div', null), document.getElementById('win10_login'));
 
-// import Desktop from './js/desktop/desktop.js';
-// render(<div></div>, document.getElementById('win10_login'));
-// render(<Desktop/>, document.getElementById('win10_main'))
+// setTimeout(function functionName() {
+//   render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
+// }, 500)
 
+
+(0, _reactDom.render)(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
 
 window.onload = function () {
     document.addEventListener('touchstart', function (event) {
