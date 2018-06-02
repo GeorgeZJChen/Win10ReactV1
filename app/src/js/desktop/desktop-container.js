@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom'
 
 import axios from 'axios'
 import Loader from '../components/loader.js'
-import Select from '../components/select.js'
 import Events from '../components/event.js'
+import Select from '../components/select.js'
+
+import Items from './desktop-item.js'
 
 import css from '../../css/desktop/desktop-container.css'
-import icon from '../../css/components/icon.css'
 
 class DesktopContainer extends Component{
 
@@ -18,16 +19,32 @@ class DesktopContainer extends Component{
     }
 
   }
+  componentDidMount(){
+    setTimeout(()=>{
+      this.refs.items.init()
+
+    },100)
+  }
 
   render(){
     return (
-      <div className={css.desktopCt} onMouseDown={(e)=>this.onMouseDown(e)}>
-        <Select returnSelf={(self)=>this.select=self} parent={this}/>
+      <div className={css.desktopCt} ref='element'>
+        <Select select={(x, y, sx, sy)=>this.refs.items.select(x, y, sx, sy)}/>
+        <Items container={this} ref='items'/>
+        <Windows />
       </div>
     )
   }
-  onMouseDown(e){
-    
+}
+
+
+class Windows extends Component {
+
+  render(){
+    return ''
   }
 }
+
+
+
 export default DesktopContainer

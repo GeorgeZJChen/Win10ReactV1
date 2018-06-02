@@ -13,14 +13,15 @@ const innerHTML = {
   "powerpoint": <span className={icon['powerpoint-inner']}>P<span className={icon['powerpoint-inner-inner']}>L</span></span> ,
   "excel": <span className={icon['excel-inner']}>X</span> ,
   "onenote": <span className={icon['onenote-inner']}>N</span>,
-  "qq": <span className={icon['qq-inner']}>N</span>,
+  "qq": <span className={icon['qq-inner']}></span>,
   "atom": (
     <React.Fragment>
       <span className={icon['atom-oval']}></span>
       <span className={icon['atom-oval']+' '+icon['atom-oval-1']}></span>
       <span className={icon['atom-oval']+' '+icon['atom-oval-2']}></span>
     </React.Fragment>
-  )
+  ),
+  "folder": <span className={icon['folder-inner']}></span>
 }
 let empty = [
   "windows-logo", "angle", "resource-manager", "unknown", "operations", "kugou", "setting",
@@ -55,23 +56,20 @@ class Icon extends Component{
     this.first_name = first_name
   }
   componentWillUnmount(){
-    console.log('unmount icon');
+    // console.log('unmount icon: '+ this.className);
   }
   shouldComponentUpdate(nextProps, nextState) {
     if(this.className == nextProps.className)
       return false
     return true
   }
-  getHtml(){
-    if(this.className==undefined) return <span ></span>
+  render(){
+    if(this.className==undefined) return <span></span>
     return (
       <span className={this.full_name} style={this.props.style}>
         {innerHTML[this.first_name]}
       </span>
     )
-  }
-  render(){
-    return this.getHtml()
   }
 
 }

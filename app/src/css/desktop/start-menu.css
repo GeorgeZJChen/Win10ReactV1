@@ -3,7 +3,7 @@
   visibility: visible;
   min-height: 400px;
   opacity: 1;
-  transition: height,opacity,visibility 0.5s,0.5s,0.5s,0.5s;
+  transition: height,opacity,visibility 0.5s,0.5s,0.5s;
   transition-timing-function: cubic-bezier(0, 1, 0, 1);
 }
 .start-menu{
@@ -14,7 +14,7 @@
   max-height: 900px;
   width: 950px;
   background-color: rgba(38, 47, 59, 0.98);
-  transition: height,opacity,visibility 0.1s,0.1s,0.1s,0.1s;
+  transition: height,opacity,visibility 0.1s,0.1s,0.1s;
   transition-timing-function: cubic-bezier(1, 0, 1, 0);
   visibility: hidden;
   overflow: hidden;
@@ -257,11 +257,13 @@
   background-color: transparent;
   transform-style: preserve-3d;
   perspective: 500px;
-  visibility: hidden;
 }
-:global(#start_menu_switch_X7VIV):checked+.start-menu .box-3D{
-  visibility: visible;
-  transition: visibility 0.2s;
+.box-animation{
+  opacity: 0;
+}
+:global(#start_menu_switch_X7VIV):checked+.start-menu .box-animation{
+  opacity: 1;
+  transition: opacity 0.2s ease-in;
 }
 .box-3D .box-face{
   transform-origin: 50px 50px -28.68px;

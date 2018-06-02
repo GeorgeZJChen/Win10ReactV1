@@ -264,7 +264,7 @@
           "icon": {"background": "", "className": "unknown", "URL": "https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"}
         },
         {
-          "name": "Mailbox",
+          "name": "Mail",
           "size": 8,
           "icon": {"background": "", "className": "mailbox"}
         },

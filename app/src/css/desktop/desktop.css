@@ -1,6 +1,6 @@
 :global #start_menu_switch_X7VIV {
   position: fixed;
-  z-index: 9999999;
+  z-index: 999991;
   bottom: 0;
   width: 46px;
   height: 40px;
@@ -9,7 +9,7 @@
   padding: 0;
 }
 .wallpaper{
-  position: absolute;
+  position: fixed;
   height: 100%;
   width: 100%;
   min-width: 850px;

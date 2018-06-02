@@ -6,12 +6,10 @@ import Loader from '../components/loader.js'
 import Events from '../components/event.js'
 import Taskbar from './taskbar.js'
 import Task from './task.js'
-import './event-handler.js'
 import StartMenu from './start-menu.js'
 import DesktopContainer from './desktop-container.js'
 
 import css from '../../css/desktop/desktop.css'
-import icon from '../../css/components/icon.css'
 import '../../css/system.css'
 
 class Desktop extends Component{
@@ -20,16 +18,15 @@ class Desktop extends Component{
     super(props)
     this.state = {
       imgURL: 'static/img/desktop_default.jpg',
-      pageReady: 0,
-      imgReady: 0,
       tasks: []
     }
+    this.wallpaperReady = 0
   }
 
   render(){
     return (
       <div className={css.desktop}>
-        <img className={css.wallpaper} src={this.state.imgURL} onLoad={()=>this.setState({imgReady:1})}/>
+        <img className={css.wallpaper} src={this.state.imgURL} onLoad={()=>this.wallpaperReady=1}/>
         <input id='start_menu_switch_X7VIV' type='checkbox' ref='start_menu_switch'/>
         <StartMenu/>
         <Taskbar tasks={this.state.tasks}/>
@@ -67,10 +64,15 @@ class Desktop extends Component{
 
   componentDidMount() {
     this.init()
-    setTimeout(()=>{
-      Events.emit(Events.names.desktopReady, 'Ready')
-    }, 10)
 
+    const checkImagesReady = ()=>{
+      if(this.wallpaperReady){
+        Events.emit(Events.names.desktopReady, 'Ready')
+      }else{
+        setTimeout(checkImagesReady, 200)
+      }
+    }
+    setTimeout(checkImagesReady, 200)
   }
   addTask(name_id){
     if(Task.registeredTasks.has(name_id)){

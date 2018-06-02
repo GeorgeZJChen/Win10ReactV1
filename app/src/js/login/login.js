@@ -139,7 +139,7 @@ class Login extends Component{
             <div className={css.dateDate}><DateSpan format='W, ~, d'/></div>
           </div>
         </div>
-        <div style={{visibility:(this.state.imgReady&&this.state.pageReady?'hidden':'visible'), marginTop: 50}}>
+        <div className={css.fullScreen} style={{visibility:(this.state.imgReady&&this.state.pageReady?'hidden':'visible')}}>
           <Loader/>
         </div>
       </div>

@@ -84,7 +84,7 @@ class ItemsColumnTwo extends Component{
   }
   render(){
     return (
-      <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseEnter={this.onMouseEnter.bind(this)}>
+      <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseEnter={this.onMouseEnter.bind(this)} onTouchStart={(e)=>this.onMouseEnter()}>
         <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this}/>
         <div className={css.contentC2} ref='toScroll'>
           {
@@ -144,7 +144,7 @@ class ItemsColumnThree extends Component{
   onScroll(){
     this.scrollbar.onScroll()
   }
-  onMouseEnter(){
+  onMouseEnter(ms){
     this.scrollbar.setUpScroll(this.refs.toScroll)
   }
   columns(){
@@ -386,14 +386,14 @@ class Box extends Component{
       )
     else
       Utils.addKeyFrames(animation_name,
-        '0%{top:100%;visibility:visible;z-index:5;}'+
+        '0%{top:100.1%;visibility:visible;z-index:5;}'+
         tp+'%{top:0;visibility:visible;z-index:4;}'+
         (p+tp)+'%{top:0;visibility:visible;z-index:4;}'+
         (p+tp+tp)+'%{top:0;visibility:visible;z-index:3;}'+
         (p+tp+tp+0.01)+'%{top:0%;visibility:visible;z-index:2}'+
         '99.9%{top:0%;;visibility:visible;z-index:1}'+
-        '99.999%{top:100%;;visibility:hidden;z-index:1}'+
-        '100%{top:100%;;visibility:visible;z-index:5;}'
+        '99.999%{top:100.1%;;visibility:hidden;z-index:1}'+
+        '100%{top:100.1%;;visibility:visible;z-index:5;}'
       )
   }
   imgOnload(){
@@ -409,7 +409,8 @@ class Box extends Component{
       if(this.props.data.icon.backgroundURL) style.backgroundImage = 'url('+this.props.data.icon.backgroundURL+')'
     }
     return (
-      <div className={css.boxContent+' '+(this.props.data.roll?css.box3D:'')} ref='self'
+      <div className={css.boxContent+' '+(this.props.data.faces?css.boxAnimation:' ')
+            +' '+(this.props.data.roll?css.box3D:'')} ref='self'
             style={style}>
         {
           this.props.data.faces?this.props.data.faces.map((face, index)=>{
@@ -458,7 +459,7 @@ class BoxFace extends Component {
     }
     this.imgStyleFace = {
       width: 'auto',
-      height: '100%',
+      height: '100.1%',
       position: 'relative',
       left: '50%',
       top: '50%',
@@ -469,12 +470,12 @@ class BoxFace extends Component {
       overflow: 'hidden'
     }
     if(this.props.size == 8){
-      this.imgStyleFace.width = '100%'
+      this.imgStyleFace.width = '100.1%'
       this.imgStyleFace.height = 'auto'
     }
     if(this.props.face.fitHeight){
       this.imgStyleFace.width = 'auto'
-      this.imgStyleFace.height = '100%'
+      this.imgStyleFace.height = '100.1%'
     }
   }
   imgOnload(){
@@ -682,7 +683,7 @@ class Scrollbar extends Component {
     let begin_top = toScroll.scrollTop
     this.refs.element.className += ' '+css.dragging
     const move = (e)=>{
-      let my = e.clientY
+      let my = e.clientY || e.changedTouches[0].clientY
       if(Math.abs(my-y)<4) return
       toScroll.scrollTop = begin_top + (my-y)*toScroll.scrollHeight/this.refs.getHeight.offsetHeight
       this.onScroll(toScroll)
