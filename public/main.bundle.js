@@ -860,6 +860,7 @@ var Select = function (_Component) {
     _this.state = {
       activated: 0
     };
+
     return _this;
   }
 
@@ -896,26 +897,33 @@ var Select = function (_Component) {
         }
         top = y;
         left = x;
+        var sx = 0;
+        var sy = 0;
         if (mx - x > 0) {
           width = mx - x;
           if (width >= cw - x) width = cw - x;
+          sx = x + width;
         } else {
           width = x - mx;
           if (width >= x) width = x;
           left = x - width;
+          sx = x - width;
         }
         if (my - y > 0) {
           height = my - y;
           if (height >= ch - y) height = ch - y;
+          sy = y + height;
         } else {
           height = y - my;
           if (height >= y) height = y;
           top = y - height;
+          sy = y - height;
         }
         area.style.top = top + 'px';
         area.style.left = left + 'px';
         area.style.width = width + 'px';
         area.style.height = height + 'px';
+        _this2.props.select(x, y, sx, sy);
       };
       var up = function up(e) {
         document.removeEventListener('mousemove', move, false);
@@ -1036,13 +1044,26 @@ var DesktopContainer = function (_Component) {
   }
 
   _createClass(DesktopContainer, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      setTimeout(function () {
+        _this2.refs.items.init();
+      }, 100);
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var _this3 = this;
+
       return _react2.default.createElement(
         'div',
-        { className: _desktopContainer2.default.desktopCt },
-        _react2.default.createElement(_select2.default, null),
-        _react2.default.createElement(Items, null),
+        { className: _desktopContainer2.default.desktopCt, ref: 'element' },
+        _react2.default.createElement(_select2.default, { select: function select(x, y, sx, sy) {
+            return _this3.refs.items.select(x, y, sx, sy);
+          } }),
+        _react2.default.createElement(_desktopItem2.default, { container: this, ref: 'items' }),
         _react2.default.createElement(Windows, null)
       );
     }
@@ -1051,37 +1072,8 @@ var DesktopContainer = function (_Component) {
   return DesktopContainer;
 }(_react.Component);
 
-var Items = function (_Component2) {
-  _inherits(Items, _Component2);
-
-  function Items() {
-    _classCallCheck(this, Items);
-
-    return _possibleConstructorReturn(this, (Items.__proto__ || Object.getPrototypeOf(Items)).apply(this, arguments));
-  }
-
-  _createClass(Items, [{
-    key: 'render',
-    value: function render() {
-      var data = {
-        icon: { className: "folder" },
-        name: "Test Folder 1",
-        className: "item-desktop"
-      };
-
-      return _react2.default.createElement(
-        'div',
-        { className: _desktopContainer2.default.itemsCt },
-        _react2.default.createElement(_desktopItem2.default, { data: data, groupName: "test" })
-      );
-    }
-  }]);
-
-  return Items;
-}(_react.Component);
-
-var Windows = function (_Component3) {
-  _inherits(Windows, _Component3);
+var Windows = function (_Component2) {
+  _inherits(Windows, _Component2);
 
   function Windows() {
     _classCallCheck(this, Windows);
@@ -1143,21 +1135,299 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Item = function (_Component) {
-  _inherits(Item, _Component);
+var Items = function (_Component) {
+  _inherits(Items, _Component);
+
+  function Items(props) {
+    _classCallCheck(this, Items);
+
+    var _this = _possibleConstructorReturn(this, (Items.__proto__ || Object.getPrototypeOf(Items)).call(this, props));
+
+    _this.state = {
+      initiated: 0
+    };
+
+    return _this;
+  }
+
+  _createClass(Items, [{
+    key: 'init',
+    value: function init() {
+      this.groupInfo = {
+        interval: [0, 0],
+        column: -1,
+        row: -1,
+        selectedColumns: [-1, -1], //[left column number, right column number] selectedColumns are from left No. to the number before right No.
+        itemWidth: 0,
+        lattice: [] //lattice[column][row] two dimension array
+      };
+      if (this.props.container.constructor.name == 'DesktopContainer') {
+        this.groupInfo.itemWidth = 72;
+        this.groupInfo.interval = [76, 110];
+      }
+      this.lattice_init();
+      this.setState({
+        initiated: 1
+      });
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {}
+  }, {
+    key: 'render',
+    value: function render() {
+      var data = {
+        icon: { className: "folder" },
+        name: "Test Folder 1",
+        className: "item-desktop"
+      };
+      var data2 = {
+        icon: { className: "folder" },
+        name: "Test Folder 2",
+        className: "item-desktop"
+
+        // (()=>{
+        //   let items = []
+        //   for (let i = 0; i < array.length; i++) {
+        //     for (let j = 0; j < array.length; j++) {
+        //       let item = this.groupInfo[i][j]
+        //       items.push(
+        //         <Item data
+        //       )
+        //     }
+        //   }
+        // })()
+      };console.log(this.state.initiated);
+      return _react2.default.createElement(
+        'div',
+        { className: _desktopContainer2.default.itemsCt, ref: 'element' },
+        this.state.initiated ? [_react2.default.createElement(Item, { data: data, groupName: 'test', key: 1, column: 1, row: 1, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data, groupName: 'test', key: 2, column: 1, row: 2, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data, groupName: 'test', key: 3, column: 4, row: 4, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data2, groupName: 'test', key: 4, column: 1, row: 2, groupInfo: this.groupInfo })] : ''
+      );
+    }
+  }, {
+    key: 'lattice_init',
+    value: function lattice_init() {
+      var p = this.groupInfo;
+      var container = this.props.container.refs.element;
+      var containerHeight = container.offsetHeight;
+      var containerWidth = container.offsetWidth;
+      var row = Math.floor(containerHeight / p.interval[1]);
+      var column = Math.floor(containerWidth / p.interval[0]);
+      p.lattice = new Array(column);
+      for (var i = 0; i < column; i++) {
+        p.lattice[i] = new Array(row);
+      }
+      p.column = column;
+      p.row = row;
+    }
+  }, {
+    key: 'lattice_reset',
+    value: function lattice_reset() {
+      var p = this.groupInfo;
+      var container = this.props.container.refs.element;
+      var containerHeight = container.offsetHeight;
+      var containerWidth = container.offsetWidth;
+      var row = Math.floor(containerHeight / p.interval[1]);
+      var column = Math.floor(containerWidth / p.interval[0]);
+      if (row == p.row && column == p.column) return; //nothing changes
+      if (column > p.column) {
+        //adds columns
+        for (var i = p.column; i < column; i++) {
+          p.lattice[i] = new Array(row);
+        }
+      } else if (column < p.column) {
+        //reduces columns
+        var outcasts = [];
+        for (var _i = p.column - 1; _i >= column; _i--) {
+          for (var j = 0; j <= p.row; j++) {
+            var item = p.lattice[_i][j];
+            if (item) outcasts.push(item);
+          }
+        }
+        outcasts.reverse();
+        p.lattice.splice(column, p.column - column);
+        var round = outcasts.length;
+        for (var _i2 = 0; _i2 < round; _i2++) {
+          //puts outcast items from reduced columns on the right side
+          var found = false; //find next available stall,
+          for (var _j = column - 1; _j > 0 && !found; _j--) {
+            // from top to bottom, right to left
+            for (var k = 0; k < row && !found; k++) {
+              if (this.check_availablePosition(_j, k, false)) {
+                //could be false
+                var _item2 = outcasts.pop();
+                this.putDesktopItemTo(_item2, _j, k);
+                found = true;
+              }
+            }
+          }
+          if (!found) {
+            for (var _i3 = 0; _i3 < outcasts.length; _i3++) {
+              outcasts[_i3].style.display = "none";
+            }
+            console.warn(outcasts.length + " column outcasts remain");
+            break;
+          }
+        }
+      }
+      var minCol = Math.min(column, p.column);
+      if (row > p.row) {
+        for (var _i4 = 0; _i4 < minCol; _i4++) {
+          //adds rows
+          for (var _j2 = p.row + 1; _j2 <= row; _j2++) {
+            p.lattice[_i4][_j2] = undefined;
+          }
+        }
+      } else if (row < p.row) {
+        var _outcasts = [];
+        for (var _i5 = 0; _i5 <= minCol; _i5++) {
+          for (var _j3 = row + 1; _j3 <= p.row; _j3++) {
+            var _item3 = p.lattice[_i5][_j3];
+            if (_item3) {
+              _outcasts.push(_item3);
+            }
+          }
+          p.lattice[_i5].splice(row + 1, p.row - row);
+        }
+        _outcasts.reverse();
+        var _round = _outcasts.length;
+        for (var _i6 = 0; _i6 < _round; _i6++) {
+          //puts outcast items from reduced rows to the left side
+          var _found = false; //find next available stall,
+          for (var _j4 = 0; _j4 <= column && !_found; _j4++) {
+            // from top to bottom, left to right
+            for (var _k = 0; _k <= row && !_found; _k++) {
+              if (this.check_availablePosition(_j4, _k, false)) {
+                //could be false
+                var _item4 = _outcasts.pop();
+                this.putDesktopItemTo(_item4, _j4, _k);
+                _found = true;
+              }
+            }
+          }
+          if (!_found) {
+            for (var _i7 = 0; _i7 < _outcasts.length; _i7++) {
+              _outcasts[_i7].hide();
+            }
+            console.warn(_outcasts.length + " row outcasts remain");
+            break;
+          }
+        }
+      }
+      p.column = column;
+      p.row = row;
+    }
+  }, {
+    key: 'putDesktopItemTo',
+    value: function putDesktopItemTo(item, column, row) {
+      var p = this.groupInfo;
+      p.lattice[column][row] = item;
+      // TODO:
+      // item.style.left = column *p.interval[0] +'px';
+      // item.style.top = row *p.interval[1] +'px';
+      // item.column = column;
+      // item.row = row;
+    }
+  }, {
+    key: 'check_availablePosition',
+    value: function check_availablePosition(column, row, assert) {
+      var p = this.groupInfo;
+      if (column > p.column || row > p.row || column < 1 || row < 1) {
+        if (assert) console.warn("Failed to add item, Column or row out of range");
+        return false;
+      }
+      if (p.lattice[column - 1][row - 1]) {
+        if (assert) console.warn("Failed to put item into position (" + column + ', ' + row + '),  stall occupied');
+        return false;
+      }
+      return true;
+    }
+  }, {
+    key: 'select',
+    value: function select(x, y, sx, sy) {
+      var p = this.groupInfo;
+      var left_n = Math.floor(Math.max(Math.min(x, sx) - 0.75 * p.itemWidth, -1) / p.interval[0]) + 1;
+      var right_n = Math.floor(Math.max(x, sx) + 0.75 * p.itemWidth / p.interval[0]) - 1;
+      if (p.selectedColumns[0] == left_n && p.selectedColumns[1] == right_n) return;
+
+      var deselected = -1;
+
+      var old_selected = [];
+      for (var j = 0, i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++, j++) {
+        old_selected[j] = i;
+      }
+      var new_selected = [];
+      for (var _j5 = 0, _i8 = left_n; _i8 <= right_n; _i8++, _j5++) {
+        new_selected[_j5] = _i8;
+      }
+      if (!Array.prototype.minus) Array.prototype.minus = function (arr) {
+        var result = [];
+        var obj = {};
+        for (var _i9 = 0; _i9 < arr.length; _i9++) {
+          obj[arr[_i9]] = 1;
+        }
+        for (var _j6 = 0; _j6 < this.length; _j6++) {
+          if (!obj[this[_j6]]) {
+            obj[this[_j6]] = 1;
+            result.push(this[_j6]);
+          }
+        }
+        return result;
+      };
+      deselected = old_selected.minus(new_selected);
+      var columns_deselected = [];
+
+      for (var _i10 = 0; _i10 < deselected.length; _i10++) {
+        columns_deselected.push(p.lattice[deselected[_i10]]);
+      }
+
+      for (var _i11 = 0; _i11 < columns_deselected.length; _i11++) {
+        var column = columns_deselected[_i11];
+        if (!column) continue;
+        for (var _j7 = 0; _j7 < column.length; _j7++) {
+          var item = column[_j7];
+          if (!item) continue;
+          // this.removeClass(item, "desktop-item-selected") // TODO:
+          item.selected = false;
+        }
+      }
+      p.selectedColumns[0] = left_n;
+      p.selectedColumns[1] = right_n;
+    }
+  }]);
+
+  return Items;
+}(_react.Component);
+
+var Item = function (_Component2) {
+  _inherits(Item, _Component2);
 
   function Item(props) {
     _classCallCheck(this, Item);
 
-    return _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
+    var _this2 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
+
+    _this2.groupInfo = _this2.props.groupInfo;
+    _this2.hidden = 1;
+    return _this2;
   }
 
   _createClass(Item, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      if (this.insert(this.props.column, this.props.row)) {
+        this.refs.element.style.display = '';
+        this.hidden = 0;
+      } else {
+        console.warn('Failed when inserting item.');
+      }
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: _desktopContainer2.default[this.props.data.className] },
+        { className: _desktopContainer2.default[this.props.data.className], ref: 'element', style: { display: this.hidden ? 'none' : '' } },
         _react2.default.createElement(
           'div',
           { className: _desktopContainer2.default.itemIcon },
@@ -1168,12 +1438,127 @@ var Item = function (_Component) {
         _react2.default.createElement('div', { className: _desktopContainer2.default.itemText, 'data-title': this.props.data.name })
       );
     }
+  }, {
+    key: 'hide',
+    value: function hide() {
+      this.refs.element.style.display = 'none';
+      this.hidden = 1;
+    }
+  }, {
+    key: 'outcast',
+    value: function outcast() {
+      // TODO:
+    }
+  }, {
+    key: 'insert',
+    value: function insert(column, row) {
+      var p = this.groupInfo;
+      var put_to = function put_to(item, i, j) {
+        p.lattice[i][j] = item;
+        item.style.left = i * p.interval[0] + 'px';
+        item.style.top = j * p.interval[1] + 'px';
+        item.column = i + 1;
+        item.row = j + 1;
+      };
+      var check_available = function check_available(column, row) {
+        if (column > p.column || row > p.row || column < 1 || row < 1) {
+          return false;
+        }
+        if (p.lattice[column - 1][row - 1]) {
+          return false;
+        }
+        return true;
+      };
+      var next_available = function next_available(pos, leftwards) {
+        var _pos = [pos[0], pos[1]];
+        var safeout = 0;
+        if (leftwards) {
+          while (!check_available(_pos[0] + 1, _pos[1] + 1)) {
+            _pos[1]--;
+            if (_pos[1] < 0 && _pos[0] > 0) {
+              _pos[0]--;
+              _pos[1] = p.row - 1;
+            } else if (_pos[1] < 0 && _pos[0] == 0) {
+              return false;
+            }
+            safeout++;
+            if (safeout++ > 10000) throw new Error("8'");
+          }
+        } else {
+          while (!check_available(_pos[0] + 1, _pos[1] + 1)) {
+            _pos[1]++;
+            if (_pos[1] > p.row - 1 && _pos[0] < p.column - 1) {
+              _pos[0]++;
+              _pos[1] = 0;
+            } else if (_pos[1] > p.row - 1 && _pos[0] == p.column - 1) {
+              return false;
+            }
+          }
+          if (safeout++ > 10000) throw new Error("8'");
+        }
+        return _pos;
+      };
+      var move_from_to = function move_from_to(from, to) {
+        var lattice = p.lattice;
+        var _item = lattice[from[0]][from[1]];
+        lattice[from[0]][from[1]] = undefined;
+        put_to(_item, to[0], to[1]);
+      };
+
+      var item = this.refs.element;
+      if (check_available(column, row)) {
+        put_to(item, column - 1, row - 1);
+        return true;
+      }
+      var to = [column - 1, row - 1];
+      var avaPos = next_available(to);
+      var safeout = 0;
+      if (avaPos) {
+        //available on right side
+        var prePos = [avaPos[0], avaPos[1]];
+        do {
+          if (prePos[1] == 0) {
+            prePos[1] = p.row - 1;
+            prePos[0]--;
+          } else {
+            prePos[1]--;
+          }
+          move_from_to(prePos, avaPos);
+          avaPos = [prePos[0], prePos[1]];
+          if (safeout++ > 10000) throw new Error("8'");
+        } while (!(avaPos[0] == to[0] && avaPos[1] == to[1]));
+        put_to(item, to[0], to[1]);
+        return true;
+      } else {
+        //search left
+        avaPos = next_available(to, true);
+        var _prePos = [avaPos[0], avaPos[1]];
+        if (avaPos) {
+          do {
+            if (_prePos[1] == p.row - 1) {
+              _prePos[1] = 0;
+              _prePos[0]++;
+            } else {
+              _prePos[1]++;
+            }
+            move_from_to(_prePos, avaPos);
+            avaPos = [_prePos[0], _prePos[1]];
+            if (safeout++ > 10000) throw new Error("8'");
+          } while (!(avaPos[0] == to[0] && avaPos[1] == to[1]));
+          put_to(item, to[0], to[1]);
+          return true;
+        } else {
+          this.outcast();
+          return false;
+        }
+      }
+    }
   }]);
 
   return Item;
 }(_react.Component);
 
-exports.default = Item;
+exports.default = Items;
 
 /***/ }),
 
@@ -3251,20 +3636,16 @@ var _login2 = _interopRequireDefault(_login);
 
 __webpack_require__(/*! ./js/components/event-handler.js */ "./app/src/js/components/event-handler.js");
 
-var _desktop = __webpack_require__(/*! ./js/desktop/desktop.js */ "./app/src/js/desktop/desktop.js");
-
-var _desktop2 = _interopRequireDefault(_desktop);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(0, _reactDom.render)(_react2.default.createElement('div', null), document.getElementById('win10_login'));
+setTimeout(function functionName() {
+    (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
+}, 500);
 
-// setTimeout(function functionName() {
-//   render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
-// }, 500)
+// import Desktop from './js/desktop/desktop.js';
+// render(<div></div>, document.getElementById('win10_login'));
+// render(<Desktop/>, document.getElementById('win10_main'))
 
-
-(0, _reactDom.render)(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
 
 window.onload = function () {
     document.addEventListener('touchstart', function (event) {
@@ -3285,7 +3666,7 @@ window.onload = function () {
     });
 };
 
-console.log('Copyright (c) 2018 Zhuojun Chen All Rights Reserved.');
+console.log('Copyright (c) 2018 Zhuojun Chen. All Rights Reserved.');
 
 /***/ }),
 

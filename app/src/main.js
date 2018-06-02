@@ -69,4 +69,4 @@ window.onload=function () {
 
 
 
-console.log('Copyright (c) 2018 Zhuojun Chen All Rights Reserved.');
+console.log('Copyright (c) 2018 Zhuojun Chen. All Rights Reserved.');
