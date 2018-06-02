@@ -1153,13 +1153,16 @@ var Items = function (_Component) {
   _createClass(Items, [{
     key: 'init',
     value: function init() {
+      var _this2 = this;
+
       this.groupInfo = {
         interval: [0, 0],
         column: -1,
         row: -1,
         selectedColumns: [-1, -1], //[left column number, right column number] selectedColumns are from left No. to the number before right No.
         itemWidth: 0,
-        lattice: [] //lattice[column][row] two dimension array
+        lattice: [], //lattice[column][row] two dimension array
+        outcasts: []
       };
       if (this.props.container.constructor.name == 'DesktopContainer') {
         this.groupInfo.itemWidth = 72;
@@ -1168,6 +1171,13 @@ var Items = function (_Component) {
       this.lattice_init();
       this.setState({
         initiated: 1
+      });
+      window.addEventListener('resize', function () {
+        var resize = function resize() {
+          _this2.lattice_reset();
+        };
+        clearTimeout(resize);
+        setTimeout(resize, 300);
       });
     }
   }, {
@@ -1178,12 +1188,22 @@ var Items = function (_Component) {
     value: function render() {
       var data = {
         icon: { className: "folder" },
-        name: "Test Folder 1",
+        name: "Folder 1",
         className: "item-desktop"
       };
       var data2 = {
         icon: { className: "folder" },
-        name: "Test Folder 2",
+        name: "Folder 2",
+        className: "item-desktop"
+      };
+      var data3 = {
+        icon: { className: "folder" },
+        name: "Folder 3",
+        className: "item-desktop"
+      };
+      var data4 = {
+        icon: { className: "folder" },
+        name: "Folder 4",
         className: "item-desktop"
 
         // (()=>{
@@ -1197,11 +1217,10 @@ var Items = function (_Component) {
         //     }
         //   }
         // })()
-      };console.log(this.state.initiated);
-      return _react2.default.createElement(
+      };return _react2.default.createElement(
         'div',
         { className: _desktopContainer2.default.itemsCt, ref: 'element' },
-        this.state.initiated ? [_react2.default.createElement(Item, { data: data, groupName: 'test', key: 1, column: 1, row: 1, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data, groupName: 'test', key: 2, column: 1, row: 2, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data, groupName: 'test', key: 3, column: 4, row: 4, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data2, groupName: 'test', key: 4, column: 1, row: 2, groupInfo: this.groupInfo })] : ''
+        this.state.initiated ? [_react2.default.createElement(Item, { data: data, groupName: 'test', key: 1, column: 1, row: 1, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data2, groupName: 'test', key: 2, column: 1, row: 2, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data3, groupName: 'test', key: 3, column: 4, row: 4, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data4, groupName: 'test', key: 4, column: 1, row: 2, groupInfo: this.groupInfo })] : ''
       );
     }
   }, {
@@ -1230,6 +1249,7 @@ var Items = function (_Component) {
       var row = Math.floor(containerHeight / p.interval[1]);
       var column = Math.floor(containerWidth / p.interval[0]);
       if (row == p.row && column == p.column) return; //nothing changes
+      var added_slots = row * column - p.row * p.column;
       if (column > p.column) {
         //adds columns
         for (var i = p.column; i < column; i++) {
@@ -1239,108 +1259,87 @@ var Items = function (_Component) {
         //reduces columns
         var outcasts = [];
         for (var _i = p.column - 1; _i >= column; _i--) {
-          for (var j = 0; j <= p.row; j++) {
+          for (var j = 0; j < p.row; j++) {
             var item = p.lattice[_i][j];
             if (item) outcasts.push(item);
           }
         }
         outcasts.reverse();
         p.lattice.splice(column, p.column - column);
-        var round = outcasts.length;
-        for (var _i2 = 0; _i2 < round; _i2++) {
+        var outcast_length = outcasts.length;
+        for (var _i2 = 0; _i2 < outcast_length; _i2++) {
           //puts outcast items from reduced columns on the right side
           var found = false; //find next available stall,
-          for (var _j = column - 1; _j > 0 && !found; _j--) {
+          for (var _j = column - 1; _j >= 0 && !found; _j--) {
             // from top to bottom, right to left
             for (var k = 0; k < row && !found; k++) {
-              if (this.check_availablePosition(_j, k, false)) {
-                //could be false
+              if (!p.lattice[_j][k]) {
                 var _item2 = outcasts.pop();
-                this.putDesktopItemTo(_item2, _j, k);
-                found = true;
+                if (_item2.insert(_j + 1, k + 1)) found = true;else {
+                  outcasts.push(_item2);
+                }
               }
             }
           }
           if (!found) {
             for (var _i3 = 0; _i3 < outcasts.length; _i3++) {
-              outcasts[_i3].style.display = "none";
+              outcasts[_i3].outcast();
             }
-            console.warn(outcasts.length + " column outcasts remain");
-            break;
-          }
-        }
-      }
-      var minCol = Math.min(column, p.column);
-      if (row > p.row) {
-        for (var _i4 = 0; _i4 < minCol; _i4++) {
-          //adds rows
-          for (var _j2 = p.row + 1; _j2 <= row; _j2++) {
-            p.lattice[_i4][_j2] = undefined;
-          }
-        }
-      } else if (row < p.row) {
-        var _outcasts = [];
-        for (var _i5 = 0; _i5 <= minCol; _i5++) {
-          for (var _j3 = row + 1; _j3 <= p.row; _j3++) {
-            var _item3 = p.lattice[_i5][_j3];
-            if (_item3) {
-              _outcasts.push(_item3);
-            }
-          }
-          p.lattice[_i5].splice(row + 1, p.row - row);
-        }
-        _outcasts.reverse();
-        var _round = _outcasts.length;
-        for (var _i6 = 0; _i6 < _round; _i6++) {
-          //puts outcast items from reduced rows to the left side
-          var _found = false; //find next available stall,
-          for (var _j4 = 0; _j4 <= column && !_found; _j4++) {
-            // from top to bottom, left to right
-            for (var _k = 0; _k <= row && !_found; _k++) {
-              if (this.check_availablePosition(_j4, _k, false)) {
-                //could be false
-                var _item4 = _outcasts.pop();
-                this.putDesktopItemTo(_item4, _j4, _k);
-                _found = true;
-              }
-            }
-          }
-          if (!_found) {
-            for (var _i7 = 0; _i7 < _outcasts.length; _i7++) {
-              _outcasts[_i7].hide();
-            }
-            console.warn(_outcasts.length + " row outcasts remain");
             break;
           }
         }
       }
       p.column = column;
+      if (row > p.row) {
+        for (var _i4 = 0; _i4 < p.lattice.length; _i4++) {
+          //adds rows
+          for (var _j2 = p.row; _j2 < row; _j2++) {
+            p.lattice[_i4][_j2] = undefined;
+          }
+        }
+      } else if (row < p.row) {
+        var _outcasts = [];
+        for (var _i5 = 0; _i5 < p.lattice.length; _i5++) {
+          for (var _j3 = row; _j3 < p.row; _j3++) {
+            var _item3 = p.lattice[_i5][_j3];
+            if (_item3) {
+              _outcasts.push(_item3);
+            }
+          }
+          p.lattice[_i5].splice(row, p.row - row);
+        }
+        _outcasts.reverse();
+        var _outcast_length = _outcasts.length;
+        for (var _i6 = 0; _i6 < _outcast_length; _i6++) {
+          //puts outcast items from reduced rows to the left side
+          var _found = false; //find next available stall,
+          for (var _j4 = 0; _j4 < column && !_found; _j4++) {
+            // from top to bottom, left to right
+            for (var _k = 0; _k < row && !_found; _k++) {
+              if (!p.lattice[_j4][_k]) {
+                var _item4 = _outcasts.pop();
+                _item4.insert(_j4 + 1, _k + 1);
+                _found = true;
+              }
+            }
+          }
+          if (!_found) {
+            for (var m = 0; m < _outcasts.length; m++) {
+              _outcasts[m].outcast();
+            }
+            break;
+          }
+        }
+      }
       p.row = row;
-    }
-  }, {
-    key: 'putDesktopItemTo',
-    value: function putDesktopItemTo(item, column, row) {
-      var p = this.groupInfo;
-      p.lattice[column][row] = item;
-      // TODO:
-      // item.style.left = column *p.interval[0] +'px';
-      // item.style.top = row *p.interval[1] +'px';
-      // item.column = column;
-      // item.row = row;
-    }
-  }, {
-    key: 'check_availablePosition',
-    value: function check_availablePosition(column, row, assert) {
-      var p = this.groupInfo;
-      if (column > p.column || row > p.row || column < 1 || row < 1) {
-        if (assert) console.warn("Failed to add item, Column or row out of range");
-        return false;
+      if (added_slots > 0) {
+        var min_n = Math.min(added_slots, p.outcasts.length);
+        for (var _i7 = 0; _i7 < min_n; _i7++) {
+          var _item5 = p.outcasts.pop();
+          _item5.append();
+          _item5.show();
+        }
       }
-      if (p.lattice[column - 1][row - 1]) {
-        if (assert) console.warn("Failed to put item into position (" + column + ', ' + row + '),  stall occupied');
-        return false;
-      }
-      return true;
     }
   }, {
     key: 'select',
@@ -1348,51 +1347,77 @@ var Items = function (_Component) {
       var p = this.groupInfo;
       var left_n = Math.floor(Math.max(Math.min(x, sx) - 0.75 * p.itemWidth, -1) / p.interval[0]) + 1;
       var right_n = Math.floor(Math.max(x, sx) + 0.75 * p.itemWidth / p.interval[0]) - 1;
-      if (p.selectedColumns[0] == left_n && p.selectedColumns[1] == right_n) return;
+      if (!(p.selectedColumns[0] == left_n && p.selectedColumns[1] == right_n)) {
+        var deselected = -1;
 
-      var deselected = -1;
-
-      var old_selected = [];
-      for (var j = 0, i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++, j++) {
-        old_selected[j] = i;
-      }
-      var new_selected = [];
-      for (var _j5 = 0, _i8 = left_n; _i8 <= right_n; _i8++, _j5++) {
-        new_selected[_j5] = _i8;
-      }
-      if (!Array.prototype.minus) Array.prototype.minus = function (arr) {
-        var result = [];
-        var obj = {};
-        for (var _i9 = 0; _i9 < arr.length; _i9++) {
-          obj[arr[_i9]] = 1;
+        var old_selected = [];
+        for (var j = 0, i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++, j++) {
+          old_selected[j] = i;
         }
-        for (var _j6 = 0; _j6 < this.length; _j6++) {
-          if (!obj[this[_j6]]) {
-            obj[this[_j6]] = 1;
-            result.push(this[_j6]);
+        var new_selected = [];
+        for (var _j5 = 0, _i8 = left_n; _i8 <= right_n; _i8++, _j5++) {
+          new_selected[_j5] = _i8;
+        }
+        if (!Array.prototype.minus) Array.prototype.minus = function (arr) {
+          var result = [];
+          var obj = {};
+          for (var _i9 = 0; _i9 < arr.length; _i9++) {
+            obj[arr[_i9]] = 1;
+          }
+          for (var _j6 = 0; _j6 < this.length; _j6++) {
+            if (!obj[this[_j6]]) {
+              obj[this[_j6]] = 1;
+              result.push(this[_j6]);
+            }
+          }
+          return result;
+        };
+        deselected = old_selected.minus(new_selected);
+        var columns_deselected = [];
+
+        for (var _i10 = 0; _i10 < deselected.length; _i10++) {
+          columns_deselected.push(p.lattice[deselected[_i10]]);
+        }
+
+        for (var _i11 = 0; _i11 < columns_deselected.length; _i11++) {
+          var _column = columns_deselected[_i11];
+          if (!_column) continue;
+          for (var _j7 = 0; _j7 < _column.length; _j7++) {
+            var item = _column[_j7];
+            if (!item) continue;
+            item.deselect();
           }
         }
-        return result;
-      };
-      deselected = old_selected.minus(new_selected);
-      var columns_deselected = [];
-
-      for (var _i10 = 0; _i10 < deselected.length; _i10++) {
-        columns_deselected.push(p.lattice[deselected[_i10]]);
+        p.selectedColumns[0] = left_n;
+        p.selectedColumns[1] = right_n;
       }
 
-      for (var _i11 = 0; _i11 < columns_deselected.length; _i11++) {
-        var column = columns_deselected[_i11];
+      var column = [];
+      for (var k = p.selectedColumns[0]; k <= p.selectedColumns[1]; k++) {
+        //since height of an item is unfixed, all items above bottom edge of the area within the column need to be computed
+        column = p.lattice[k];
         if (!column) continue;
-        for (var _j7 = 0; _j7 < column.length; _j7++) {
-          var item = column[_j7];
-          if (!item) continue;
-          // this.removeClass(item, "desktop-item-selected") // TODO:
-          item.selected = false;
+        for (var _i12 = 0; _i12 < column.length; _i12++) {
+          var _item6 = column[_i12];
+          if (!_item6) continue;
+          var item_node = _item6.refs.element;
+          var item_select_top = item_node.offsetTop + item_node.offsetHeight * 0.25;
+          var item_select_bottom = item_node.offsetTop + item_node.offsetHeight * 0.75;
+          if (sy > y) {
+            if (item_select_top >= y && item_select_top <= sy || item_select_bottom >= y && item_select_bottom <= sy || item_select_bottom > sy && item_select_top < y) {
+              _item6.select();
+            } else {
+              _item6.deselect();
+            }
+          } else {
+            if (item_select_top >= sy && item_select_top <= y || item_select_bottom >= sy && item_select_bottom <= y || item_select_bottom > y && item_select_top < sy) {
+              _item6.select();
+            } else {
+              _item6.deselect();
+            }
+          }
         }
       }
-      p.selectedColumns[0] = left_n;
-      p.selectedColumns[1] = right_n;
     }
   }]);
 
@@ -1405,21 +1430,24 @@ var Item = function (_Component2) {
   function Item(props) {
     _classCallCheck(this, Item);
 
-    var _this2 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
+    var _this3 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
 
-    _this2.groupInfo = _this2.props.groupInfo;
-    _this2.hidden = 1;
-    return _this2;
+    _this3.hidden = 1;
+    return _this3;
   }
 
   _createClass(Item, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      if (this.insert(this.props.column, this.props.row)) {
+      var t = void 0;
+      if (this.props.column && this.props.row) t = this.insert(this.props.column, this.props.row);else t = this.append();
+      if (t) {
         this.refs.element.style.display = '';
         this.hidden = 0;
+        this.isOutcast = 0;
+        this.selected = 0;
       } else {
-        console.warn('Failed when inserting item.');
+        if (!this.isOutcast) this.outcast();
       }
     }
   }, {
@@ -1439,64 +1467,118 @@ var Item = function (_Component2) {
       );
     }
   }, {
+    key: 'select',
+    value: function select() {
+      if (!this.selected) {
+        this.refs.element.className += ' ' + _desktopContainer2.default.itemSelected;
+        this.selected = 1;
+      }
+    }
+  }, {
+    key: 'deselect',
+    value: function deselect() {
+      if (this.selected) {
+        var ele = this.refs.element;
+        ele.className = ele.className.replace(new RegExp(_desktopContainer2.default.itemSelected, 'g'), '');
+        this.selected = 0;
+      }
+    }
+  }, {
     key: 'hide',
     value: function hide() {
       this.refs.element.style.display = 'none';
       this.hidden = 1;
     }
   }, {
+    key: 'show',
+    value: function show() {
+      this.refs.element.style.display = '';
+      this.hidden = 0;
+      this.isOutcast = 0;
+    }
+  }, {
     key: 'outcast',
     value: function outcast() {
-      // TODO:
+      if (this.props.groupInfo.outcasts.indexOf(this) == -1) {
+
+        this.isOutcast = 1;
+        this.hide();
+        this.props.groupInfo.outcasts.push(this);
+      }
+    }
+  }, {
+    key: 'append',
+    value: function append() {
+      var p = this.props.groupInfo;
+      var item_node = this.refs.element;
+      var put_to = function put_to(item, i, j) {
+        p.lattice[i][j] = item;
+        item_node.style.left = i * p.interval[0] + 'px';
+        item_node.style.top = j * p.interval[1] + 'px';
+        item.column = i + 1;
+        item.row = j + 1;
+      };
+      for (var i = 0; i < p.column; i++) {
+        if (!p.lattice[i][p.row - 1]) {
+          for (var j = 0; j < p.row; j++) {
+            if (!p.lattice[i][j]) {
+              put_to(this, i, j);
+              return true;
+            }
+          }
+        }
+      }
+      for (var _i13 = 0; _i13 < p.column; _i13++) {
+        for (var _j8 = 0; _j8 < p.row - 1; _j8++) {
+          if (!p.lattice[_i13][_j8]) {
+            put_to(this, _i13, _j8);
+            return true;
+          }
+        }
+      }
+      this.outcast();
+      return false;
     }
   }, {
     key: 'insert',
     value: function insert(column, row) {
-      var p = this.groupInfo;
+      var p = this.props.groupInfo;
+      if (column > p.column) column = p.column;
+      if (row > p.row) row = p.row;
+      if (column < 1) column = 1;
+      if (row < 1) row = 1;
       var put_to = function put_to(item, i, j) {
+        var item_node = item.refs.element;
         p.lattice[i][j] = item;
-        item.style.left = i * p.interval[0] + 'px';
-        item.style.top = j * p.interval[1] + 'px';
+        item_node.style.left = i * p.interval[0] + 'px';
+        item_node.style.top = j * p.interval[1] + 'px';
         item.column = i + 1;
         item.row = j + 1;
       };
-      var check_available = function check_available(column, row) {
-        if (column > p.column || row > p.row || column < 1 || row < 1) {
-          return false;
-        }
-        if (p.lattice[column - 1][row - 1]) {
-          return false;
-        }
-        return true;
-      };
       var next_available = function next_available(pos, leftwards) {
         var _pos = [pos[0], pos[1]];
-        var safeout = 0;
         if (leftwards) {
-          while (!check_available(_pos[0] + 1, _pos[1] + 1)) {
-            _pos[1]--;
-            if (_pos[1] < 0 && _pos[0] > 0) {
-              _pos[0]--;
-              _pos[1] = p.row - 1;
-            } else if (_pos[1] < 0 && _pos[0] == 0) {
-              return false;
+          for (var i = _pos[0]; i >= 0; i--) {
+            var j = void 0;
+            if (i == _pos[0]) j = _pos[1];else j = p.row - 1;
+            for (; j >= 0; j--) {
+              if (!p.lattice[i][j]) {
+                return [i, j];
+              }
             }
-            safeout++;
-            if (safeout++ > 10000) throw new Error("8'");
           }
         } else {
-          while (!check_available(_pos[0] + 1, _pos[1] + 1)) {
-            _pos[1]++;
-            if (_pos[1] > p.row - 1 && _pos[0] < p.column - 1) {
-              _pos[0]++;
-              _pos[1] = 0;
-            } else if (_pos[1] > p.row - 1 && _pos[0] == p.column - 1) {
-              return false;
+          for (var _i14 = _pos[0]; _i14 < p.column; _i14++) {
+            var _j9 = void 0;
+            if (_i14 == _pos[0]) _j9 = _pos[1];else _j9 = 0;
+            for (; _j9 < p.row; _j9++) {
+              if (!p.lattice[_i14][_j9]) {
+                return [_i14, _j9];
+              }
             }
           }
-          if (safeout++ > 10000) throw new Error("8'");
         }
-        return _pos;
+        return;
       };
       var move_from_to = function move_from_to(from, to) {
         var lattice = p.lattice;
@@ -1504,9 +1586,8 @@ var Item = function (_Component2) {
         lattice[from[0]][from[1]] = undefined;
         put_to(_item, to[0], to[1]);
       };
-
-      var item = this.refs.element;
-      if (check_available(column, row)) {
+      var item = this;
+      if (!p.lattice[column - 1][row - 1]) {
         put_to(item, column - 1, row - 1);
         return true;
       }
@@ -1532,8 +1613,8 @@ var Item = function (_Component2) {
       } else {
         //search left
         avaPos = next_available(to, true);
-        var _prePos = [avaPos[0], avaPos[1]];
         if (avaPos) {
+          var _prePos = [avaPos[0], avaPos[1]];
           do {
             if (_prePos[1] == p.row - 1) {
               _prePos[1] = 0;
@@ -3636,38 +3717,28 @@ var _login2 = _interopRequireDefault(_login);
 
 __webpack_require__(/*! ./js/components/event-handler.js */ "./app/src/js/components/event-handler.js");
 
-var _desktop = __webpack_require__(/*! ./js/desktop/desktop.js */ "./app/src/js/desktop/desktop.js");
-
-var _desktop2 = _interopRequireDefault(_desktop);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-(0, _reactDom.render)(_react2.default.createElement('div', null), document.getElementById('win10_login'));
+setTimeout(function functionName() {
+  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
+}, 500);
 
-// setTimeout(function functionName() {
-//   render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
-// }, 500)
+// import Desktop from './js/desktop/desktop.js'
+// render(<div></div>, document.getElementById('win10_login'))
+// render(<Desktop/>, document.getElementById('win10_main'))
 
-
-(0, _reactDom.render)(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
 
 window.onload = function () {
-    document.addEventListener('touchstart', function (event) {
-        if (event.touches.length > 1) {
-            event.preventDefault();
-        }
-    });
-    var lastTouchEnd = 0;
-    document.addEventListener('touchend', function (event) {
-        var now = new Date().getTime();
-        if (now - lastTouchEnd <= 300) {
-            event.preventDefault();
-        }
-        lastTouchEnd = now;
-    }, false);
-    document.addEventListener('touchmove', function (e) {
-        e.preventDefault();
-    });
+  document.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+  });
+  var lastTouchEnd = 0;
+  document.addEventListener('touchend', function (e) {
+    e.preventDefault();
+  });
+  document.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+  });
 };
 
 console.log('Copyright (c) 2018 Zhuojun Chen. All Rights Reserved.');
