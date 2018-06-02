@@ -3744,7 +3744,7 @@ window.onload = function () {
     }, false);
     document.addEventListener('touchmove', function (e) {
         e.preventDefault();
-    });
+    }, false);
 };
 
 console.log('Copyright (c) 2018 Zhuojun Chen. All Rights Reserved.');
