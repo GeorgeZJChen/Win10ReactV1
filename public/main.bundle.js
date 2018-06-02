@@ -3720,7 +3720,7 @@ __webpack_require__(/*! ./js/components/event-handler.js */ "./app/src/js/compon
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 setTimeout(function functionName() {
-    (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
+  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
 }, 500);
 
 // import Desktop from './js/desktop/desktop.js'
@@ -3729,23 +3729,22 @@ setTimeout(function functionName() {
 
 
 window.onload = function () {
-    document.addEventListener('touchstart', function (event) {
-        if (event.touches.length > 1) {
-            event.preventDefault();
-        }
-    });
-    var lastTouchEnd = 0;
-    document.addEventListener('touchend', function (event) {
-        var now = new Date().getTime();
-        if (now - lastTouchEnd <= 300) {
-            event.preventDefault();
-        }
-        lastTouchEnd = now;
-    }, false);
-    document.addEventListener('touchmove', function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-    }, false);
+  // document.addEventListener('touchstart',function (event) {
+  //     if(event.touches.length>1){
+  //         event.preventDefault();
+  //     }
+  // })
+  // var lastTouchEnd=0;
+  // document.addEventListener('touchend',function (event) {
+  //     var now=(new Date()).getTime();
+  //     if(now-lastTouchEnd<=300){
+  //         event.preventDefault();
+  //     }
+  //     lastTouchEnd=now;
+  // },false)
+  document.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+  }, { passive: false });
 };
 
 console.log('Copyright (c) 2018 Zhuojun Chen. All Rights Reserved.');
