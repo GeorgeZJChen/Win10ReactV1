@@ -81,6 +81,7 @@ class ItemsColumnTwo extends Component{
   }
   onMouseEnter(){
     this.scrollbar.setUpScroll(this.refs.toScroll)
+
   }
   render(){
     return (
