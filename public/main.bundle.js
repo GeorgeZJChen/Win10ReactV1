@@ -868,9 +868,9 @@ var Select = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (this.props.returnSelf) this.props.returnSelf(this);
-      // this.refs.element.addEventListener('touchmove', function(e){
-      //   e.preventDefault()
-      // }, {passive: false})
+      this.refs.element.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+      }, { passive: false });
     }
   }, {
     key: 'onMouseDown',
@@ -3736,22 +3736,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (0, _reactDom.render)(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
 
 window.onload = function () {
-  // document.addEventListener('touchstart',function (event) {
-  //     if(event.touches.length>1){
-  //         event.preventDefault();
-  //     }
-  // })
-  // var lastTouchEnd=0;
-  // document.addEventListener('touchend',function (event) {
-  //     var now=(new Date()).getTime();
-  //     if(now-lastTouchEnd<=300){
-  //         event.preventDefault();
-  //     }
-  //     lastTouchEnd=now;
-  // },false)
-  document.addEventListener('touchmove', function (e) {
-    e.preventDefault();
-  }, { passive: false });
+        // document.addEventListener('touchstart',function (event) {
+        //     if(event.touches.length>1){
+        //         event.preventDefault();
+        //     }
+        // })
+        // var lastTouchEnd=0;
+        // document.addEventListener('touchend',function (event) {
+        //     var now=(new Date()).getTime();
+        //     if(now-lastTouchEnd<=300){
+        //         event.preventDefault();
+        //     }
+        //     lastTouchEnd=now;
+        // },false)
+        // document.addEventListener('touchmove', function(e){
+        //   e.preventDefault()
+        // }, {passive: false})
 };
 
 console.log('Copyright (c) 2018 Zhuojun Chen. All Rights Reserved.');
