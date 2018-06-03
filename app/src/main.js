@@ -10,8 +10,11 @@ import './js/components/event-handler.js'
 
 
 import Desktop from './js/desktop/desktop.js'
-render(<div></div>, document.getElementById('win10_login'))
-render(<Desktop/>, document.getElementById('win10_main'))
+setTimeout(function functionName() {
+  render(<div></div>, document.getElementById('win10_login'))
+  render(<Desktop/>, document.getElementById('win10_main'))
+}, 500)
+
 
 
 
