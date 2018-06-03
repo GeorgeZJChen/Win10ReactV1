@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
 import Icon from '../components/icon.js'
+import ut from '../components/Utils.js'
 
 import css from '../../css/desktop/desktop-container.css'
 
@@ -17,7 +18,12 @@ class Items extends Component {
 
   }
   init(){
+    if(this.state.initiated) return
     this.groupInfo = {
+      name: '',
+      parent: this,
+      focused: null,
+      checked: null,
       interval: [0, 0],
       column: -1,
       row: -1,
@@ -29,17 +35,18 @@ class Items extends Component {
     if(this.props.container.constructor.name == 'DesktopContainer'){
       this.groupInfo.itemWidth = 72
       this.groupInfo.interval = [76, 110]
+      this.groupInfo.name = "desktop"
     }
     this.lattice_init()
-    this.setState({
-      initiated : 1
-    })
     window.addEventListener('resize', ()=>{
       const resize = ()=>{
         this.lattice_reset()
       }
       clearTimeout(resize)
       setTimeout(resize, 300)
+    })
+    this.setState({
+      initiated : 1
     })
   }
   componentDidMount(){
@@ -63,7 +70,7 @@ class Items extends Component {
     }
     let data4 = {
       icon: {className:"folder"},
-      name: "Folder 4",
+      name: "Folder 4: This one doesn't have a very long name",
       className: "item-desktop"
     }
 
@@ -84,10 +91,10 @@ class Items extends Component {
         {
           this.state.initiated?
           [
-            <Item data={data} groupName={'test'} key={1} column={1} row={1} groupInfo={this.groupInfo}/>,
-            <Item data={data2} groupName={'test'} key={2} column={1} row={2} groupInfo={this.groupInfo}/>,
-            <Item data={data3} groupName={'test'} key={3} column={4} row={4} groupInfo={this.groupInfo}/>,
-            <Item data={data4} groupName={'test'} key={4} column={1} row={2} groupInfo={this.groupInfo}/>,
+            <Item data={data} key={1} column={1} row={1} groupInfo={this.groupInfo}/>,
+            <Item data={data2} key={2} column={1} row={2} groupInfo={this.groupInfo}/>,
+            <Item data={data3} key={3} column={4} row={4} groupInfo={this.groupInfo}/>,
+            <Item data={data4} key={4} column={1} row={2} groupInfo={this.groupInfo}/>,
 
           ]
           :
@@ -112,6 +119,7 @@ class Items extends Component {
     p.row = row
   }
   lattice_reset(){
+    if(!this.state.initiated) return
     let p = this.groupInfo
     let container = this.props.container.refs.element
     let containerHeight = container.offsetHeight
@@ -208,12 +216,38 @@ class Items extends Component {
       }
     }
   }
+  getChecked(){
+    let p = this.groupInfo
+    let inputs = document.getElementsByName(p.name)
+    for (let i = 0; i < inputs.length; i++) {
+      if(inputs[i].checked) {
+        return inputs[i]
+      }
+    }
+  }
+  deselect(){
+    let p = this.groupInfo
+    if(p.selectedColumns[0]!=-1&&p.selectedColumns[1]!=-1)
+    for (let i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++) {
+      for (var j = 0; j < p.row; j++) {
+        let item = p.lattice[i][j]
+        if(item)
+          item.deselect()
+      }
+    }
+    p.selectedColumns[0] = -1
+    p.selectedColumns[1] = -1
 
-
+    if(p.checked) p.checked.uncheck()
+  }
   select(x, y, sx, sy){
+    if(!this.state.initiated) return
+
     const p = this.groupInfo
+    if(p.checked) p.checked.uncheck()
+
     let left_n = Math.floor(Math.max(Math.min(x, sx)-0.75*p.itemWidth, -1)/p.interval[0]) +1
-    let right_n = Math.floor(Math.max(x, sx) +0.75*p.itemWidth/p.interval[0])-1
+    let right_n = Math.floor((Math.max(x, sx) +0.75*p.itemWidth)/p.interval[0])-1
     if(!(p.selectedColumns[0] == left_n && p.selectedColumns[1] == right_n)){
       let deselected =-1
 
@@ -298,6 +332,8 @@ class Item extends Component {
   constructor(props){
     super(props)
     this.hidden = 1
+    this.onMouseDown = this.onMouseDown.bind(this)
+    this.onClick = this.onClick.bind(this)
   }
   componentDidMount(){
     let t
@@ -315,31 +351,82 @@ class Item extends Component {
         this.outcast()
     }
   }
+  onMouseDown(e){
+    if(!this.selected){
+      this.props.groupInfo.parent.deselect()
+      this.check()
+      this.focus()
+    }
+  }
+  onClick(e){
+    if(this.selected){
+      this.props.groupInfo.parent.deselect()
+      this.check()
+      this.focus()
+    }
+  }
+  check(){
+    let lastChecked = this.props.groupInfo.checked
+    if(lastChecked==this) return
+    if(lastChecked) lastChecked.uncheck()
+    this.refs.input.checked = true
+    this.props.groupInfo.checked = this
+  }
+  uncheck(){
+    let lastChecked = this.props.groupInfo.checked
+    if(lastChecked!=this) return
+    this.refs.input.checked = false
+    this.props.groupInfo.checked = null
+  }
+  focus(){
+    let lastFocused = this.props.groupInfo.focused
+    if(lastFocused==this) return
+    if(lastFocused) lastFocused.blur()
+    let ele = this.refs.element
+    ele.className += ' '+ css.focused
+    this.props.groupInfo.focused = this
+  }
+  blur(){
+    let lastFocused = this.props.groupInfo.focused
+    if(lastFocused!=this) return
+    let ele = this.refs.element
+    ele.className = ele.className.replace(new RegExp(css.focused, 'g'), '')
+    this.props.groupInfo.focused = null
+    if(ut.browser.indexOf('Edge')!=-1){
+      this.refs.bg.style.outline = 'unset'
+      setTimeout(()=>{
+        this.refs.bg.style.outline = ''
+      },10)
+    }
+  }
   render(){
     return (
       <div className={css[this.props.data.className]} ref='element' style={{display:this.hidden?'none':''}}>
         <div className={css.itemIcon}>
           <Icon className={this.props.data.icon.className}/>
         </div>
-        <input type="radio" name={this.props.groupName+"_items_2RHBpnMd"} className={css.itemCheck}/>
+        <input type="radio" name={this.props.groupInfo.name} className={css.itemCheck} ref='input'
+          onMouseDown = {this.onMouseDown} onTouchStart = {this.onMouseDown}
+          onClick = {this.onClick}
+        />
           {/*  ondblclick="desktop.createWindow(this);this.checked=false"
           onblur="this.parentNode.style.zIndex=auto;"
           onfocus="this.parentNode.style.zIndex=1;"*/}
-        <div className={css.itemBackground}></div>
+        <div className={css.itemBackground} ref='bg'></div>
         <div className={css.itemText} data-title={this.props.data.name}></div>
       </div>
     )
   }
   select(){
     if(!this.selected){
-      this.refs.element.className += ' '+css.itemSelected
+      this.refs.element.className += ' '+css.selected
       this.selected = 1
     }
   }
   deselect(){
     if(this.selected){
       let ele = this.refs.element
-      ele.className = ele.className.replace(new RegExp(css.itemSelected, 'g'), '')
+      ele.className = ele.className.replace(new RegExp(css.selected, 'g'), '')
       this.selected = 0
     }
   }

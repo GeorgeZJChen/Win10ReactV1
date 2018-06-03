@@ -23,13 +23,14 @@ class DesktopContainer extends Component{
     setTimeout(()=>{
       this.refs.items.init()
 
-    },100)
+    },50)
   }
 
   render(){
     return (
       <div className={css.desktopCt} ref='element'>
-        <Select select={(x, y, sx, sy)=>this.refs.items.select(x, y, sx, sy)}/>
+        <Select select={(x, y, sx, sy)=>this.refs.items.select(x, y, sx, sy)}
+            deselect={()=>this.refs.items.deselect()}/>
         <Items container={this} ref='items'/>
         <Windows />
       </div>

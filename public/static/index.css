@@ -2,7 +2,7 @@
 html, body{
   height: 100%;
   width: 100%;
-  position: fixed;
+  position: fixed!important;
   overflow: hidden;
   font-size: 0;
   color: #fff;

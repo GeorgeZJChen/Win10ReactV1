@@ -388,16 +388,25 @@ document.head.appendChild(style);
 ut.addKeyFrames = function (name, frames) {
   global_style.innerHTML += "@keyframes " + name + "{" + frames + "}";
 };
-// let ss = document.styleSheets[document.styleSheets.length - 1]
-// if (CSS && CSS.supports && CSS.supports('animation: name')){
-// } else {
-//     ut.addKeyFrames = function(name, frames){
-//         var str = name + "{" + frames + "}",
-//             pos = ss.length;
-//         ss.insertRule("@-webkit-keyframes " + str, pos);
-//         ss.insertRule("@keyframes " + str, pos+1);
-//     }
-// }
+
+var getBrowser = function getBrowser() {
+  var ua = navigator.userAgent,
+      tem,
+      M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+  if (/trident/i.test(M[1])) {
+    tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
+    return 'IE ' + (tem[1] || '');
+  }
+  if (M[1] === 'Chrome') {
+    tem = ua.match(/\b(OPR|Edge)\/(\d+)/);
+    if (tem != null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+  }
+  M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
+  if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
+  return M.join(' ');
+};
+ut.browser = getBrowser();
+
 exports.default = ut;
 
 /***/ }),
@@ -868,9 +877,9 @@ var Select = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (this.props.returnSelf) this.props.returnSelf(this);
-      // this.refs.element.addEventListener('touchmove', function(e){
-      //   e.preventDefault()
-      // }, {passive: false})
+      this.refs.element.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+      }, { passive: false });
     }
   }, {
     key: 'onMouseDown',
@@ -943,6 +952,8 @@ var Select = function (_Component) {
             activated: 0
           });
           moved = false;
+        } else {
+          _this2.props.deselect();
         }
       };
       document.addEventListener('mousemove', move, false);
@@ -1053,7 +1064,7 @@ var DesktopContainer = function (_Component) {
 
       setTimeout(function () {
         _this2.refs.items.init();
-      }, 100);
+      }, 50);
     }
   }, {
     key: 'render',
@@ -1065,6 +1076,9 @@ var DesktopContainer = function (_Component) {
         { className: _desktopContainer2.default.desktopCt, ref: 'element' },
         _react2.default.createElement(_select2.default, { select: function select(x, y, sx, sy) {
             return _this3.refs.items.select(x, y, sx, sy);
+          },
+          deselect: function deselect() {
+            return _this3.refs.items.deselect();
           } }),
         _react2.default.createElement(_desktopItem2.default, { container: this, ref: 'items' }),
         _react2.default.createElement(Windows, null)
@@ -1126,6 +1140,10 @@ var _icon = __webpack_require__(/*! ../components/icon.js */ "./app/src/js/compo
 
 var _icon2 = _interopRequireDefault(_icon);
 
+var _Utils = __webpack_require__(/*! ../components/Utils.js */ "./app/src/js/components/Utils.js");
+
+var _Utils2 = _interopRequireDefault(_Utils);
+
 var _desktopContainer = __webpack_require__(/*! ../../css/desktop/desktop-container.css */ "./app/src/css/desktop/desktop-container.css");
 
 var _desktopContainer2 = _interopRequireDefault(_desktopContainer);
@@ -1158,7 +1176,12 @@ var Items = function (_Component) {
     value: function init() {
       var _this2 = this;
 
+      if (this.state.initiated) return;
       this.groupInfo = {
+        name: '',
+        parent: this,
+        focused: null,
+        checked: null,
         interval: [0, 0],
         column: -1,
         row: -1,
@@ -1170,17 +1193,18 @@ var Items = function (_Component) {
       if (this.props.container.constructor.name == 'DesktopContainer') {
         this.groupInfo.itemWidth = 72;
         this.groupInfo.interval = [76, 110];
+        this.groupInfo.name = "desktop";
       }
       this.lattice_init();
-      this.setState({
-        initiated: 1
-      });
       window.addEventListener('resize', function () {
         var resize = function resize() {
           _this2.lattice_reset();
         };
         clearTimeout(resize);
         setTimeout(resize, 300);
+      });
+      this.setState({
+        initiated: 1
       });
     }
   }, {
@@ -1206,7 +1230,7 @@ var Items = function (_Component) {
       };
       var data4 = {
         icon: { className: "folder" },
-        name: "Folder 4",
+        name: "Folder 4: This one doesn't have a very long name",
         className: "item-desktop"
 
         // (()=>{
@@ -1223,7 +1247,7 @@ var Items = function (_Component) {
       };return _react2.default.createElement(
         'div',
         { className: _desktopContainer2.default.itemsCt, ref: 'element' },
-        this.state.initiated ? [_react2.default.createElement(Item, { data: data, groupName: 'test', key: 1, column: 1, row: 1, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data2, groupName: 'test', key: 2, column: 1, row: 2, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data3, groupName: 'test', key: 3, column: 4, row: 4, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data4, groupName: 'test', key: 4, column: 1, row: 2, groupInfo: this.groupInfo })] : ''
+        this.state.initiated ? [_react2.default.createElement(Item, { data: data, key: 1, column: 1, row: 1, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data2, key: 2, column: 1, row: 2, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data3, key: 3, column: 4, row: 4, groupInfo: this.groupInfo }), _react2.default.createElement(Item, { data: data4, key: 4, column: 1, row: 2, groupInfo: this.groupInfo })] : ''
       );
     }
   }, {
@@ -1245,6 +1269,7 @@ var Items = function (_Component) {
   }, {
     key: 'lattice_reset',
     value: function lattice_reset() {
+      if (!this.state.initiated) return;
       var p = this.groupInfo;
       var container = this.props.container.refs.element;
       var containerHeight = container.offsetHeight;
@@ -1345,11 +1370,41 @@ var Items = function (_Component) {
       }
     }
   }, {
+    key: 'getChecked',
+    value: function getChecked() {
+      var p = this.groupInfo;
+      var inputs = document.getElementsByName(p.name);
+      for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].checked) {
+          return inputs[i];
+        }
+      }
+    }
+  }, {
+    key: 'deselect',
+    value: function deselect() {
+      var p = this.groupInfo;
+      if (p.selectedColumns[0] != -1 && p.selectedColumns[1] != -1) for (var i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++) {
+        for (var j = 0; j < p.row; j++) {
+          var item = p.lattice[i][j];
+          if (item) item.deselect();
+        }
+      }
+      p.selectedColumns[0] = -1;
+      p.selectedColumns[1] = -1;
+
+      if (p.checked) p.checked.uncheck();
+    }
+  }, {
     key: 'select',
     value: function select(x, y, sx, sy) {
+      if (!this.state.initiated) return;
+
       var p = this.groupInfo;
+      if (p.checked) p.checked.uncheck();
+
       var left_n = Math.floor(Math.max(Math.min(x, sx) - 0.75 * p.itemWidth, -1) / p.interval[0]) + 1;
-      var right_n = Math.floor(Math.max(x, sx) + 0.75 * p.itemWidth / p.interval[0]) - 1;
+      var right_n = Math.floor((Math.max(x, sx) + 0.75 * p.itemWidth) / p.interval[0]) - 1;
       if (!(p.selectedColumns[0] == left_n && p.selectedColumns[1] == right_n)) {
         var deselected = -1;
 
@@ -1436,6 +1491,8 @@ var Item = function (_Component2) {
     var _this3 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
 
     _this3.hidden = 1;
+    _this3.onMouseDown = _this3.onMouseDown.bind(_this3);
+    _this3.onClick = _this3.onClick.bind(_this3);
     return _this3;
   }
 
@@ -1454,6 +1511,68 @@ var Item = function (_Component2) {
       }
     }
   }, {
+    key: 'onMouseDown',
+    value: function onMouseDown(e) {
+      if (!this.selected) {
+        this.props.groupInfo.parent.deselect();
+        this.check();
+        this.focus();
+      }
+    }
+  }, {
+    key: 'onClick',
+    value: function onClick(e) {
+      if (this.selected) {
+        this.props.groupInfo.parent.deselect();
+        this.check();
+        this.focus();
+      }
+    }
+  }, {
+    key: 'check',
+    value: function check() {
+      var lastChecked = this.props.groupInfo.checked;
+      if (lastChecked == this) return;
+      if (lastChecked) lastChecked.uncheck();
+      this.refs.input.checked = true;
+      this.props.groupInfo.checked = this;
+    }
+  }, {
+    key: 'uncheck',
+    value: function uncheck() {
+      var lastChecked = this.props.groupInfo.checked;
+      if (lastChecked != this) return;
+      this.refs.input.checked = false;
+      this.props.groupInfo.checked = null;
+    }
+  }, {
+    key: 'focus',
+    value: function focus() {
+      var lastFocused = this.props.groupInfo.focused;
+      if (lastFocused == this) return;
+      if (lastFocused) lastFocused.blur();
+      var ele = this.refs.element;
+      ele.className += ' ' + _desktopContainer2.default.focused;
+      this.props.groupInfo.focused = this;
+    }
+  }, {
+    key: 'blur',
+    value: function blur() {
+      var _this4 = this;
+
+      var lastFocused = this.props.groupInfo.focused;
+      if (lastFocused != this) return;
+      var ele = this.refs.element;
+      ele.className = ele.className.replace(new RegExp(_desktopContainer2.default.focused, 'g'), '');
+      this.props.groupInfo.focused = null;
+      if (_Utils2.default.browser.indexOf('Edge') != -1) {
+        this.refs.bg.style.outline = 'unset';
+        setTimeout(function () {
+          _this4.refs.bg.style.outline = '';
+        }, 10);
+      }
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
@@ -1464,8 +1583,11 @@ var Item = function (_Component2) {
           { className: _desktopContainer2.default.itemIcon },
           _react2.default.createElement(_icon2.default, { className: this.props.data.icon.className })
         ),
-        _react2.default.createElement('input', { type: 'radio', name: this.props.groupName + "_items_2RHBpnMd", className: _desktopContainer2.default.itemCheck }),
-        _react2.default.createElement('div', { className: _desktopContainer2.default.itemBackground }),
+        _react2.default.createElement('input', { type: 'radio', name: this.props.groupInfo.name, className: _desktopContainer2.default.itemCheck, ref: 'input',
+          onMouseDown: this.onMouseDown, onTouchStart: this.onMouseDown,
+          onClick: this.onClick
+        }),
+        _react2.default.createElement('div', { className: _desktopContainer2.default.itemBackground, ref: 'bg' }),
         _react2.default.createElement('div', { className: _desktopContainer2.default.itemText, 'data-title': this.props.data.name })
       );
     }
@@ -1473,7 +1595,7 @@ var Item = function (_Component2) {
     key: 'select',
     value: function select() {
       if (!this.selected) {
-        this.refs.element.className += ' ' + _desktopContainer2.default.itemSelected;
+        this.refs.element.className += ' ' + _desktopContainer2.default.selected;
         this.selected = 1;
       }
     }
@@ -1482,7 +1604,7 @@ var Item = function (_Component2) {
     value: function deselect() {
       if (this.selected) {
         var ele = this.refs.element;
-        ele.className = ele.className.replace(new RegExp(_desktopContainer2.default.itemSelected, 'g'), '');
+        ele.className = ele.className.replace(new RegExp(_desktopContainer2.default.selected, 'g'), '');
         this.selected = 0;
       }
     }
@@ -3720,40 +3842,18 @@ var _login2 = _interopRequireDefault(_login);
 
 __webpack_require__(/*! ./js/components/event-handler.js */ "./app/src/js/components/event-handler.js");
 
-var _desktop = __webpack_require__(/*! ./js/desktop/desktop.js */ "./app/src/js/desktop/desktop.js");
-
-var _desktop2 = _interopRequireDefault(_desktop);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 setTimeout(function functionName() {
-  (0, _reactDom.render)(_react2.default.createElement('div', null), document.getElementById('win10_login'));
-  (0, _reactDom.render)(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
+  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
 }, 500);
 
+// import Desktop from './js/desktop/desktop.js'
 // setTimeout(function functionName() {
-//   render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
+//   render(<div></div>, document.getElementById('win10_login'))
+//   render(<Desktop/>, document.getElementById('win10_main'))
 // }, 500)
 
-
-window.onload = function () {
-  // document.addEventListener('touchstart',function (event) {
-  //     if(event.touches.length>1){
-  //         event.preventDefault();
-  //     }
-  // })
-  // var lastTouchEnd=0;
-  // document.addEventListener('touchend',function (event) {
-  //     var now=(new Date()).getTime();
-  //     if(now-lastTouchEnd<=300){
-  //         event.preventDefault();
-  //     }
-  //     lastTouchEnd=now;
-  // },false)
-  // document.addEventListener('touchmove', function(e){
-  //   e.preventDefault()
-  // }, {passive: false})
-};
 
 console.log('Copyright (c) 2018 Zhuojun Chen. All Rights Reserved.');
 
@@ -5590,7 +5690,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".desktop-container_desktop-ct_2CFFz{height:100%;width:100%;box-sizing:border-box;position:relative}.desktop-container_items-ct_Ulf7P{position:absolute;margin:6px 0 0 1px;z-index:103}.desktop-container_item-desktop_30hAL{position:absolute;width:72px;overflow:visible}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu{max-height:32px;overflow:hidden;width:68px;text-align:center;margin:1px 2px;font-size:12px;text-shadow:1px 1px 1px #000,-1px 0 1px #000}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu:before{content:attr(data-title);overflow:hidden;height:100%;width:100%}.desktop-container_item-desktop_30hAL>.desktop-container_item-icon_T0GSI{margin:auto;width:46px;height:46px}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH{position:absolute;z-index:1;top:0;width:100%;height:100%;margin:0;opacity:0}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-text_1aeVu{max-height:300px}.desktop-container_item-desktop_30hAL>.desktop-container_item-background_2FKXT{position:absolute;z-index:-1;top:0;width:100%;height:100%;outline:none}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:hover~.desktop-container_item-background_2FKXT{background-color:rgba(217,236,255,.15);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:active~.desktop-container_item-background_2FKXT,.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked:hover~.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL.desktop-container_item-selected_2ao2d>.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_item-selected_2ao2d:hover>.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop-container.css"],"names":[],"mappings":"AAAA,oCACE,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,iBAAmB,CACpB,AAOD,kCACE,kBAAmB,AACnB,mBAAwB,AACxB,WAAa,CACd,AACD,sCACE,kBAAmB,AACnB,WAAY,AACZ,gBAAkB,CACnB,AACD,yEACE,gBAAiB,AACjB,gBAAiB,AACjB,WAAY,AACZ,kBAAmB,AACnB,eAAwB,AACxB,eAAgB,AAChB,4CAAiD,CAClD,AACD,gFACE,yBAA0B,AAC1B,gBAAiB,AACjB,YAAa,AACb,UAAY,CACb,AACD,yEACE,YAAa,AACb,WAAY,AACZ,WAAa,CACd,AACD,0EACE,kBAAmB,AACnB,UAAW,AACX,MAAO,AACP,WAAY,AACZ,YAAa,AACb,SAAU,AACV,SAAW,CACZ,AACD,qHACE,gBAAkB,CACnB,AACD,+EACE,kBAAmB,AACnB,WAAY,AACZ,MAAO,AACP,WAAY,AACZ,YAAa,AACb,YAAc,CACf,AACD,yHACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,2HACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AAKD,2PACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,qHACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,2HACE,uCAA4C,AAC5C,uCAA6C,CAC9C","file":"desktop-container.css","sourcesContent":[".desktop-ct{\r\n  height: 100%;\r\n  width: 100%;\r\n  box-sizing: border-box;\r\n  position: relative;\r\n}\r\n/* .select-ct{\r\n  z-index: 100;\r\n}\r\n.items-ct{\r\n  z-index: 110;\r\n} */\r\n.items-ct{\r\n  position: absolute;\r\n  margin: 6px 0px 0px 1px;\r\n  z-index: 103;\r\n}\r\n.item-desktop{\r\n  position: absolute;\r\n  width: 72px;\r\n  overflow: visible;\r\n}\r\n.item-desktop>.item-text{\r\n  max-height: 32px;\r\n  overflow: hidden;\r\n  width: 68px;\r\n  text-align: center;\r\n  margin: 1px 2px 1px 2px;\r\n  font-size: 12px;\r\n  text-shadow: 1px 1px 1px #000, -1px 0px 1px #000;\r\n}\r\n.item-desktop>.item-text:before{\r\n  content: attr(data-title);\r\n  overflow: hidden;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.item-desktop>.item-icon{\r\n  margin: auto;\r\n  width: 46px;\r\n  height: 46px;\r\n}\r\n.item-desktop>.item-check{\r\n  position: absolute;\r\n  z-index: 1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  margin: 0;\r\n  opacity: 0;\r\n}\r\n.item-desktop>.item-check:checked~.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop>.item-background{\r\n  position: absolute;\r\n  z-index: -1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  outline: none;\r\n}\r\n.item-desktop>.item-check:hover~.item-background{\r\n  background-color: rgba(217, 236, 255, 0.15);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop>.item-check:checked~.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop>.item-check:active~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop>.item-check:checked:hover~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop.item-selected>.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.item-selected:hover>.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".desktop-container_desktop-ct_2CFFz{height:100%;width:100%;box-sizing:border-box;position:relative}.desktop-container_items-ct_Ulf7P{position:absolute;margin:6px 0 0 1px;z-index:103}.desktop-container_item-desktop_30hAL{position:absolute;width:72px;overflow:visible}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu{max-height:32px;overflow:hidden;width:68px;text-align:center;margin:1px 2px;font-size:12px;text-shadow:1px 1px 1px #000,-1px 0 1px #000}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu:before{content:attr(data-title);overflow:hidden;height:100%;width:100%}.desktop-container_item-desktop_30hAL>.desktop-container_item-icon_T0GSI{margin:auto;width:46px;height:46px}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH{position:absolute;z-index:1;top:0;width:100%;height:100%;margin:0;opacity:0}.desktop-container_item-desktop_30hAL.desktop-container_focused_2wWK->.desktop-container_item-text_1aeVu,.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-text_1aeVu{max-height:300px}.desktop-container_item-desktop_30hAL>.desktop-container_item-background_2FKXT{position:absolute;z-index:-1;top:0;width:100%;height:100%;outline:unset}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:hover~.desktop-container_item-background_2FKXT{background-color:rgba(217,236,255,.15);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_focused_2wWK-:not(.desktop-container_selected_1nXx1)>.desktop-container_item-check_3oEtH:not(:checked):not(:hover)~.desktop-container_item-background_2FKXT{background-color:transparent;outline:1px dotted #fff}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:active~.desktop-container_item-background_2FKXT,.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked:hover~.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1>.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1:hover>.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop-container.css"],"names":[],"mappings":"AAAA,oCACE,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,iBAAmB,CACpB,AAOD,kCACE,kBAAmB,AACnB,mBAAwB,AACxB,WAAa,CACd,AACD,sCACE,kBAAmB,AACnB,WAAY,AACZ,gBAAkB,CACnB,AACD,yEACE,gBAAiB,AACjB,gBAAiB,AACjB,WAAY,AACZ,kBAAmB,AACnB,eAAwB,AACxB,eAAgB,AAChB,4CAAiD,CAClD,AACD,gFACE,yBAA0B,AAC1B,gBAAiB,AACjB,YAAa,AACb,UAAY,CACb,AACD,yEACE,YAAa,AACb,WAAY,AACZ,WAAa,CACd,AACD,0EACE,kBAAmB,AACnB,UAAW,AACX,MAAO,AACP,WAAY,AACZ,YAAa,AACb,SAAU,AACV,SAAW,CACZ,AAID,8NACE,gBAAkB,CACnB,AACD,+EACE,kBAAmB,AACnB,WAAY,AACZ,MAAO,AACP,WAAY,AACZ,YAAa,AACb,aAAe,CAChB,AACD,yHACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,2HACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,oNACE,6BAA8B,AAC9B,uBAAyB,CAC1B,AAKD,2PACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,gHACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,sHACE,uCAA4C,AAC5C,uCAA6C,CAC9C","file":"desktop-container.css","sourcesContent":[".desktop-ct{\r\n  height: 100%;\r\n  width: 100%;\r\n  box-sizing: border-box;\r\n  position: relative;\r\n}\r\n/* .select-ct{\r\n  z-index: 100;\r\n}\r\n.items-ct{\r\n  z-index: 110;\r\n} */\r\n.items-ct{\r\n  position: absolute;\r\n  margin: 6px 0px 0px 1px;\r\n  z-index: 103;\r\n}\r\n.item-desktop{\r\n  position: absolute;\r\n  width: 72px;\r\n  overflow: visible;\r\n}\r\n.item-desktop>.item-text{\r\n  max-height: 32px;\r\n  overflow: hidden;\r\n  width: 68px;\r\n  text-align: center;\r\n  margin: 1px 2px 1px 2px;\r\n  font-size: 12px;\r\n  text-shadow: 1px 1px 1px #000, -1px 0px 1px #000;\r\n}\r\n.item-desktop>.item-text:before{\r\n  content: attr(data-title);\r\n  overflow: hidden;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.item-desktop>.item-icon{\r\n  margin: auto;\r\n  width: 46px;\r\n  height: 46px;\r\n}\r\n.item-desktop>.item-check{\r\n  position: absolute;\r\n  z-index: 1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  margin: 0;\r\n  opacity: 0;\r\n}\r\n.item-desktop>.item-check:checked~.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop.focused>.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop>.item-background{\r\n  position: absolute;\r\n  z-index: -1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  outline: unset;\r\n}\r\n.item-desktop>.item-check:hover~.item-background{\r\n  background-color: rgba(217, 236, 255, 0.15);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop>.item-check:checked~.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.focused:not(.selected)>.item-check:not(:checked):not(:hover)~.item-background{\r\n  background-color: transparent;\r\n  outline: 1px dotted #fff;\r\n}\r\n.item-desktop>.item-check:active~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop>.item-check:checked:hover~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop.selected>.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.selected:hover>.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -5606,10 +5706,10 @@ exports.locals = {
 	"itemIcon": "desktop-container_item-icon_T0GSI",
 	"item-check": "desktop-container_item-check_3oEtH",
 	"itemCheck": "desktop-container_item-check_3oEtH",
+	"focused": "desktop-container_focused_2wWK-",
 	"item-background": "desktop-container_item-background_2FKXT",
 	"itemBackground": "desktop-container_item-background_2FKXT",
-	"item-selected": "desktop-container_item-selected_2ao2d",
-	"itemSelected": "desktop-container_item-selected_2ao2d"
+	"selected": "desktop-container_selected_1nXx1"
 };
 
 /***/ }),

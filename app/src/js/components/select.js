@@ -14,9 +14,9 @@ class Select extends Component{
   }
   componentDidMount(){
     if(this.props.returnSelf)this.props.returnSelf(this)
-    // this.refs.element.addEventListener('touchmove', function(e){
-    //   e.preventDefault()
-    // }, {passive: false})
+    this.refs.element.addEventListener('touchmove', function(e){
+      e.preventDefault()
+    }, {passive: false})
   }
 
   onMouseDown(e){
@@ -86,6 +86,8 @@ class Select extends Component{
           activated: 0
         })
         moved = false
+      }else {
+        this.props.deselect()
       }
     }
     document.addEventListener('mousemove', move, false)
