@@ -3742,9 +3742,9 @@ window.onload = function () {
   //     }
   //     lastTouchEnd=now;
   // },false)
-  document.addEventListener('touchmove', function (e) {
-    e.preventDefault();
-  }, { passive: false });
+  // document.addEventListener('touchmove', function(e){
+  //   e.preventDefault()
+  // }, {passive: false})
 };
 
 console.log('Copyright (c) 2018 Zhuojun Chen. All Rights Reserved.');
