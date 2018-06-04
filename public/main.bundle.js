@@ -1500,9 +1500,7 @@ var Items = function (_Component) {
           var origin = [target.column, target.row];
           var opacity = 0.63;
           var ct = document.createElement('div');
-          ct.addEventListener('touchmove', function (e) {
-            e.preventDefault();
-          }, { passive: false });
+
           ct.id = ctid;
           ct.className = _desktopContainer2.default.itemsCt;
           ct.style.pointerEvents = 'none';
@@ -1544,7 +1542,11 @@ var Items = function (_Component) {
           _ct.style.left = mx - x + 'px';
         }
       };
+      var tm = function tm(e) {
+        e.preventDefault();
+      };
       var up = function up(e) {
+        document.removeEventListener('touchmove', tm, { passive: false });
         document.removeEventListener('mousemove', move, false);
         document.removeEventListener('mouseup', up, false);
         document.removeEventListener("touchmove", move, false);
@@ -1558,6 +1560,7 @@ var Items = function (_Component) {
           }, 50);
         }
       };
+      document.addEventListener('touchmove', tm, { passive: false });
       document.addEventListener('mousemove', move, false);
       document.addEventListener('mouseup', up, false);
       document.addEventListener("touchmove", move, false);

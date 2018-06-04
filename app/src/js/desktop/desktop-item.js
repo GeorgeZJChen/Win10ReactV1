@@ -341,9 +341,7 @@ class Items extends Component {
         const origin = [target.column, target.row]
         const opacity = 0.63
         const ct = document.createElement('div')
-        ct.addEventListener('touchmove', function(e){
-          e.preventDefault()
-        }, {passive: false})
+
         ct.id = ctid
         ct.className = css.itemsCt
         ct.style.pointerEvents = 'none'
@@ -387,7 +385,9 @@ class Items extends Component {
 
 
     }
+    const tm = function(e){e.preventDefault()}
     const up = (e)=>{
+      document.removeEventListener('touchmove', tm, {passive: false})
       document.removeEventListener('mousemove', move, false)
       document.removeEventListener('mouseup', up, false)
       document.removeEventListener("touchmove", move, false)
@@ -401,6 +401,7 @@ class Items extends Component {
         },50)
       }
     }
+    document.addEventListener('touchmove', tm, {passive: false})
     document.addEventListener('mousemove', move, false)
     document.addEventListener('mouseup', up, false)
     document.addEventListener("touchmove", move, false)
