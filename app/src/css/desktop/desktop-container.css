@@ -14,6 +14,7 @@
   position: absolute;
   margin: 6px 0px 0px 1px;
   z-index: 103;
+  box-sizing: border-box;
 }
 .item-desktop{
   position: absolute;
@@ -75,10 +76,10 @@
   background-color: transparent;
   outline: 1px dotted #fff;
 }
-.item-desktop>.item-check:active~.item-background{
+/* .item-desktop>.item-check:active~.item-background{
   background-color: rgba(138, 191, 244, 0.25);
   outline: 1px solid rgba(217, 236, 255, 0.36);
-}
+} */
 .item-desktop>.item-check:checked:hover~.item-background{
   background-color: rgba(138, 191, 244, 0.25);
   outline: 1px solid rgba(217, 236, 255, 0.36);
@@ -90,4 +91,15 @@
 .item-desktop.selected:hover>.item-background{
   background-color: rgba(138, 191, 244, 0.25);
   outline: 1px solid rgba(217, 236, 255, 0.36);
+}
+.item-desktop.dragged>.item-check:checked~.item-background{
+  background-color: transparent;
+  outline: none;
+}
+.item-desktop.selected.dragged>.item-background{
+  background-color: transparent;
+  outline: none;
+}
+.item-desktop.dragged>.item-check:checked~.item-text{
+  max-height: 300px;
 }

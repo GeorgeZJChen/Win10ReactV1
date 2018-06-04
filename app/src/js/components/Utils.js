@@ -31,4 +31,6 @@ let getBrowser = function(){
     }
 ut.browser = getBrowser()
 
+ut.global = {}
+
 export default ut

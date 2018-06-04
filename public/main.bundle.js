@@ -407,6 +407,8 @@ var getBrowser = function getBrowser() {
 };
 ut.browser = getBrowser();
 
+ut.global = {};
+
 exports.default = ut;
 
 /***/ }),
@@ -976,7 +978,7 @@ var Select = function (_Component) {
             return _this3.onMouseDown(e);
           },
           style: { zIndex: this.state.activated ? 110 : '' } },
-        _react2.default.createElement('div', { className: _select2.default.selectArea, ref: 'area' })
+        _react2.default.createElement('div', { className: _select2.default.selectArea, ref: 'area', style: { display: this.state.activated ? 'block' : 'none' } })
       );
     }
   }]);
@@ -1384,7 +1386,7 @@ var Items = function (_Component) {
     key: 'deselect',
     value: function deselect() {
       var p = this.groupInfo;
-      if (p.selectedColumns[0] != -1 && p.selectedColumns[1] != -1) for (var i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++) {
+      if (p.selectedColumns[0] != -1 && p.selectedColumns[1] != -1) for (var i = p.selectedColumns[0]; i < p.selectedColumns[1]; i++) {
         for (var j = 0; j < p.row; j++) {
           var item = p.lattice[i][j];
           if (item) item.deselect();
@@ -1477,6 +1479,91 @@ var Items = function (_Component) {
         }
       }
     }
+  }, {
+    key: 'onDrag',
+    value: function onDrag(e, target) {
+      var _this3 = this;
+
+      var x = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
+      var y = e.pageY || (e.changedTouches ? e.changedTouches[0].pageY : 0);
+
+      var draggedItems = [];
+      var ctid = 'ct_CEbcp1oiBy';
+
+      var moved = false;
+      var move = function move(e) {
+        var mx = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
+        var my = e.pageY || (e.changedTouches ? e.changedTouches[0].pageY : 0);
+        if (!moved && Math.abs(my - y) < 4 && Math.abs(mx - x) < 4) return;
+        if (!moved) {
+          moved = true;
+          var origin = [target.column, target.row];
+          var opacity = 0.63;
+          var ct = document.createElement('div');
+          ct.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+          }, { passive: false });
+          ct.id = ctid;
+          ct.className = _desktopContainer2.default.itemsCt;
+          ct.style.pointerEvents = 'none';
+          ct.style.zIndex = 9999999;
+          var p = _this3.groupInfo;
+          for (var i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++) {
+            for (var j = 0; j < p.row; j++) {
+              var item = p.lattice[i][j];
+              if (item && item.selected) {
+                var copy = item.refs.element.cloneNode(true);
+                copy.className += ' ' + _desktopContainer2.default.dragged;
+                copy.id += '_dragged';
+                if (item == target) {
+                  target.dragged = true;
+                  copy.style.opacity = opacity;
+
+                  var children = copy.children;
+                  for (var k = 0; k < children.length; k++) {
+                    if (children[k].className.indexOf(_desktopContainer2.default.itemBackground) != -1) {
+                      children[k].style.outline = 'unset';
+                      children[k].style.backgroundColor = 'unset';
+                    }
+                  }
+                } else {
+                  var position = [item.column, item.row];
+                  var distance = Math.sqrt(Math.pow(position[0] - origin[0], 2) + Math.pow(position[1] - origin[1], 2));
+                  var ac = 1 / ((Math.pow(1.1 * distance, 2) + 2) * 0.5); //attenuation coefficient
+                  copy.style.opacity = ac * opacity;
+                }
+                ct.appendChild(copy);
+                draggedItems.push(item);
+              }
+            }
+          }
+          _this3.props.container.refs.element.appendChild(ct);
+        } else {
+          var _ct = document.getElementById(ctid);
+          _ct.style.top = my - y + 'px';
+          _ct.style.left = mx - x + 'px';
+        }
+      };
+      var up = function up(e) {
+        document.removeEventListener('mousemove', move, false);
+        document.removeEventListener('mouseup', up, false);
+        document.removeEventListener("touchmove", move, false);
+        document.removeEventListener("touchend", up, false);
+        document.removeEventListener("touchcancel", up, false);
+        if (moved) {
+          var ct = document.getElementById(ctid);
+          if (ct) ct.parentNode.removeChild(ct);
+          setTimeout(function () {
+            delete target.dragged;
+          }, 50);
+        }
+      };
+      document.addEventListener('mousemove', move, false);
+      document.addEventListener('mouseup', up, false);
+      document.addEventListener("touchmove", move, false);
+      document.addEventListener("touchend", up, false);
+      document.addEventListener("touchcancel", up, false);
+    }
   }]);
 
   return Items;
@@ -1488,12 +1575,12 @@ var Item = function (_Component2) {
   function Item(props) {
     _classCallCheck(this, Item);
 
-    var _this3 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
+    var _this4 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
 
-    _this3.hidden = 1;
-    _this3.onMouseDown = _this3.onMouseDown.bind(_this3);
-    _this3.onClick = _this3.onClick.bind(_this3);
-    return _this3;
+    _this4.hidden = 1;
+    _this4.onMouseDown = _this4.onMouseDown.bind(_this4);
+    _this4.onClick = _this4.onClick.bind(_this4);
+    return _this4;
   }
 
   _createClass(Item, [{
@@ -1508,68 +1595,6 @@ var Item = function (_Component2) {
         this.selected = 0;
       } else {
         if (!this.isOutcast) this.outcast();
-      }
-    }
-  }, {
-    key: 'onMouseDown',
-    value: function onMouseDown(e) {
-      if (!this.selected) {
-        this.props.groupInfo.parent.deselect();
-        this.check();
-        this.focus();
-      }
-    }
-  }, {
-    key: 'onClick',
-    value: function onClick(e) {
-      if (this.selected) {
-        this.props.groupInfo.parent.deselect();
-        this.check();
-        this.focus();
-      }
-    }
-  }, {
-    key: 'check',
-    value: function check() {
-      var lastChecked = this.props.groupInfo.checked;
-      if (lastChecked == this) return;
-      if (lastChecked) lastChecked.uncheck();
-      this.refs.input.checked = true;
-      this.props.groupInfo.checked = this;
-    }
-  }, {
-    key: 'uncheck',
-    value: function uncheck() {
-      var lastChecked = this.props.groupInfo.checked;
-      if (lastChecked != this) return;
-      this.refs.input.checked = false;
-      this.props.groupInfo.checked = null;
-    }
-  }, {
-    key: 'focus',
-    value: function focus() {
-      var lastFocused = this.props.groupInfo.focused;
-      if (lastFocused == this) return;
-      if (lastFocused) lastFocused.blur();
-      var ele = this.refs.element;
-      ele.className += ' ' + _desktopContainer2.default.focused;
-      this.props.groupInfo.focused = this;
-    }
-  }, {
-    key: 'blur',
-    value: function blur() {
-      var _this4 = this;
-
-      var lastFocused = this.props.groupInfo.focused;
-      if (lastFocused != this) return;
-      var ele = this.refs.element;
-      ele.className = ele.className.replace(new RegExp(_desktopContainer2.default.focused, 'g'), '');
-      this.props.groupInfo.focused = null;
-      if (_Utils2.default.browser.indexOf('Edge') != -1) {
-        this.refs.bg.style.outline = 'unset';
-        setTimeout(function () {
-          _this4.refs.bg.style.outline = '';
-        }, 10);
       }
     }
   }, {
@@ -1590,6 +1615,78 @@ var Item = function (_Component2) {
         _react2.default.createElement('div', { className: _desktopContainer2.default.itemBackground, ref: 'bg' }),
         _react2.default.createElement('div', { className: _desktopContainer2.default.itemText, 'data-title': this.props.data.name })
       );
+    }
+  }, {
+    key: 'onMouseDown',
+    value: function onMouseDown(e) {
+      this.focus();
+      if (!this.selected) {
+        this.props.groupInfo.parent.deselect();
+        this.check();
+      }
+      this.props.groupInfo.parent.onDrag(e, this);
+    }
+  }, {
+    key: 'onClick',
+    value: function onClick(e) {
+      if (this.selected && !this.dragged) {
+        delete this.dragged;
+        this.props.groupInfo.parent.deselect();
+        this.check();
+        this.focus();
+      }
+    }
+  }, {
+    key: 'check',
+    value: function check() {
+      var lastChecked = this.props.groupInfo.checked;
+      if (lastChecked == this) return;
+      if (lastChecked) lastChecked.uncheck();
+      this.refs.input.checked = true;
+      var p = this.props.groupInfo;
+      p.checked = this;
+      this.select();
+      p.selectedColumns[0] = this.column - 1;
+      p.selectedColumns[1] = this.column;
+    }
+  }, {
+    key: 'uncheck',
+    value: function uncheck() {
+      var lastChecked = this.props.groupInfo.checked;
+      if (lastChecked != this) return;
+      this.refs.input.checked = false;
+      this.props.groupInfo.checked = null;
+      this.deselect();
+      var p = this.props.groupInfo;
+      p.selectedColumns[0] = -1;
+      p.selectedColumns[1] = -1;
+    }
+  }, {
+    key: 'focus',
+    value: function focus() {
+      var lastFocused = this.props.groupInfo.focused;
+      if (lastFocused == this) return;
+      if (lastFocused) lastFocused.blur();
+      var ele = this.refs.element;
+      ele.className += ' ' + _desktopContainer2.default.focused;
+      this.props.groupInfo.focused = this;
+    }
+  }, {
+    key: 'blur',
+    value: function blur() {
+      var _this5 = this;
+
+      var lastFocused = this.props.groupInfo.focused;
+      if (lastFocused != this) return;
+      var ele = this.refs.element;
+      ele.className = ele.className.replace(new RegExp(_desktopContainer2.default.focused, 'g'), '');
+      this.props.groupInfo.focused = null;
+      if (_Utils2.default.browser.indexOf('Edge') != -1) {
+        this.refs.bg.style.outline = 'unset';
+        setTimeout(function () {
+          _this5.refs.bg.style.outline = '';
+        }, 10);
+      }
     }
   }, {
     key: 'select',
@@ -5666,7 +5763,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".select_select-ct_sPLBT{width:100%;height:100%;position:absolute}.select_select-area_3vidz{box-sizing:border-box;border:1px solid #0078d7;width:0;height:0;position:absolute;background-color:rgba(0,120,215,.2)}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/components/select.css"],"names":[],"mappings":"AAAA,wBACE,WAAY,AACZ,YAAa,AACb,iBAAmB,CACpB,AACD,0BACE,sBAAuB,AACvB,yBAAmC,AACnC,QAAS,AACT,SAAU,AACV,kBAAmB,AACnB,mCAAyC,CAC1C","file":"select.css","sourcesContent":[".select-ct{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n}\r\n.select-area{\r\n  box-sizing: border-box;\r\n  border: 1px solid rgb(0, 120, 215);\r\n  width: 0;\r\n  height: 0;\r\n  position: absolute;\r\n  background-color: rgba(0, 120, 215, 0.2);\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".select_select-ct_sPLBT{width:100%;height:100%;position:absolute}.select_select-area_3vidz{box-sizing:border-box;border:1px solid #0078d7;width:0;height:0;position:absolute;background-color:rgba(0,120,215,.2);display:none}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/components/select.css"],"names":[],"mappings":"AAAA,wBACE,WAAY,AACZ,YAAa,AACb,iBAAmB,CACpB,AACD,0BACE,sBAAuB,AACvB,yBAAmC,AACnC,QAAS,AACT,SAAU,AACV,kBAAmB,AACnB,oCAAyC,AACzC,YAAc,CACf","file":"select.css","sourcesContent":[".select-ct{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n}\r\n.select-area{\r\n  box-sizing: border-box;\r\n  border: 1px solid rgb(0, 120, 215);\r\n  width: 0;\r\n  height: 0;\r\n  position: absolute;\r\n  background-color: rgba(0, 120, 215, 0.2);\r\n  display: none;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -5690,7 +5787,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".desktop-container_desktop-ct_2CFFz{height:100%;width:100%;box-sizing:border-box;position:relative}.desktop-container_items-ct_Ulf7P{position:absolute;margin:6px 0 0 1px;z-index:103}.desktop-container_item-desktop_30hAL{position:absolute;width:72px;overflow:visible}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu{max-height:32px;overflow:hidden;width:68px;text-align:center;margin:1px 2px;font-size:12px;text-shadow:1px 1px 1px #000,-1px 0 1px #000}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu:before{content:attr(data-title);overflow:hidden;height:100%;width:100%}.desktop-container_item-desktop_30hAL>.desktop-container_item-icon_T0GSI{margin:auto;width:46px;height:46px}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH{position:absolute;z-index:1;top:0;width:100%;height:100%;margin:0;opacity:0}.desktop-container_item-desktop_30hAL.desktop-container_focused_2wWK->.desktop-container_item-text_1aeVu,.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-text_1aeVu{max-height:300px}.desktop-container_item-desktop_30hAL>.desktop-container_item-background_2FKXT{position:absolute;z-index:-1;top:0;width:100%;height:100%;outline:unset}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:hover~.desktop-container_item-background_2FKXT{background-color:rgba(217,236,255,.15);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_focused_2wWK-:not(.desktop-container_selected_1nXx1)>.desktop-container_item-check_3oEtH:not(:checked):not(:hover)~.desktop-container_item-background_2FKXT{background-color:transparent;outline:1px dotted #fff}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:active~.desktop-container_item-background_2FKXT,.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked:hover~.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1>.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1:hover>.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop-container.css"],"names":[],"mappings":"AAAA,oCACE,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,iBAAmB,CACpB,AAOD,kCACE,kBAAmB,AACnB,mBAAwB,AACxB,WAAa,CACd,AACD,sCACE,kBAAmB,AACnB,WAAY,AACZ,gBAAkB,CACnB,AACD,yEACE,gBAAiB,AACjB,gBAAiB,AACjB,WAAY,AACZ,kBAAmB,AACnB,eAAwB,AACxB,eAAgB,AAChB,4CAAiD,CAClD,AACD,gFACE,yBAA0B,AAC1B,gBAAiB,AACjB,YAAa,AACb,UAAY,CACb,AACD,yEACE,YAAa,AACb,WAAY,AACZ,WAAa,CACd,AACD,0EACE,kBAAmB,AACnB,UAAW,AACX,MAAO,AACP,WAAY,AACZ,YAAa,AACb,SAAU,AACV,SAAW,CACZ,AAID,8NACE,gBAAkB,CACnB,AACD,+EACE,kBAAmB,AACnB,WAAY,AACZ,MAAO,AACP,WAAY,AACZ,YAAa,AACb,aAAe,CAChB,AACD,yHACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,2HACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,oNACE,6BAA8B,AAC9B,uBAAyB,CAC1B,AAKD,2PACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,gHACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,sHACE,uCAA4C,AAC5C,uCAA6C,CAC9C","file":"desktop-container.css","sourcesContent":[".desktop-ct{\r\n  height: 100%;\r\n  width: 100%;\r\n  box-sizing: border-box;\r\n  position: relative;\r\n}\r\n/* .select-ct{\r\n  z-index: 100;\r\n}\r\n.items-ct{\r\n  z-index: 110;\r\n} */\r\n.items-ct{\r\n  position: absolute;\r\n  margin: 6px 0px 0px 1px;\r\n  z-index: 103;\r\n}\r\n.item-desktop{\r\n  position: absolute;\r\n  width: 72px;\r\n  overflow: visible;\r\n}\r\n.item-desktop>.item-text{\r\n  max-height: 32px;\r\n  overflow: hidden;\r\n  width: 68px;\r\n  text-align: center;\r\n  margin: 1px 2px 1px 2px;\r\n  font-size: 12px;\r\n  text-shadow: 1px 1px 1px #000, -1px 0px 1px #000;\r\n}\r\n.item-desktop>.item-text:before{\r\n  content: attr(data-title);\r\n  overflow: hidden;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.item-desktop>.item-icon{\r\n  margin: auto;\r\n  width: 46px;\r\n  height: 46px;\r\n}\r\n.item-desktop>.item-check{\r\n  position: absolute;\r\n  z-index: 1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  margin: 0;\r\n  opacity: 0;\r\n}\r\n.item-desktop>.item-check:checked~.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop.focused>.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop>.item-background{\r\n  position: absolute;\r\n  z-index: -1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  outline: unset;\r\n}\r\n.item-desktop>.item-check:hover~.item-background{\r\n  background-color: rgba(217, 236, 255, 0.15);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop>.item-check:checked~.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.focused:not(.selected)>.item-check:not(:checked):not(:hover)~.item-background{\r\n  background-color: transparent;\r\n  outline: 1px dotted #fff;\r\n}\r\n.item-desktop>.item-check:active~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop>.item-check:checked:hover~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop.selected>.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.selected:hover>.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".desktop-container_desktop-ct_2CFFz{height:100%;width:100%;box-sizing:border-box;position:relative}.desktop-container_items-ct_Ulf7P{position:absolute;margin:6px 0 0 1px;z-index:103;box-sizing:border-box}.desktop-container_item-desktop_30hAL{position:absolute;width:72px;overflow:visible}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu{max-height:32px;overflow:hidden;width:68px;text-align:center;margin:1px 2px;font-size:12px;text-shadow:1px 1px 1px #000,-1px 0 1px #000}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu:before{content:attr(data-title);overflow:hidden;height:100%;width:100%}.desktop-container_item-desktop_30hAL>.desktop-container_item-icon_T0GSI{margin:auto;width:46px;height:46px}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH{position:absolute;z-index:1;top:0;width:100%;height:100%;margin:0;opacity:0}.desktop-container_item-desktop_30hAL.desktop-container_focused_2wWK->.desktop-container_item-text_1aeVu,.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-text_1aeVu{max-height:300px}.desktop-container_item-desktop_30hAL>.desktop-container_item-background_2FKXT{position:absolute;z-index:-1;top:0;width:100%;height:100%;outline:unset}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:hover~.desktop-container_item-background_2FKXT{background-color:rgba(217,236,255,.15);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_focused_2wWK-:not(.desktop-container_selected_1nXx1)>.desktop-container_item-check_3oEtH:not(:checked):not(:hover)~.desktop-container_item-background_2FKXT{background-color:transparent;outline:1px dotted #fff}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked:hover~.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1>.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1:hover>.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL.desktop-container_dragged_2KMKm>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-background_2FKXT,.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1.desktop-container_dragged_2KMKm>.desktop-container_item-background_2FKXT{background-color:transparent;outline:none}.desktop-container_item-desktop_30hAL.desktop-container_dragged_2KMKm>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-text_1aeVu{max-height:300px}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop-container.css"],"names":[],"mappings":"AAAA,oCACE,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,iBAAmB,CACpB,AAOD,kCACE,kBAAmB,AACnB,mBAAwB,AACxB,YAAa,AACb,qBAAuB,CACxB,AACD,sCACE,kBAAmB,AACnB,WAAY,AACZ,gBAAkB,CACnB,AACD,yEACE,gBAAiB,AACjB,gBAAiB,AACjB,WAAY,AACZ,kBAAmB,AACnB,eAAwB,AACxB,eAAgB,AAChB,4CAAiD,CAClD,AACD,gFACE,yBAA0B,AAC1B,gBAAiB,AACjB,YAAa,AACb,UAAY,CACb,AACD,yEACE,YAAa,AACb,WAAY,AACZ,WAAa,CACd,AACD,0EACE,kBAAmB,AACnB,UAAW,AACX,MAAO,AACP,WAAY,AACZ,YAAa,AACb,SAAU,AACV,SAAW,CACZ,AAID,8NACE,gBAAkB,CACnB,AACD,+EACE,kBAAmB,AACnB,WAAY,AACZ,MAAO,AACP,WAAY,AACZ,YAAa,AACb,aAAe,CAChB,AACD,yHACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,2HACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,oNACE,6BAA8B,AAC9B,uBAAyB,CAC1B,AAKD,iIACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,gHACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,sHACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AAKD,2SACE,6BAA8B,AAC9B,YAAc,CACf,AACD,qJACE,gBAAkB,CACnB","file":"desktop-container.css","sourcesContent":[".desktop-ct{\r\n  height: 100%;\r\n  width: 100%;\r\n  box-sizing: border-box;\r\n  position: relative;\r\n}\r\n/* .select-ct{\r\n  z-index: 100;\r\n}\r\n.items-ct{\r\n  z-index: 110;\r\n} */\r\n.items-ct{\r\n  position: absolute;\r\n  margin: 6px 0px 0px 1px;\r\n  z-index: 103;\r\n  box-sizing: border-box;\r\n}\r\n.item-desktop{\r\n  position: absolute;\r\n  width: 72px;\r\n  overflow: visible;\r\n}\r\n.item-desktop>.item-text{\r\n  max-height: 32px;\r\n  overflow: hidden;\r\n  width: 68px;\r\n  text-align: center;\r\n  margin: 1px 2px 1px 2px;\r\n  font-size: 12px;\r\n  text-shadow: 1px 1px 1px #000, -1px 0px 1px #000;\r\n}\r\n.item-desktop>.item-text:before{\r\n  content: attr(data-title);\r\n  overflow: hidden;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.item-desktop>.item-icon{\r\n  margin: auto;\r\n  width: 46px;\r\n  height: 46px;\r\n}\r\n.item-desktop>.item-check{\r\n  position: absolute;\r\n  z-index: 1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  margin: 0;\r\n  opacity: 0;\r\n}\r\n.item-desktop>.item-check:checked~.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop.focused>.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop>.item-background{\r\n  position: absolute;\r\n  z-index: -1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  outline: unset;\r\n}\r\n.item-desktop>.item-check:hover~.item-background{\r\n  background-color: rgba(217, 236, 255, 0.15);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop>.item-check:checked~.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.focused:not(.selected)>.item-check:not(:checked):not(:hover)~.item-background{\r\n  background-color: transparent;\r\n  outline: 1px dotted #fff;\r\n}\r\n/* .item-desktop>.item-check:active~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n} */\r\n.item-desktop>.item-check:checked:hover~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop.selected>.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.selected:hover>.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop.dragged>.item-check:checked~.item-background{\r\n  background-color: transparent;\r\n  outline: none;\r\n}\r\n.item-desktop.selected.dragged>.item-background{\r\n  background-color: transparent;\r\n  outline: none;\r\n}\r\n.item-desktop.dragged>.item-check:checked~.item-text{\r\n  max-height: 300px;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -5709,7 +5806,8 @@ exports.locals = {
 	"focused": "desktop-container_focused_2wWK-",
 	"item-background": "desktop-container_item-background_2FKXT",
 	"itemBackground": "desktop-container_item-background_2FKXT",
-	"selected": "desktop-container_selected_1nXx1"
+	"selected": "desktop-container_selected_1nXx1",
+	"dragged": "desktop-container_dragged_2KMKm"
 };
 
 /***/ }),

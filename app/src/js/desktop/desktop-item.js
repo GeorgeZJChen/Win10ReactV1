@@ -228,7 +228,7 @@ class Items extends Component {
   deselect(){
     let p = this.groupInfo
     if(p.selectedColumns[0]!=-1&&p.selectedColumns[1]!=-1)
-    for (let i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++) {
+    for (let i = p.selectedColumns[0]; i < p.selectedColumns[1]; i++) {
       for (var j = 0; j < p.row; j++) {
         let item = p.lattice[i][j]
         if(item)
@@ -324,6 +324,89 @@ class Items extends Component {
       }
     }
   }
+  onDrag(e, target){
+    const x = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
+    const y = e.pageY || (e.changedTouches?e.changedTouches[0].pageY:0)
+
+    const draggedItems = []
+    const ctid = 'ct_CEbcp1oiBy'
+
+    let moved = false
+    const move = (e)=>{
+      let mx = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
+      let my = e.pageY || (e.changedTouches?e.changedTouches[0].pageY:0)
+      if(!moved&&Math.abs(my-y)<4&&Math.abs(mx-x)<4) return
+      if(!moved){
+        moved = true
+        const origin = [target.column, target.row]
+        const opacity = 0.63
+        const ct = document.createElement('div')
+        ct.addEventListener('touchmove', function(e){
+          e.preventDefault()
+        }, {passive: false})
+        ct.id = ctid
+        ct.className = css.itemsCt
+        ct.style.pointerEvents = 'none'
+        ct.style.zIndex = 9999999
+        let p = this.groupInfo
+        for (let i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++) {
+          for (let j = 0; j < p.row; j++) {
+            let item = p.lattice[i][j]
+            if(item&&item.selected){
+              let copy = item.refs.element.cloneNode(true)
+              copy.className += ' '+css.dragged
+              copy.id += '_dragged'
+              if(item == target){
+                target.dragged = true
+                copy.style.opacity = opacity
+
+                let children = copy.children
+                for (let k = 0; k < children.length; k++) {
+                  if (children[k].className.indexOf(css.itemBackground)!=-1) {
+                    children[k].style.outline = 'unset'
+                    children[k].style.backgroundColor = 'unset'
+                  }
+                }
+              }else {
+                let position = [item.column, item.row]
+                let distance = Math.sqrt(Math.pow((position[0]-origin[0]),2)+Math.pow((position[1]-origin[1]),2))
+                let ac = 1/((Math.pow(1.1*(distance),2)+2) *0.5)//attenuation coefficient
+                copy.style.opacity = ac *opacity
+              }
+              ct.appendChild(copy)
+              draggedItems.push(item)
+            }
+          }
+        }
+        this.props.container.refs.element.appendChild(ct)
+      }else{
+        const ct = document.getElementById(ctid)
+        ct.style.top = my-y +'px'
+        ct.style.left = mx-x +'px'
+      }
+
+
+    }
+    const up = (e)=>{
+      document.removeEventListener('mousemove', move, false)
+      document.removeEventListener('mouseup', up, false)
+      document.removeEventListener("touchmove", move, false)
+      document.removeEventListener("touchend", up, false)
+      document.removeEventListener("touchcancel", up, false)
+      if(moved){
+        const ct = document.getElementById(ctid)
+        if(ct) ct.parentNode.removeChild(ct)
+        setTimeout(()=>{
+          delete target.dragged
+        },50)
+      }
+    }
+    document.addEventListener('mousemove', move, false)
+    document.addEventListener('mouseup', up, false)
+    document.addEventListener("touchmove", move, false)
+    document.addEventListener("touchend", up, false)
+    document.addEventListener("touchcancel", up, false)
+  }
 
 
 }
@@ -351,15 +434,35 @@ class Item extends Component {
         this.outcast()
     }
   }
+  render(){
+    return (
+      <div className={css[this.props.data.className]} ref='element' style={{display:this.hidden?'none':''}}>
+        <div className={css.itemIcon}>
+          <Icon className={this.props.data.icon.className}/>
+        </div>
+        <input type="radio" name={this.props.groupInfo.name} className={css.itemCheck} ref='input'
+          onMouseDown = {this.onMouseDown} onTouchStart = {this.onMouseDown}
+          onClick = {this.onClick}
+        />
+          {/*  ondblclick="desktop.createWindow(this);this.checked=false"
+          onblur="this.parentNode.style.zIndex=auto;"
+          onfocus="this.parentNode.style.zIndex=1;"*/}
+        <div className={css.itemBackground} ref='bg'></div>
+        <div className={css.itemText} data-title={this.props.data.name}></div>
+      </div>
+    )
+  }
   onMouseDown(e){
+    this.focus()
     if(!this.selected){
       this.props.groupInfo.parent.deselect()
       this.check()
-      this.focus()
     }
+    this.props.groupInfo.parent.onDrag(e, this)
   }
   onClick(e){
-    if(this.selected){
+    if(this.selected&&!this.dragged){
+      delete this.dragged
       this.props.groupInfo.parent.deselect()
       this.check()
       this.focus()
@@ -370,13 +473,21 @@ class Item extends Component {
     if(lastChecked==this) return
     if(lastChecked) lastChecked.uncheck()
     this.refs.input.checked = true
-    this.props.groupInfo.checked = this
+    let p = this.props.groupInfo
+    p.checked = this
+    this.select()
+    p.selectedColumns[0] = this.column-1
+    p.selectedColumns[1] = this.column
   }
   uncheck(){
     let lastChecked = this.props.groupInfo.checked
     if(lastChecked!=this) return
     this.refs.input.checked = false
     this.props.groupInfo.checked = null
+    this.deselect()
+    let p = this.props.groupInfo
+    p.selectedColumns[0] = -1
+    p.selectedColumns[1] = -1
   }
   focus(){
     let lastFocused = this.props.groupInfo.focused
@@ -398,24 +509,6 @@ class Item extends Component {
         this.refs.bg.style.outline = ''
       },10)
     }
-  }
-  render(){
-    return (
-      <div className={css[this.props.data.className]} ref='element' style={{display:this.hidden?'none':''}}>
-        <div className={css.itemIcon}>
-          <Icon className={this.props.data.icon.className}/>
-        </div>
-        <input type="radio" name={this.props.groupInfo.name} className={css.itemCheck} ref='input'
-          onMouseDown = {this.onMouseDown} onTouchStart = {this.onMouseDown}
-          onClick = {this.onClick}
-        />
-          {/*  ondblclick="desktop.createWindow(this);this.checked=false"
-          onblur="this.parentNode.style.zIndex=auto;"
-          onfocus="this.parentNode.style.zIndex=1;"*/}
-        <div className={css.itemBackground} ref='bg'></div>
-        <div className={css.itemText} data-title={this.props.data.name}></div>
-      </div>
-    )
   }
   select(){
     if(!this.selected){
