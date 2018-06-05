@@ -1,8 +1,58 @@
 {
   "items": [
     {
-      "name": "New File",
+      "name": "Folder 1",
+      "className": "item-desktop",
+      "icon": { "className": "folder" },
+      "column": 1,
+      "row": 1
+    },
+    {
+      "name": "Folder 2",
+      "className": "item-desktop",
+      "icon": { "className": "folder" },
+      "column": 1,
+      "row": 2
+    },
+    {
+      "name": "Folder 3",
+      "className": "item-desktop",
+      "icon": { "className": "folder" },
+      "column": 2,
+      "row": 1,
+      "link": 1
+    },
+    {
+      "name": "Folder 4: A folder with a not very long name.",
+      "className": "item-desktop",
+      "icon": { "className": "folder" },
+      "column": 1,
+      "row": 1
+    },
+    {
+      "name": "Atom",
+      "className": "item-desktop",
+      "icon": { "className": "atom atom-outline" },
+      "column": 20,
+      "row": 1,
+      "link": 1
+    },
+    {
+      "name": "Folder 5",
+      "className": "item-desktop",
       "icon": { "className": "folder" }
+    },
+    {
+      "name": "Eclipse Neon",
+      "className": "item-desktop",
+      "icon": { "className": "eclipse-neon desktop" },
+      "link": 1
+    },
+    {
+      "name": "Google Chrome",
+      "className": "item-desktop",
+      "icon": { "URL": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/200px-Google_Chrome_icon_%28September_2014%29.svg.png" },
+      "link": 1
     }
   ]
 }

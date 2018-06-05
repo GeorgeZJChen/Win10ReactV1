@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import axios from 'axios'
 
 import {ItemsColumnOne, ItemsColumnTwo, ItemsColumnThree} from './start-menu-comps.js'
 import Events from '../components/event.js'

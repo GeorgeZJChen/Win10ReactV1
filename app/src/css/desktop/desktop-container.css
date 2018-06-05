@@ -8,8 +8,12 @@
   z-index: 100;
 }
 .items-ct{
-  z-index: 110;
-} */
+  z-index: 103;
+}
+.windows-ct{
+  z-index: 106;
+}
+*/
 .items-ct{
   position: absolute;
   margin: 6px 0px 0px 1px;
@@ -20,6 +24,7 @@
   position: absolute;
   width: 72px;
   overflow: visible;
+  z-index: 0;
 }
 .item-desktop>.item-text{
   max-height: 32px;
@@ -38,8 +43,10 @@
 }
 .item-desktop>.item-icon{
   margin: auto;
-  width: 46px;
-  height: 46px;
+  width: 50px;
+  height: 50px;
+  position: relative;
+  overflow: hidden;
 }
 .item-desktop>.item-check{
   position: absolute;
@@ -52,6 +59,9 @@
 }
 .item-desktop>.item-check:checked~.item-text{
   max-height: 300px;
+}
+.item-desktop.focused{
+  z-index: 3;
 }
 .item-desktop.focused>.item-text{
   max-height: 300px;
@@ -76,10 +86,6 @@
   background-color: transparent;
   outline: 1px dotted #fff;
 }
-/* .item-desktop>.item-check:active~.item-background{
-  background-color: rgba(138, 191, 244, 0.25);
-  outline: 1px solid rgba(217, 236, 255, 0.36);
-} */
 .item-desktop>.item-check:checked:hover~.item-background{
   background-color: rgba(138, 191, 244, 0.25);
   outline: 1px solid rgba(217, 236, 255, 0.36);
@@ -103,6 +109,27 @@
 .item-desktop.dragged>.item-check:checked~.item-text{
   max-height: 300px;
 }
+.icon-link{
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  overflow: hidden;
+  border: 1px solid rgb(176,176,176);
+  background: #fff url('/static/img/link.jpg') no-repeat center;
+  background-size: 100% 100%;
+  z-index: 2;
+}
+.icon-img{
+  position: absolute;
+  width: 98%;
+  height: 98%;
+  pointer-events: none;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
 
 .dragging-tag{
   position: absolute;
@@ -121,6 +148,8 @@
   height:100%;
   line-height:20px;
   white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .dragging-tag-action{
   height: 100%;

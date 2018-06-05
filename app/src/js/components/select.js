@@ -101,7 +101,7 @@ class Select extends Component{
     return (
       <div className={css.selectCt} ref="element"
         onMouseDown={(e)=>this.onMouseDown(e)} onTouchStart={(e)=>this.onMouseDown(e)}
-        style={{zIndex: this.state.activated?110:''}}>
+        style={{zIndex: this.state.activated?this.props.zIndex:''}}>
         <div className={css.selectArea} ref="area" style={{display: this.state.activated?'block':'none'}}></div>
       </div>
     )

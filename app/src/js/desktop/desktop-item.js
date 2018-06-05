@@ -14,11 +14,12 @@ class Items extends Component {
     super(props)
 
     this.state = {
-      initiated : 0
+      initiated : 0,
+      items: []
     }
 
   }
-  init(){
+  init(data){
     if(this.state.initiated) return
     this.groupInfo = {
       name: '',
@@ -48,59 +49,24 @@ class Items extends Component {
       setTimeout(resize, 300)
     })
     this.setState({
-      initiated : 1
+      initiated : 1,
+      items: data.items
     })
   }
   componentDidMount(){
 
   }
   render(){
-    let data = {
-      icon: {className:"folder"},
-      name: "Folder 1",
-      className: "item-desktop"
-    }
-    let data2 = {
-      icon: {className:"folder"},
-      name: "Folder 2",
-      className: "item-desktop"
-    }
-    let data3 = {
-      icon: {className:"folder"},
-      name: "Folder 3",
-      className: "item-desktop"
-    }
-    let data4 = {
-      icon: {className:"folder"},
-      name: "Folder 4: This one doesn't have a very long name",
-      className: "item-desktop"
-    }
-
-    // (()=>{
-    //   let items = []
-    //   for (let i = 0; i < array.length; i++) {
-    //     for (let j = 0; j < array.length; j++) {
-    //       let item = this.groupInfo[i][j]
-    //       items.push(
-    //         <Item data
-    //       )
-    //     }
-    //   }
-    // })()
     return (
 
       <div className={css.itemsCt} ref='element'>
         {
           this.state.initiated?
-          [
-            <Item data={data} key={1} column={1} row={1} groupInfo={this.groupInfo}/>,
-            <Item data={data2} key={2} column={1} row={2} groupInfo={this.groupInfo}/>,
-            <Item data={data3} key={3} column={4} row={4} groupInfo={this.groupInfo}/>,
-            <Item data={data4} key={4} column={1} row={2} groupInfo={this.groupInfo}/>,
-
-          ]
-          :
-          ''
+            this.state.items.map((item, index)=>{
+              return <Item data={item} key={index} groupInfo={this.groupInfo}/>
+            })
+            :
+            ''
         }
       </div>
     )
@@ -497,14 +463,18 @@ class Items extends Component {
 class Item extends Component {
   constructor(props){
     super(props)
+    this.state = {
+      imgReady: 0
+    }
     this.hidden = 1
     this.selected = 0
-    this.outcast = 0
+    this.isOutcast = 0
     this.onMouseDown = this.onMouseDown.bind(this)
     this.onMouseEnter = this.onMouseEnter.bind(this)
     this.onMouseUp = this.onMouseUp.bind(this)
     this.onMouseLeave = this.onMouseLeave.bind(this)
     this.onClick = this.onClick.bind(this)
+    this.imgOnLoad = this.imgOnLoad.bind(this)
     this.hoverTag = {
       name: this.props.data.name,
       action: "Move to"
@@ -512,8 +482,8 @@ class Item extends Component {
   }
   componentDidMount(){
     let t
-    if(this.props.column&&this.props.row)
-      t = this.insert(this.props.column, this.props.row)
+    if(this.props.data.column&&this.props.data.row)
+      t = this.insert(this.props.data.column, this.props.data.row)
     else
       t = this.append()
   }
@@ -525,16 +495,30 @@ class Item extends Component {
         onClick = {this.onClick}
       >
         <div className={css.itemIcon}>
-          <Icon className={this.props.data.icon.className}/>
+          {
+            this.props.data.link?
+            <div className={css.iconLink}></div> : ''
+          }
+          {
+            this.props.data.icon.URL?
+            (
+              [<img src={this.props.data.icon.URL} className={css.iconImg} key={0} onLoad={this.imgOnLoad} style={{display:this.state.imgReady?'':'none'}}/>,
+              this.state.imgReady? '' : <Icon className={"unknown"} key={1}/>]
+            )
+            :
+            <Icon className={this.props.data.icon.className}/>
+          }
         </div>
         <input type="radio" name={this.props.groupInfo.name} className={css.itemCheck} ref='input'/>
-          {/*  ondblclick="desktop.createWindow(this);this.checked=false"
-          onblur="this.parentNode.style.zIndex=auto;"
-          onfocus="this.parentNode.style.zIndex=1;"*/}
         <div className={css.itemBackground} ref='bg'></div>
         <div className={css.itemText} data-title={this.props.data.name}></div>
       </div>
     )
+  }
+  imgOnLoad(){
+    this.setState({
+      imgReady: 1
+    })
   }
   onMouseEnter(e){
     Events.emit(Events.names.being_dragged_items_onenter, this)
@@ -619,7 +603,7 @@ class Item extends Component {
     this.hidden = 1
     this.selected = 0
     let lattice = this.props.groupInfo.lattice
-    if(lattice[this.column-1][this.row-1]==this)
+    if(lattice[this.column-1]&&lattice[this.column-1][this.row-1]==this)
       lattice[this.column-1][this.row-1] = undefined
   }
   show(){
@@ -627,7 +611,7 @@ class Item extends Component {
     this.hidden = 0
     this.isOutcast = 0
     let lattice = this.props.groupInfo.lattice
-    if(lattice[this.column-1][this.row-1]!=this)
+    if(lattice[this.column-1]&&lattice[this.column-1][this.row-1]!=this)
       this.append()
   }
   outcast(){
@@ -672,7 +656,7 @@ class Item extends Component {
   insert(column, row){
     if(!this.hidden){
       let lattice = this.props.groupInfo.lattice
-      if(lattice[this.column-1][this.row-1]==this)
+      if(lattice[this.column-1]&&lattice[this.column-1][this.row-1]==this)
         lattice[this.column-1][this.row-1] = undefined
     }
     let p = this.props.groupInfo

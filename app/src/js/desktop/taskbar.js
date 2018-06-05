@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import axios from 'axios'
+
 import css from '../../css/desktop/taskbar.css'
 import Task from './task.js'
 import TaskItems from './taskItems.js'

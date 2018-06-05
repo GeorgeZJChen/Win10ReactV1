@@ -364,7 +364,7 @@
         {
           "name": "Google Chrome",
           "size": 4,
-          "icon": {"background": "#212121", "small":1, "URL": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/2000px-Google_Chrome_icon_%28September_2014%29.svg.png"}
+          "icon": {"background": "#212121", "small":1, "URL": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/200px-Google_Chrome_icon_%28September_2014%29.svg.png"}
         },
         {
           "name": "Atom",

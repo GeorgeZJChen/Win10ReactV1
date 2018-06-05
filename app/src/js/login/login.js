@@ -35,8 +35,6 @@ class Login extends Component{
       }, 2000)
     })
   }
-  componentWillUnmount(){
-  }
   loadUserInformation(cb){
     //shall get data from cookies or back end server
     axios({

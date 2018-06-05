@@ -37,7 +37,8 @@ class Desktop extends Component{
   init(){
     this.addSystemTasks()
 
-    this.loadStartMenuData()
+    this.loadStartMenu()
+    this.loadDesktopItems()
 
     setTimeout(()=>{
       this.addTask('wechat_W8kyt9KR')
@@ -103,7 +104,7 @@ class Desktop extends Component{
     this.state.tasks.push(task)
     Events.emit(Events.names.to_taskbar_add_new_task, task)
   }
-  loadStartMenuData(){
+  loadStartMenu(){
     const url = 'static/data/start-menu.json'
     axios({
       method: 'get',
@@ -113,6 +114,23 @@ class Desktop extends Component{
       try {
         if(!res.data) throw new Error()
         Events.emit(Events.names.to_start_menu_loaded_data, res.data)
+      } catch (e) {
+        console.error('Data format error');
+      }
+    }).catch((err)=>{
+      console.warn(err);
+    })
+  }
+  loadDesktopItems(){
+    const url = 'static/data/desktop-items.json'
+    axios({
+      method: 'get',
+      url: url,
+      responseType: 'json'
+    }).then((res)=>{
+      try {
+        if(!res.data) throw new Error()
+        Events.emit(Events.names.to_desktop_items_loaded_data, res.data)
       } catch (e) {
         console.error('Data format error');
       }
