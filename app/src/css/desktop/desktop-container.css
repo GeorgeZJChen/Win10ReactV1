@@ -103,3 +103,36 @@
 .item-desktop.dragged>.item-check:checked~.item-text{
   max-height: 300px;
 }
+
+.dragging-tag{
+  position: absolute;
+  height: 20px;
+  border: 1px solid #767676;
+  background-color: #fff;
+  max-width: 300px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.dragging-tag-text{
+  padding: 0px 2px;
+  font-size: 12px;
+  color: rgba(0, 51, 204, 1);
+  margin:0;
+  height:100%;
+  line-height:20px;
+  white-space: nowrap;
+}
+.dragging-tag-action{
+  height: 100%;
+  padding: 0px 1px;
+  margin: 0;
+  color: #03c;
+  box-sizing: border-box;
+}
+.dragging-tag-name{
+  height: 100%;
+  padding: 0px 1px;
+  margin: 0;
+  color: #00009d;
+  box-sizing: border-box;
+}

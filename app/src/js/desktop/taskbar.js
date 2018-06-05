@@ -14,6 +14,13 @@ class Taskbar extends Component{
     super(props)
     this.state = {
     }
+    this.onMouseEnter = this.onMouseEnter.bind(this)
+    this.onMouseUp = this.onMouseUp.bind(this)
+    this.onMouseLeave = this.onMouseLeave.bind(this)
+    this.hoverTag = {
+      name: "taskbar",
+      action: "Attach to"
+    }
   }
   componentDidMount() {
     Events.on(Events.names.to_taskbar_add_new_task, (task)=>{
@@ -22,6 +29,15 @@ class Taskbar extends Component{
   }
   componentWillUnmount(){
     // clearInterval(this.dateIntvId)
+  }
+  onMouseEnter(e){
+    Events.emit(Events.names.being_dragged_items_onenter, this)
+  }
+  onMouseLeave(e){
+    Events.emit(Events.names.being_dragged_items_onleave, this)
+  }
+  onMouseUp(e){
+    Events.emit(Events.names.being_dragged_items_ondrop, this)
   }
 
   changeLanguage(){
@@ -33,8 +49,11 @@ class Taskbar extends Component{
   }
   render(){
     return(
-      <div className={css.taskbar}>
-          <div className={css.tbLeft}>
+      <div className={css.taskbar}
+        onTouchStart = {this.onMouseDown} onMouseEnter = {this.onMouseEnter}
+        onMouseUp = {this.onMouseUp} onMouseLeave = {this.onMouseLeave}
+        >
+          <div className={css.tbLeft} ref='tb'>
             <div className={css.tbSys}>
               <div className={css.item+' '+css.itemMenu}>
                 <Icon className={'windows-logo '+css.iconStartMenu}/>
@@ -43,7 +62,7 @@ class Taskbar extends Component{
                 <Icon className='cortana'/>
               </div>
             </div>
-            <div className={css.tasksCt}>
+            <div className={css.tasksCt} ref='ct'>
               <input type='checkbox' className={css.item+' '+css.taskSwitch} defaultChecked/>
               <div className={css.item+' '+css.switchResponser}>
                 <Icon className={'angle up '+css.switchAU}/>

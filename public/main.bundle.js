@@ -593,7 +593,10 @@ myEvents.names = { //register names
   to_taskbar_add_new_task: ec++ + '',
   to_task_items_add_new_task: ec++ + '',
   to_start_menu_loaded_data: ec++ + '',
-  handle_task_items_onclick: ec++ + ''
+  handle_task_items_onclick: ec++ + '',
+  being_dragged_items_onenter: ec++ + '',
+  being_dragged_items_onleave: ec++ + '',
+  being_dragged_items_ondrop: ec++ + ''
 };
 
 exports.default = myEvents;
@@ -1146,6 +1149,10 @@ var _Utils = __webpack_require__(/*! ../components/Utils.js */ "./app/src/js/com
 
 var _Utils2 = _interopRequireDefault(_Utils);
 
+var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
+
+var _event2 = _interopRequireDefault(_event);
+
 var _desktopContainer = __webpack_require__(/*! ../../css/desktop/desktop-container.css */ "./app/src/css/desktop/desktop-container.css");
 
 var _desktopContainer2 = _interopRequireDefault(_desktopContainer);
@@ -1187,10 +1194,11 @@ var Items = function (_Component) {
         interval: [0, 0],
         column: -1,
         row: -1,
-        selectedColumns: [-1, -1], //[left column number, right column number] selectedColumns are from left No. to the number before right No.
+        selectedColumns: [-1, -1], //[left column number, right column number].
         itemWidth: 0,
-        lattice: [], //lattice[column][row] two dimension array
-        outcasts: []
+        lattice: [], //lattice[column][row] = item
+        outcasts: [],
+        selected: new Set()
       };
       if (this.props.container.constructor.name == 'DesktopContainer') {
         this.groupInfo.itemWidth = 72;
@@ -1386,15 +1394,11 @@ var Items = function (_Component) {
     key: 'deselect',
     value: function deselect() {
       var p = this.groupInfo;
-      if (p.selectedColumns[0] != -1 && p.selectedColumns[1] != -1) for (var i = p.selectedColumns[0]; i < p.selectedColumns[1]; i++) {
-        for (var j = 0; j < p.row; j++) {
-          var item = p.lattice[i][j];
-          if (item) item.deselect();
-        }
-      }
+      p.selected.forEach(function (item) {
+        item.deselect();
+      });
       p.selectedColumns[0] = -1;
       p.selectedColumns[1] = -1;
-
       if (p.checked) p.checked.uncheck();
     }
   }, {
@@ -1487,9 +1491,36 @@ var Items = function (_Component) {
       var x = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
       var y = e.pageY || (e.changedTouches ? e.changedTouches[0].pageY : 0);
 
-      var draggedItems = [];
       var ctid = 'ct_CEbcp1oiBy';
+      var tagid = 'tag_CEbcp1oiBy';
 
+      var ondroppable = false;
+      var Tag = {
+        show: 0,
+        name: '',
+        action: ''
+      };
+      var onEnterListener = function onEnterListener(_target) {
+        if (_target == target || _this3.groupInfo.selected.has(_target)) return;
+
+        if (_target.hoverTag) {
+          Tag.show = 1;
+          Tag.name = _target.hoverTag.name;
+          Tag.action = _target.hoverTag.action;
+        }
+
+        ondroppable = true;
+      };
+      var onDropListener = function onDropListener(_target) {
+        if (_target == target || _this3.groupInfo.selected.has(_target)) return;
+      };
+      var onLeaveListener = function onLeaveListener(_target) {
+        if (_target == target || _this3.groupInfo.selected.has(_target)) return;
+        Tag.show = 0;
+        Tag.name = '';
+        Tag.action = '';
+        ondroppable = false;
+      };
       var moved = false;
       var move = function move(e) {
         var mx = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
@@ -1499,47 +1530,73 @@ var Items = function (_Component) {
           moved = true;
           var origin = [target.column, target.row];
           var opacity = 0.63;
-          var ct = document.createElement('div');
 
+          var ct = document.createElement('div');
           ct.id = ctid;
           ct.className = _desktopContainer2.default.itemsCt;
           ct.style.pointerEvents = 'none';
-          ct.style.zIndex = 9999999;
-          var p = _this3.groupInfo;
-          for (var i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++) {
-            for (var j = 0; j < p.row; j++) {
-              var item = p.lattice[i][j];
-              if (item && item.selected) {
-                var copy = item.refs.element.cloneNode(true);
-                copy.className += ' ' + _desktopContainer2.default.dragged;
-                copy.id += '_dragged';
-                if (item == target) {
-                  target.dragged = true;
-                  copy.style.opacity = opacity;
+          ct.style.zIndex = 99999997;
 
-                  var children = copy.children;
-                  for (var k = 0; k < children.length; k++) {
-                    if (children[k].className.indexOf(_desktopContainer2.default.itemBackground) != -1) {
-                      children[k].style.outline = 'unset';
-                      children[k].style.backgroundColor = 'unset';
-                    }
-                  }
-                } else {
-                  var position = [item.column, item.row];
-                  var distance = Math.sqrt(Math.pow(position[0] - origin[0], 2) + Math.pow(position[1] - origin[1], 2));
-                  var ac = 1 / ((Math.pow(1.1 * distance, 2) + 2) * 0.5); //attenuation coefficient
-                  copy.style.opacity = ac * opacity;
+          var tag = document.createElement('div');
+          tag.id = tagid;
+          tag.className = _desktopContainer2.default.draggingTag;
+          tag.style.zIndex = 99999998;
+          tag.style.top = y + 'px';
+          tag.style.left = x + 12 + 'px';
+          tag.style.visibility = 'hidden';
+          tag.innerHTML = "<p class='" + _desktopContainer2.default.draggingTagText + "'>" + "<span class='" + _desktopContainer2.default.draggingTagAction + "' id='" + tagid + "_action'></span>&nbsp" + "<span class='" + _desktopContainer2.default.draggingTagName + "' id='" + tagid + "_name'></span></p>";
+
+          ct.appendChild(tag);
+
+          var p = _this3.groupInfo;
+          p.selected.forEach(function (item) {
+            var copy = item.refs.element.cloneNode(true);
+            copy.className += ' ' + _desktopContainer2.default.dragged;
+            copy.id += '_dragged';
+            if (item == target) {
+              target.dragged = true;
+              copy.style.opacity = opacity;
+
+              var children = copy.children;
+              for (var k = 0; k < children.length; k++) {
+                if (children[k].className.indexOf(_desktopContainer2.default.itemBackground) != -1) {
+                  children[k].style.outline = 'unset';
+                  children[k].style.backgroundColor = 'unset';
                 }
-                ct.appendChild(copy);
-                draggedItems.push(item);
               }
+            } else {
+              var position = [item.column, item.row];
+              var distance = Math.sqrt(Math.pow(position[0] - origin[0], 2) + Math.pow(position[1] - origin[1], 2));
+              var ac = 1 / ((Math.pow(1.1 * distance, 2) + 2) * 0.5); //attenuation coefficient
+              copy.style.opacity = ac * opacity;
             }
-          }
+            ct.appendChild(copy);
+          });
           _this3.props.container.refs.element.appendChild(ct);
+
+          _event2.default.on(_event2.default.names.being_dragged_items_onenter, onEnterListener);
+          _event2.default.on(_event2.default.names.being_dragged_items_ondrop, onDropListener);
+          _event2.default.on(_event2.default.names.being_dragged_items_onleave, onLeaveListener);
         } else {
           var _ct = document.getElementById(ctid);
           _ct.style.top = my - y + 'px';
           _ct.style.left = mx - x + 'px';
+
+          if (ondroppable) {
+            if (Tag.show) {
+              document.getElementById(tagid + '_action').innerHTML = Tag.action;
+              document.getElementById(tagid + '_name').innerHTML = Tag.name;
+              var tagNode = document.getElementById(tagid);
+              tagNode.style.visibility = 'visible';
+              if (tagNode.offsetLeft + _ct.offsetLeft > document.body.clientWidth - 2 * tagNode.offsetWidth) {
+                tagNode.style.left = document.body.clientWidth - tagNode.offsetWidth - _ct.offsetLeft + 'px';
+              } else {
+                tagNode.style.left = x + 12 + 'px';
+              }
+            }
+          } else {
+            document.getElementById(tagid).style.visibility = 'hidden';
+          }
         }
       };
       var tm = function tm(e) {
@@ -1558,6 +1615,32 @@ var Items = function (_Component) {
           setTimeout(function () {
             delete target.dragged;
           }, 50);
+          _event2.default.removeListener(_event2.default.names.being_dragged_items_onenter, onEnterListener);
+          _event2.default.removeListener(_event2.default.names.being_dragged_items_ondrop, onDropListener);
+          _event2.default.removeListener(_event2.default.names.being_dragged_items_onleave, onLeaveListener);
+
+          //move items
+          if (!ondroppable) {
+            var ux = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
+            var uy = e.pageY || (e.changedTouches ? e.changedTouches[0].pageY : 0);
+            var p = _this3.groupInfo;
+            var mousePos = [];
+            mousePos[0] = Math.max(Math.min(Math.floor(ux / p.interval[0]), p.column - 1), 0);
+            mousePos[1] = Math.max(Math.min(Math.floor(uy / p.interval[1]), p.row - 1), 0);
+
+            var dx = mousePos[0] - target.column + 1;
+            var dy = mousePos[1] - target.row + 1;
+            if (dx || dy) {
+              for (var i = dx > 0 ? p.column - 1 : 0; dx > 0 ? i >= 0 : i < p.column; dx > 0 ? i-- : i++) {
+                for (var j = dy > 0 ? p.row - 1 : 0; dy > 0 ? j >= 0 : j < p.row; dy > 0 ? j-- : j++) {
+                  var item = p.lattice[i][j];
+                  if (item && item.selected) {
+                    item.insert(item.column + dx, item.row + dy);
+                  }
+                }
+              }
+            }
+          }
         }
       };
       document.addEventListener('touchmove', tm, { passive: false });
@@ -1581,8 +1664,17 @@ var Item = function (_Component2) {
     var _this4 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
 
     _this4.hidden = 1;
+    _this4.selected = 0;
+    _this4.outcast = 0;
     _this4.onMouseDown = _this4.onMouseDown.bind(_this4);
+    _this4.onMouseEnter = _this4.onMouseEnter.bind(_this4);
+    _this4.onMouseUp = _this4.onMouseUp.bind(_this4);
+    _this4.onMouseLeave = _this4.onMouseLeave.bind(_this4);
     _this4.onClick = _this4.onClick.bind(_this4);
+    _this4.hoverTag = {
+      name: _this4.props.data.name,
+      action: "Move to"
+    };
     return _this4;
   }
 
@@ -1591,33 +1683,41 @@ var Item = function (_Component2) {
     value: function componentDidMount() {
       var t = void 0;
       if (this.props.column && this.props.row) t = this.insert(this.props.column, this.props.row);else t = this.append();
-      if (t) {
-        this.refs.element.style.display = '';
-        this.hidden = 0;
-        this.isOutcast = 0;
-        this.selected = 0;
-      } else {
-        if (!this.isOutcast) this.outcast();
-      }
     }
   }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: _desktopContainer2.default[this.props.data.className], ref: 'element', style: { display: this.hidden ? 'none' : '' } },
+        { className: _desktopContainer2.default[this.props.data.className], ref: 'element', style: { display: this.hidden ? 'none' : '' },
+          onMouseDown: this.onMouseDown, onTouchStart: this.onMouseDown,
+          onMouseEnter: this.onMouseEnter, onMouseUp: this.onMouseUp, onMouseLeave: this.onMouseLeave,
+          onClick: this.onClick
+        },
         _react2.default.createElement(
           'div',
           { className: _desktopContainer2.default.itemIcon },
           _react2.default.createElement(_icon2.default, { className: this.props.data.icon.className })
         ),
-        _react2.default.createElement('input', { type: 'radio', name: this.props.groupInfo.name, className: _desktopContainer2.default.itemCheck, ref: 'input',
-          onMouseDown: this.onMouseDown, onTouchStart: this.onMouseDown,
-          onClick: this.onClick
-        }),
+        _react2.default.createElement('input', { type: 'radio', name: this.props.groupInfo.name, className: _desktopContainer2.default.itemCheck, ref: 'input' }),
         _react2.default.createElement('div', { className: _desktopContainer2.default.itemBackground, ref: 'bg' }),
         _react2.default.createElement('div', { className: _desktopContainer2.default.itemText, 'data-title': this.props.data.name })
       );
+    }
+  }, {
+    key: 'onMouseEnter',
+    value: function onMouseEnter(e) {
+      _event2.default.emit(_event2.default.names.being_dragged_items_onenter, this);
+    }
+  }, {
+    key: 'onMouseLeave',
+    value: function onMouseLeave(e) {
+      _event2.default.emit(_event2.default.names.being_dragged_items_onleave, this);
+    }
+  }, {
+    key: 'onMouseUp',
+    value: function onMouseUp(e) {
+      _event2.default.emit(_event2.default.names.being_dragged_items_ondrop, this);
     }
   }, {
     key: 'onMouseDown',
@@ -1649,20 +1749,15 @@ var Item = function (_Component2) {
       var p = this.props.groupInfo;
       p.checked = this;
       this.select();
-      p.selectedColumns[0] = this.column - 1;
-      p.selectedColumns[1] = this.column;
     }
   }, {
     key: 'uncheck',
     value: function uncheck() {
+      this.refs.input.checked = false;
+      if (this.selected) this.deselect();
       var lastChecked = this.props.groupInfo.checked;
       if (lastChecked != this) return;
-      this.refs.input.checked = false;
       this.props.groupInfo.checked = null;
-      this.deselect();
-      var p = this.props.groupInfo;
-      p.selectedColumns[0] = -1;
-      p.selectedColumns[1] = -1;
     }
   }, {
     key: 'focus',
@@ -1697,6 +1792,7 @@ var Item = function (_Component2) {
       if (!this.selected) {
         this.refs.element.className += ' ' + _desktopContainer2.default.selected;
         this.selected = 1;
+        this.props.groupInfo.selected.add(this);
       }
     }
   }, {
@@ -1706,13 +1802,18 @@ var Item = function (_Component2) {
         var ele = this.refs.element;
         ele.className = ele.className.replace(new RegExp(_desktopContainer2.default.selected, 'g'), '');
         this.selected = 0;
+        this.props.groupInfo.selected.delete(this);
       }
+      this.uncheck();
     }
   }, {
     key: 'hide',
     value: function hide() {
       this.refs.element.style.display = 'none';
       this.hidden = 1;
+      this.selected = 0;
+      var lattice = this.props.groupInfo.lattice;
+      if (lattice[this.column - 1][this.row - 1] == this) lattice[this.column - 1][this.row - 1] = undefined;
     }
   }, {
     key: 'show',
@@ -1720,12 +1821,13 @@ var Item = function (_Component2) {
       this.refs.element.style.display = '';
       this.hidden = 0;
       this.isOutcast = 0;
+      var lattice = this.props.groupInfo.lattice;
+      if (lattice[this.column - 1][this.row - 1] != this) this.append();
     }
   }, {
     key: 'outcast',
     value: function outcast() {
       if (this.props.groupInfo.outcasts.indexOf(this) == -1) {
-
         this.isOutcast = 1;
         this.hide();
         this.props.groupInfo.outcasts.push(this);
@@ -1742,6 +1844,7 @@ var Item = function (_Component2) {
         item_node.style.top = j * p.interval[1] + 'px';
         item.column = i + 1;
         item.row = j + 1;
+        item.show();
       };
       for (var i = 0; i < p.column; i++) {
         if (!p.lattice[i][p.row - 1]) {
@@ -1767,6 +1870,10 @@ var Item = function (_Component2) {
   }, {
     key: 'insert',
     value: function insert(column, row) {
+      if (!this.hidden) {
+        var lattice = this.props.groupInfo.lattice;
+        if (lattice[this.column - 1][this.row - 1] == this) lattice[this.column - 1][this.row - 1] = undefined;
+      }
       var p = this.props.groupInfo;
       if (column > p.column) column = p.column;
       if (row > p.row) row = p.row;
@@ -1779,6 +1886,7 @@ var Item = function (_Component2) {
         item_node.style.top = j * p.interval[1] + 'px';
         item.column = i + 1;
         item.row = j + 1;
+        item.show();
       };
       var next_available = function next_available(pos, leftwards) {
         var _pos = [pos[0], pos[1]];
@@ -3501,6 +3609,13 @@ var Taskbar = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Taskbar.__proto__ || Object.getPrototypeOf(Taskbar)).call(this, props));
 
     _this.state = {};
+    _this.onMouseEnter = _this.onMouseEnter.bind(_this);
+    _this.onMouseUp = _this.onMouseUp.bind(_this);
+    _this.onMouseLeave = _this.onMouseLeave.bind(_this);
+    _this.hoverTag = {
+      name: "taskbar",
+      action: "Attach to"
+    };
     return _this;
   }
 
@@ -3517,6 +3632,21 @@ var Taskbar = function (_Component) {
       // clearInterval(this.dateIntvId)
     }
   }, {
+    key: 'onMouseEnter',
+    value: function onMouseEnter(e) {
+      _event2.default.emit(_event2.default.names.being_dragged_items_onenter, this);
+    }
+  }, {
+    key: 'onMouseLeave',
+    value: function onMouseLeave(e) {
+      _event2.default.emit(_event2.default.names.being_dragged_items_onleave, this);
+    }
+  }, {
+    key: 'onMouseUp',
+    value: function onMouseUp(e) {
+      _event2.default.emit(_event2.default.names.being_dragged_items_ondrop, this);
+    }
+  }, {
     key: 'changeLanguage',
     value: function changeLanguage() {
       var item = this.refs['item_lang'];
@@ -3529,10 +3659,13 @@ var Taskbar = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: _taskbar2.default.taskbar },
+        { className: _taskbar2.default.taskbar,
+          onTouchStart: this.onMouseDown, onMouseEnter: this.onMouseEnter,
+          onMouseUp: this.onMouseUp, onMouseLeave: this.onMouseLeave
+        },
         _react2.default.createElement(
           'div',
-          { className: _taskbar2.default.tbLeft },
+          { className: _taskbar2.default.tbLeft, ref: 'tb' },
           _react2.default.createElement(
             'div',
             { className: _taskbar2.default.tbSys },
@@ -3549,7 +3682,7 @@ var Taskbar = function (_Component) {
           ),
           _react2.default.createElement(
             'div',
-            { className: _taskbar2.default.tasksCt },
+            { className: _taskbar2.default.tasksCt, ref: 'ct' },
             _react2.default.createElement('input', { type: 'checkbox', className: _taskbar2.default.item + ' ' + _taskbar2.default.taskSwitch, defaultChecked: true }),
             _react2.default.createElement(
               'div',
@@ -5790,7 +5923,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".desktop-container_desktop-ct_2CFFz{height:100%;width:100%;box-sizing:border-box;position:relative}.desktop-container_items-ct_Ulf7P{position:absolute;margin:6px 0 0 1px;z-index:103;box-sizing:border-box}.desktop-container_item-desktop_30hAL{position:absolute;width:72px;overflow:visible}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu{max-height:32px;overflow:hidden;width:68px;text-align:center;margin:1px 2px;font-size:12px;text-shadow:1px 1px 1px #000,-1px 0 1px #000}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu:before{content:attr(data-title);overflow:hidden;height:100%;width:100%}.desktop-container_item-desktop_30hAL>.desktop-container_item-icon_T0GSI{margin:auto;width:46px;height:46px}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH{position:absolute;z-index:1;top:0;width:100%;height:100%;margin:0;opacity:0}.desktop-container_item-desktop_30hAL.desktop-container_focused_2wWK->.desktop-container_item-text_1aeVu,.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-text_1aeVu{max-height:300px}.desktop-container_item-desktop_30hAL>.desktop-container_item-background_2FKXT{position:absolute;z-index:-1;top:0;width:100%;height:100%;outline:unset}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:hover~.desktop-container_item-background_2FKXT{background-color:rgba(217,236,255,.15);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_focused_2wWK-:not(.desktop-container_selected_1nXx1)>.desktop-container_item-check_3oEtH:not(:checked):not(:hover)~.desktop-container_item-background_2FKXT{background-color:transparent;outline:1px dotted #fff}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked:hover~.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1>.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1:hover>.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL.desktop-container_dragged_2KMKm>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-background_2FKXT,.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1.desktop-container_dragged_2KMKm>.desktop-container_item-background_2FKXT{background-color:transparent;outline:none}.desktop-container_item-desktop_30hAL.desktop-container_dragged_2KMKm>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-text_1aeVu{max-height:300px}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop-container.css"],"names":[],"mappings":"AAAA,oCACE,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,iBAAmB,CACpB,AAOD,kCACE,kBAAmB,AACnB,mBAAwB,AACxB,YAAa,AACb,qBAAuB,CACxB,AACD,sCACE,kBAAmB,AACnB,WAAY,AACZ,gBAAkB,CACnB,AACD,yEACE,gBAAiB,AACjB,gBAAiB,AACjB,WAAY,AACZ,kBAAmB,AACnB,eAAwB,AACxB,eAAgB,AAChB,4CAAiD,CAClD,AACD,gFACE,yBAA0B,AAC1B,gBAAiB,AACjB,YAAa,AACb,UAAY,CACb,AACD,yEACE,YAAa,AACb,WAAY,AACZ,WAAa,CACd,AACD,0EACE,kBAAmB,AACnB,UAAW,AACX,MAAO,AACP,WAAY,AACZ,YAAa,AACb,SAAU,AACV,SAAW,CACZ,AAID,8NACE,gBAAkB,CACnB,AACD,+EACE,kBAAmB,AACnB,WAAY,AACZ,MAAO,AACP,WAAY,AACZ,YAAa,AACb,aAAe,CAChB,AACD,yHACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,2HACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,oNACE,6BAA8B,AAC9B,uBAAyB,CAC1B,AAKD,iIACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,gHACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,sHACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AAKD,2SACE,6BAA8B,AAC9B,YAAc,CACf,AACD,qJACE,gBAAkB,CACnB","file":"desktop-container.css","sourcesContent":[".desktop-ct{\r\n  height: 100%;\r\n  width: 100%;\r\n  box-sizing: border-box;\r\n  position: relative;\r\n}\r\n/* .select-ct{\r\n  z-index: 100;\r\n}\r\n.items-ct{\r\n  z-index: 110;\r\n} */\r\n.items-ct{\r\n  position: absolute;\r\n  margin: 6px 0px 0px 1px;\r\n  z-index: 103;\r\n  box-sizing: border-box;\r\n}\r\n.item-desktop{\r\n  position: absolute;\r\n  width: 72px;\r\n  overflow: visible;\r\n}\r\n.item-desktop>.item-text{\r\n  max-height: 32px;\r\n  overflow: hidden;\r\n  width: 68px;\r\n  text-align: center;\r\n  margin: 1px 2px 1px 2px;\r\n  font-size: 12px;\r\n  text-shadow: 1px 1px 1px #000, -1px 0px 1px #000;\r\n}\r\n.item-desktop>.item-text:before{\r\n  content: attr(data-title);\r\n  overflow: hidden;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.item-desktop>.item-icon{\r\n  margin: auto;\r\n  width: 46px;\r\n  height: 46px;\r\n}\r\n.item-desktop>.item-check{\r\n  position: absolute;\r\n  z-index: 1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  margin: 0;\r\n  opacity: 0;\r\n}\r\n.item-desktop>.item-check:checked~.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop.focused>.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop>.item-background{\r\n  position: absolute;\r\n  z-index: -1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  outline: unset;\r\n}\r\n.item-desktop>.item-check:hover~.item-background{\r\n  background-color: rgba(217, 236, 255, 0.15);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop>.item-check:checked~.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.focused:not(.selected)>.item-check:not(:checked):not(:hover)~.item-background{\r\n  background-color: transparent;\r\n  outline: 1px dotted #fff;\r\n}\r\n/* .item-desktop>.item-check:active~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n} */\r\n.item-desktop>.item-check:checked:hover~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop.selected>.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.selected:hover>.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop.dragged>.item-check:checked~.item-background{\r\n  background-color: transparent;\r\n  outline: none;\r\n}\r\n.item-desktop.selected.dragged>.item-background{\r\n  background-color: transparent;\r\n  outline: none;\r\n}\r\n.item-desktop.dragged>.item-check:checked~.item-text{\r\n  max-height: 300px;\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".desktop-container_desktop-ct_2CFFz{height:100%;width:100%;box-sizing:border-box;position:relative}.desktop-container_items-ct_Ulf7P{position:absolute;margin:6px 0 0 1px;z-index:103;box-sizing:border-box}.desktop-container_item-desktop_30hAL{position:absolute;width:72px;overflow:visible}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu{max-height:32px;overflow:hidden;width:68px;text-align:center;margin:1px 2px;font-size:12px;text-shadow:1px 1px 1px #000,-1px 0 1px #000}.desktop-container_item-desktop_30hAL>.desktop-container_item-text_1aeVu:before{content:attr(data-title);overflow:hidden;height:100%;width:100%}.desktop-container_item-desktop_30hAL>.desktop-container_item-icon_T0GSI{margin:auto;width:46px;height:46px}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH{position:absolute;z-index:1;top:0;width:100%;height:100%;margin:0;opacity:0}.desktop-container_item-desktop_30hAL.desktop-container_focused_2wWK->.desktop-container_item-text_1aeVu,.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-text_1aeVu{max-height:300px}.desktop-container_item-desktop_30hAL>.desktop-container_item-background_2FKXT{position:absolute;z-index:-1;top:0;width:100%;height:100%;outline:unset}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:hover~.desktop-container_item-background_2FKXT{background-color:rgba(217,236,255,.15);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_focused_2wWK-:not(.desktop-container_selected_1nXx1)>.desktop-container_item-check_3oEtH:not(:checked):not(:hover)~.desktop-container_item-background_2FKXT{background-color:transparent;outline:1px dotted #fff}.desktop-container_item-desktop_30hAL>.desktop-container_item-check_3oEtH:checked:hover~.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1>.desktop-container_item-background_2FKXT{background-color:rgba(181,218,255,.3);outline:1px solid rgba(217,236,255,.51)}.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1:hover>.desktop-container_item-background_2FKXT{background-color:rgba(138,191,244,.25);outline:1px solid rgba(217,236,255,.36)}.desktop-container_item-desktop_30hAL.desktop-container_dragged_2KMKm>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-background_2FKXT,.desktop-container_item-desktop_30hAL.desktop-container_selected_1nXx1.desktop-container_dragged_2KMKm>.desktop-container_item-background_2FKXT{background-color:transparent;outline:none}.desktop-container_item-desktop_30hAL.desktop-container_dragged_2KMKm>.desktop-container_item-check_3oEtH:checked~.desktop-container_item-text_1aeVu{max-height:300px}.desktop-container_dragging-tag_S9y2U{position:absolute;height:20px;border:1px solid #767676;background-color:#fff;max-width:300px;overflow:hidden;pointer-events:none}.desktop-container_dragging-tag-text_3NEqI{padding:0 2px;font-size:12px;color:#03c;margin:0;height:100%;line-height:20px;white-space:nowrap}.desktop-container_dragging-tag-action_3EsTw{height:100%;padding:0 1px;margin:0;color:#03c;box-sizing:border-box}.desktop-container_dragging-tag-name_5PSYr{height:100%;padding:0 1px;margin:0;color:#00009d;box-sizing:border-box}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop-container.css"],"names":[],"mappings":"AAAA,oCACE,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,iBAAmB,CACpB,AAOD,kCACE,kBAAmB,AACnB,mBAAwB,AACxB,YAAa,AACb,qBAAuB,CACxB,AACD,sCACE,kBAAmB,AACnB,WAAY,AACZ,gBAAkB,CACnB,AACD,yEACE,gBAAiB,AACjB,gBAAiB,AACjB,WAAY,AACZ,kBAAmB,AACnB,eAAwB,AACxB,eAAgB,AAChB,4CAAiD,CAClD,AACD,gFACE,yBAA0B,AAC1B,gBAAiB,AACjB,YAAa,AACb,UAAY,CACb,AACD,yEACE,YAAa,AACb,WAAY,AACZ,WAAa,CACd,AACD,0EACE,kBAAmB,AACnB,UAAW,AACX,MAAO,AACP,WAAY,AACZ,YAAa,AACb,SAAU,AACV,SAAW,CACZ,AAID,8NACE,gBAAkB,CACnB,AACD,+EACE,kBAAmB,AACnB,WAAY,AACZ,MAAO,AACP,WAAY,AACZ,YAAa,AACb,aAAe,CAChB,AACD,yHACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,2HACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,oNACE,6BAA8B,AAC9B,uBAAyB,CAC1B,AAKD,iIACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AACD,gHACE,sCAA2C,AAC3C,uCAA6C,CAC9C,AACD,sHACE,uCAA4C,AAC5C,uCAA6C,CAC9C,AAKD,2SACE,6BAA8B,AAC9B,YAAc,CACf,AACD,qJACE,gBAAkB,CACnB,AAED,sCACE,kBAAmB,AACnB,YAAa,AACb,yBAA0B,AAC1B,sBAAuB,AACvB,gBAAiB,AACjB,gBAAiB,AACjB,mBAAqB,CACtB,AACD,2CACE,cAAiB,AACjB,eAAgB,AAChB,WAA2B,AAC3B,SAAS,AACT,YAAY,AACZ,iBAAiB,AACjB,kBAAoB,CACrB,AACD,6CACE,YAAa,AACb,cAAiB,AACjB,SAAU,AACV,WAAY,AACZ,qBAAuB,CACxB,AACD,2CACE,YAAa,AACb,cAAiB,AACjB,SAAU,AACV,cAAe,AACf,qBAAuB,CACxB","file":"desktop-container.css","sourcesContent":[".desktop-ct{\r\n  height: 100%;\r\n  width: 100%;\r\n  box-sizing: border-box;\r\n  position: relative;\r\n}\r\n/* .select-ct{\r\n  z-index: 100;\r\n}\r\n.items-ct{\r\n  z-index: 110;\r\n} */\r\n.items-ct{\r\n  position: absolute;\r\n  margin: 6px 0px 0px 1px;\r\n  z-index: 103;\r\n  box-sizing: border-box;\r\n}\r\n.item-desktop{\r\n  position: absolute;\r\n  width: 72px;\r\n  overflow: visible;\r\n}\r\n.item-desktop>.item-text{\r\n  max-height: 32px;\r\n  overflow: hidden;\r\n  width: 68px;\r\n  text-align: center;\r\n  margin: 1px 2px 1px 2px;\r\n  font-size: 12px;\r\n  text-shadow: 1px 1px 1px #000, -1px 0px 1px #000;\r\n}\r\n.item-desktop>.item-text:before{\r\n  content: attr(data-title);\r\n  overflow: hidden;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.item-desktop>.item-icon{\r\n  margin: auto;\r\n  width: 46px;\r\n  height: 46px;\r\n}\r\n.item-desktop>.item-check{\r\n  position: absolute;\r\n  z-index: 1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  margin: 0;\r\n  opacity: 0;\r\n}\r\n.item-desktop>.item-check:checked~.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop.focused>.item-text{\r\n  max-height: 300px;\r\n}\r\n.item-desktop>.item-background{\r\n  position: absolute;\r\n  z-index: -1;\r\n  top: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  outline: unset;\r\n}\r\n.item-desktop>.item-check:hover~.item-background{\r\n  background-color: rgba(217, 236, 255, 0.15);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop>.item-check:checked~.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.focused:not(.selected)>.item-check:not(:checked):not(:hover)~.item-background{\r\n  background-color: transparent;\r\n  outline: 1px dotted #fff;\r\n}\r\n/* .item-desktop>.item-check:active~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n} */\r\n.item-desktop>.item-check:checked:hover~.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop.selected>.item-background{\r\n  background-color: rgba(181, 218, 255, 0.3);\r\n  outline: 1px solid rgba(217, 236, 255, 0.51);\r\n}\r\n.item-desktop.selected:hover>.item-background{\r\n  background-color: rgba(138, 191, 244, 0.25);\r\n  outline: 1px solid rgba(217, 236, 255, 0.36);\r\n}\r\n.item-desktop.dragged>.item-check:checked~.item-background{\r\n  background-color: transparent;\r\n  outline: none;\r\n}\r\n.item-desktop.selected.dragged>.item-background{\r\n  background-color: transparent;\r\n  outline: none;\r\n}\r\n.item-desktop.dragged>.item-check:checked~.item-text{\r\n  max-height: 300px;\r\n}\r\n\r\n.dragging-tag{\r\n  position: absolute;\r\n  height: 20px;\r\n  border: 1px solid #767676;\r\n  background-color: #fff;\r\n  max-width: 300px;\r\n  overflow: hidden;\r\n  pointer-events: none;\r\n}\r\n.dragging-tag-text{\r\n  padding: 0px 2px;\r\n  font-size: 12px;\r\n  color: rgba(0, 51, 204, 1);\r\n  margin:0;\r\n  height:100%;\r\n  line-height:20px;\r\n  white-space: nowrap;\r\n}\r\n.dragging-tag-action{\r\n  height: 100%;\r\n  padding: 0px 1px;\r\n  margin: 0;\r\n  color: #03c;\r\n  box-sizing: border-box;\r\n}\r\n.dragging-tag-name{\r\n  height: 100%;\r\n  padding: 0px 1px;\r\n  margin: 0;\r\n  color: #00009d;\r\n  box-sizing: border-box;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -5810,7 +5943,15 @@ exports.locals = {
 	"item-background": "desktop-container_item-background_2FKXT",
 	"itemBackground": "desktop-container_item-background_2FKXT",
 	"selected": "desktop-container_selected_1nXx1",
-	"dragged": "desktop-container_dragged_2KMKm"
+	"dragged": "desktop-container_dragged_2KMKm",
+	"dragging-tag": "desktop-container_dragging-tag_S9y2U",
+	"draggingTag": "desktop-container_dragging-tag_S9y2U",
+	"dragging-tag-text": "desktop-container_dragging-tag-text_3NEqI",
+	"draggingTagText": "desktop-container_dragging-tag-text_3NEqI",
+	"dragging-tag-action": "desktop-container_dragging-tag-action_3EsTw",
+	"draggingTagAction": "desktop-container_dragging-tag-action_3EsTw",
+	"dragging-tag-name": "desktop-container_dragging-tag-name_5PSYr",
+	"draggingTagName": "desktop-container_dragging-tag-name_5PSYr"
 };
 
 /***/ }),

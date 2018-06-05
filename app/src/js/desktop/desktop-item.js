@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 
 import Icon from '../components/icon.js'
 import ut from '../components/Utils.js'
+import Events from '../components/event.js'
 
 import css from '../../css/desktop/desktop-container.css'
 
@@ -27,10 +28,11 @@ class Items extends Component {
       interval: [0, 0],
       column: -1,
       row: -1,
-      selectedColumns: [-1, -1], //[left column number, right column number] selectedColumns are from left No. to the number before right No.
+      selectedColumns: [-1, -1], //[left column number, right column number].
       itemWidth: 0,
-      lattice: [], //lattice[column][row] two dimension array
-      outcasts: []
+      lattice: [], //lattice[column][row] = item
+      outcasts: [],
+      selected: new Set()
     }
     if(this.props.container.constructor.name == 'DesktopContainer'){
       this.groupInfo.itemWidth = 72
@@ -227,17 +229,11 @@ class Items extends Component {
   }
   deselect(){
     let p = this.groupInfo
-    if(p.selectedColumns[0]!=-1&&p.selectedColumns[1]!=-1)
-    for (let i = p.selectedColumns[0]; i < p.selectedColumns[1]; i++) {
-      for (var j = 0; j < p.row; j++) {
-        let item = p.lattice[i][j]
-        if(item)
-          item.deselect()
-      }
-    }
+    p.selected.forEach((item)=>{
+      item.deselect()
+    })
     p.selectedColumns[0] = -1
     p.selectedColumns[1] = -1
-
     if(p.checked) p.checked.uncheck()
   }
   select(x, y, sx, sy){
@@ -328,9 +324,37 @@ class Items extends Component {
     const x = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
     const y = e.pageY || (e.changedTouches?e.changedTouches[0].pageY:0)
 
-    const draggedItems = []
     const ctid = 'ct_CEbcp1oiBy'
+    const tagid = 'tag_CEbcp1oiBy'
 
+    let ondroppable = false
+    const Tag = {
+      show: 0,
+      name: '',
+      action: ''
+    }
+    const onEnterListener = (_target)=>{
+      if(_target==target || this.groupInfo.selected.has(_target) ) return
+
+      if(_target.hoverTag){
+        Tag.show = 1
+        Tag.name = _target.hoverTag.name
+        Tag.action = _target.hoverTag.action
+      }
+
+      ondroppable = true
+    }
+    const onDropListener = (_target)=>{
+      if(_target==target || this.groupInfo.selected.has(_target) ) return
+
+    }
+    const onLeaveListener = (_target)=>{
+      if(_target==target || this.groupInfo.selected.has(_target) ) return
+      Tag.show = 0
+      Tag.name = ''
+      Tag.action = ''
+      ondroppable = false
+    }
     let moved = false
     const move = (e)=>{
       let mx = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
@@ -340,47 +364,75 @@ class Items extends Component {
         moved = true
         const origin = [target.column, target.row]
         const opacity = 0.63
-        const ct = document.createElement('div')
 
+        const ct = document.createElement('div')
         ct.id = ctid
         ct.className = css.itemsCt
         ct.style.pointerEvents = 'none'
-        ct.style.zIndex = 9999999
-        let p = this.groupInfo
-        for (let i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++) {
-          for (let j = 0; j < p.row; j++) {
-            let item = p.lattice[i][j]
-            if(item&&item.selected){
-              let copy = item.refs.element.cloneNode(true)
-              copy.className += ' '+css.dragged
-              copy.id += '_dragged'
-              if(item == target){
-                target.dragged = true
-                copy.style.opacity = opacity
+        ct.style.zIndex = 99999997
 
-                let children = copy.children
-                for (let k = 0; k < children.length; k++) {
-                  if (children[k].className.indexOf(css.itemBackground)!=-1) {
-                    children[k].style.outline = 'unset'
-                    children[k].style.backgroundColor = 'unset'
-                  }
-                }
-              }else {
-                let position = [item.column, item.row]
-                let distance = Math.sqrt(Math.pow((position[0]-origin[0]),2)+Math.pow((position[1]-origin[1]),2))
-                let ac = 1/((Math.pow(1.1*(distance),2)+2) *0.5)//attenuation coefficient
-                copy.style.opacity = ac *opacity
+        const tag = document.createElement('div')
+        tag.id = tagid
+        tag.className = css.draggingTag
+        tag.style.zIndex = 99999998
+        tag.style.top = y +'px'
+        tag.style.left = x+12 +'px'
+        tag.style.visibility = 'hidden'
+        tag.innerHTML = "<p class='"+ css.draggingTagText +"'>"+
+        "<span class='"+ css.draggingTagAction +"' id='"+tagid+"_action'></span>&nbsp"+
+        "<span class='"+ css.draggingTagName +"' id='"+tagid+"_name'></span></p>"
+
+        ct.appendChild(tag)
+
+        let p = this.groupInfo
+        p.selected.forEach((item)=>{
+          let copy = item.refs.element.cloneNode(true)
+          copy.className += ' '+css.dragged
+          copy.id += '_dragged'
+          if(item == target){
+            target.dragged = true
+            copy.style.opacity = opacity
+
+            let children = copy.children
+            for (let k = 0; k < children.length; k++) {
+              if (children[k].className.indexOf(css.itemBackground)!=-1) {
+                children[k].style.outline = 'unset'
+                children[k].style.backgroundColor = 'unset'
               }
-              ct.appendChild(copy)
-              draggedItems.push(item)
             }
+          }else {
+            let position = [item.column, item.row]
+            let distance = Math.sqrt(Math.pow((position[0]-origin[0]),2)+Math.pow((position[1]-origin[1]),2))
+            let ac = 1/((Math.pow(1.1*(distance),2)+2) *0.5)//attenuation coefficient
+            copy.style.opacity = ac *opacity
           }
-        }
+          ct.appendChild(copy)
+        })
         this.props.container.refs.element.appendChild(ct)
+
+        Events.on(Events.names.being_dragged_items_onenter, onEnterListener)
+        Events.on(Events.names.being_dragged_items_ondrop, onDropListener)
+        Events.on(Events.names.being_dragged_items_onleave, onLeaveListener)
       }else{
         const ct = document.getElementById(ctid)
         ct.style.top = my-y +'px'
         ct.style.left = mx-x +'px'
+
+        if(ondroppable){
+          if(Tag.show){
+            document.getElementById(tagid+'_action').innerHTML = Tag.action
+            document.getElementById(tagid+'_name').innerHTML = Tag.name
+            let tagNode = document.getElementById(tagid)
+            tagNode.style.visibility = 'visible'
+            if(tagNode.offsetLeft+ct.offsetLeft>document.body.clientWidth-2*tagNode.offsetWidth){
+              tagNode.style.left = document.body.clientWidth -tagNode.offsetWidth -ct.offsetLeft + 'px'
+            }else {
+              tagNode.style.left = x+12 +'px'
+            }
+          }
+        }else{
+          document.getElementById(tagid).style.visibility = 'hidden'
+        }
       }
 
 
@@ -399,6 +451,36 @@ class Items extends Component {
         setTimeout(()=>{
           delete target.dragged
         },50)
+        Events.removeListener(Events.names.being_dragged_items_onenter, onEnterListener)
+        Events.removeListener(Events.names.being_dragged_items_ondrop, onDropListener)
+        Events.removeListener(Events.names.being_dragged_items_onleave, onLeaveListener)
+
+        //move items
+        if(!ondroppable){
+          let ux = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
+          let uy = e.pageY || (e.changedTouches?e.changedTouches[0].pageY:0)
+          let p = this.groupInfo
+          let mousePos = []
+          mousePos[0] = Math.max(Math.min(Math.floor(ux/p.interval[0]), p.column-1), 0)
+          mousePos[1] = Math.max(Math.min(Math.floor(uy/p.interval[1]), p.row-1), 0)
+
+          let dx = mousePos[0] -target.column+1
+          let dy = mousePos[1] -target.row+1
+          if(dx || dy){
+            for (let i = (dx>0? p.column-1 : 0);
+            (dx>0?       i>=0 : i<p.column);
+            (dx>0?        i-- : i++)) {
+              for (let j = (dy>0? p.row-1 : 0);
+              (dy>0?    j>=0 : j<p.row);
+              (dy>0?     j-- : j++)) {
+                let item = p.lattice[i][j]
+                if(item&&item.selected){
+                  item.insert(item.column+dx,item.row+dy)
+                }
+              }
+            }
+          }
+        }
       }
     }
     document.addEventListener('touchmove', tm, {passive: false})
@@ -416,8 +498,17 @@ class Item extends Component {
   constructor(props){
     super(props)
     this.hidden = 1
+    this.selected = 0
+    this.outcast = 0
     this.onMouseDown = this.onMouseDown.bind(this)
+    this.onMouseEnter = this.onMouseEnter.bind(this)
+    this.onMouseUp = this.onMouseUp.bind(this)
+    this.onMouseLeave = this.onMouseLeave.bind(this)
     this.onClick = this.onClick.bind(this)
+    this.hoverTag = {
+      name: this.props.data.name,
+      action: "Move to"
+    }
   }
   componentDidMount(){
     let t
@@ -425,26 +516,18 @@ class Item extends Component {
       t = this.insert(this.props.column, this.props.row)
     else
       t = this.append()
-    if(t){
-      this.refs.element.style.display = ''
-      this.hidden = 0
-      this.isOutcast = 0
-      this.selected = 0
-    }else {
-      if(!this.isOutcast)
-        this.outcast()
-    }
   }
   render(){
     return (
-      <div className={css[this.props.data.className]} ref='element' style={{display:this.hidden?'none':''}}>
+      <div className={css[this.props.data.className]} ref='element' style={{display:this.hidden?'none':''}}
+        onMouseDown = {this.onMouseDown} onTouchStart = {this.onMouseDown}
+        onMouseEnter = {this.onMouseEnter} onMouseUp = {this.onMouseUp} onMouseLeave = {this.onMouseLeave}
+        onClick = {this.onClick}
+      >
         <div className={css.itemIcon}>
           <Icon className={this.props.data.icon.className}/>
         </div>
-        <input type="radio" name={this.props.groupInfo.name} className={css.itemCheck} ref='input'
-          onMouseDown = {this.onMouseDown} onTouchStart = {this.onMouseDown}
-          onClick = {this.onClick}
-        />
+        <input type="radio" name={this.props.groupInfo.name} className={css.itemCheck} ref='input'/>
           {/*  ondblclick="desktop.createWindow(this);this.checked=false"
           onblur="this.parentNode.style.zIndex=auto;"
           onfocus="this.parentNode.style.zIndex=1;"*/}
@@ -452,6 +535,15 @@ class Item extends Component {
         <div className={css.itemText} data-title={this.props.data.name}></div>
       </div>
     )
+  }
+  onMouseEnter(e){
+    Events.emit(Events.names.being_dragged_items_onenter, this)
+  }
+  onMouseLeave(e){
+    Events.emit(Events.names.being_dragged_items_onleave, this)
+  }
+  onMouseUp(e){
+    Events.emit(Events.names.being_dragged_items_ondrop, this)
   }
   onMouseDown(e){
     this.focus()
@@ -477,18 +569,13 @@ class Item extends Component {
     let p = this.props.groupInfo
     p.checked = this
     this.select()
-    p.selectedColumns[0] = this.column-1
-    p.selectedColumns[1] = this.column
   }
   uncheck(){
+    this.refs.input.checked = false
+    if(this.selected) this.deselect()
     let lastChecked = this.props.groupInfo.checked
     if(lastChecked!=this) return
-    this.refs.input.checked = false
     this.props.groupInfo.checked = null
-    this.deselect()
-    let p = this.props.groupInfo
-    p.selectedColumns[0] = -1
-    p.selectedColumns[1] = -1
   }
   focus(){
     let lastFocused = this.props.groupInfo.focused
@@ -515,6 +602,7 @@ class Item extends Component {
     if(!this.selected){
       this.refs.element.className += ' '+css.selected
       this.selected = 1
+      this.props.groupInfo.selected.add(this)
     }
   }
   deselect(){
@@ -522,20 +610,28 @@ class Item extends Component {
       let ele = this.refs.element
       ele.className = ele.className.replace(new RegExp(css.selected, 'g'), '')
       this.selected = 0
+      this.props.groupInfo.selected.delete(this)
     }
+    this.uncheck()
   }
   hide(){
     this.refs.element.style.display = 'none'
     this.hidden = 1
+    this.selected = 0
+    let lattice = this.props.groupInfo.lattice
+    if(lattice[this.column-1][this.row-1]==this)
+      lattice[this.column-1][this.row-1] = undefined
   }
   show(){
     this.refs.element.style.display = ''
     this.hidden = 0
     this.isOutcast = 0
+    let lattice = this.props.groupInfo.lattice
+    if(lattice[this.column-1][this.row-1]!=this)
+      this.append()
   }
   outcast(){
     if(this.props.groupInfo.outcasts.indexOf(this)==-1){
-
       this.isOutcast = 1
       this.hide()
       this.props.groupInfo.outcasts.push(this)
@@ -550,6 +646,7 @@ class Item extends Component {
       item_node.style.top = j *p.interval[1] +'px'
       item.column = i+1
       item.row = j+1
+      item.show()
     }
     for (let i = 0; i < p.column; i++) {
       if(!p.lattice[i][p.row-1]){
@@ -573,6 +670,11 @@ class Item extends Component {
     return false
   }
   insert(column, row){
+    if(!this.hidden){
+      let lattice = this.props.groupInfo.lattice
+      if(lattice[this.column-1][this.row-1]==this)
+        lattice[this.column-1][this.row-1] = undefined
+    }
     let p = this.props.groupInfo
     if(column>p.column) column = p.column
     if(row>p.row) row = p.row
@@ -585,6 +687,7 @@ class Item extends Component {
       item_node.style.top = j *p.interval[1] +'px'
       item.column = i+1
       item.row = j+1
+      item.show()
     }
     const next_available = (pos, leftwards) =>{
       let _pos = [pos[0], pos[1]]
