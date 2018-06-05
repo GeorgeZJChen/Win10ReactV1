@@ -497,7 +497,7 @@ class Item extends Component {
         <div className={css.itemIcon}>
           {
             this.props.data.link?
-            <div className={css.iconLink}></div> : ''
+            <div className={css.iconLink} style={{backgroundImage:'url(static/img/link.jpg)'}}></div> : ''
           }
           {
             this.props.data.icon.URL?

@@ -75,12 +75,14 @@ class Win extends Component{
     this.minimise = this.minimise.bind(this)
     this.maximum = this.maximise.bind(this)
 
+    console.log('new');
   }
   componentDidMount() {
     this.setStyle({
       visibility: "visible"
     })
     this.select()
+    console.log('mount');
   }
   render(){
     return(
