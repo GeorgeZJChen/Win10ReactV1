@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 
 import axios from 'axios'
 import Loader from '../components/loader.js'
-import Events from '../components/event.js'
 import Taskbar from './taskbar.js'
 import Task from './task.js'
 import StartMenu from './start-menu.js'
@@ -28,9 +27,9 @@ class Desktop extends Component{
       <div className={css.desktop}>
         <img className={css.wallpaper} src={this.state.imgURL} onLoad={()=>this.wallpaperReady=1}/>
         <input id='start_menu_switch_X7VIV' type='checkbox' ref='start_menu_switch'/>
-        <StartMenu/>
-        <Taskbar tasks={this.state.tasks}/>
-        <DesktopContainer/>
+        <StartMenu ref='startMenu'/>
+        <Taskbar tasks={this.state.tasks} ref='taskbar'/>
+        <DesktopContainer ref='desktopCt'/>
       </div>
     )
   }
@@ -68,7 +67,7 @@ class Desktop extends Component{
 
     const checkImagesReady = ()=>{
       if(this.wallpaperReady){
-        Events.emit(Events.names.desktopReady, 'Ready')
+        if(this.props.login) this.props.login.unmount()
       }else{
         setTimeout(checkImagesReady, 200)
       }
@@ -102,7 +101,7 @@ class Desktop extends Component{
   }
   renderNewTask(task){
     this.state.tasks.push(task)
-    Events.emit(Events.names.to_taskbar_add_new_task, task)
+    this.refs.taskbar.refs.tasks.renderNewTask(task)
   }
   loadStartMenu(){
     const url = 'static/data/start-menu.json'
@@ -113,7 +112,7 @@ class Desktop extends Component{
     }).then((res)=>{
       try {
         if(!res.data) throw new Error()
-        Events.emit(Events.names.to_start_menu_loaded_data, res.data)
+        this.refs.startMenu.init(res.data)
       } catch (e) {
         console.error('Data format error');
       }
@@ -130,7 +129,7 @@ class Desktop extends Component{
     }).then((res)=>{
       try {
         if(!res.data) throw new Error()
-        Events.emit(Events.names.to_desktop_items_loaded_data, res.data)
+        this.refs.desktopCt.refs.items.init(res.data)
       } catch (e) {
         console.error('Data format error');
       }

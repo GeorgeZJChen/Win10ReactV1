@@ -45,12 +45,12 @@
   overflow: hidden;
   position: relative;
 }
-.window.deselected>.label, .window.deselected>.btn-group{
+.window.deselected>.label-name, .window.deselected>.btn-group{
   color: #999;
 }
 .window.deselected{
   background-color: #fff;
-  color: #fff;
+  color: #999;
 }
 .label-name{
   height: 26px;
@@ -118,7 +118,7 @@
   height: 30px;
   top: 53%;
   left: 48%;
-  transform: translate(-50%,-50%) scale(0.27);
+  transform: translate(-50%,-50%) scale(0.25);
 }
 .btn-maximise.restore:after{
   content: "";
@@ -157,7 +157,14 @@
   left: 50%;
   transform: translate(-50%,-50%) rotate(-45deg) scale(0.33);
 }
-
+.window.deselected .btn:hover{
+  background-color: rgba(0,0,0,0.1);
+  color: rgb(0,0,0);
+}
+.window.deselected .btn.btn-close:hover{
+  background-color: rgb(218, 54, 54);
+  color: #fff;
+}
 .resize{
   position: absolute;
   width: 100%;

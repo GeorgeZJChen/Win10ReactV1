@@ -17,7 +17,6 @@ class Items extends Component {
       initiated : 0,
       items: []
     }
-
   }
   init(data){
     if(this.state.initiated) return
@@ -53,9 +52,6 @@ class Items extends Component {
       items: data.items
     })
   }
-  componentDidMount(){
-
-  }
   render(){
     return (
 
@@ -63,7 +59,7 @@ class Items extends Component {
         {
           this.state.initiated?
             this.state.items.map((item, index)=>{
-              return <Item data={item} key={index} groupInfo={this.groupInfo}/>
+              return <Item data={item} key={index} groupInfo={this.groupInfo} parent={this}/>
             })
             :
             ''
@@ -203,6 +199,7 @@ class Items extends Component {
     if(p.checked) p.checked.uncheck()
   }
   select(x, y, sx, sy){
+    this.__click_on_dragged_item_or_select_moved__ = 1
     if(!this.state.initiated) return
 
     const p = this.groupInfo
@@ -420,7 +417,6 @@ class Items extends Component {
         Events.removeListener(Events.names.being_dragged_items_onenter, onEnterListener)
         Events.removeListener(Events.names.being_dragged_items_ondrop, onDropListener)
         Events.removeListener(Events.names.being_dragged_items_onleave, onLeaveListener)
-
         //move items
         if(!ondroppable){
           let ux = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
@@ -530,11 +526,11 @@ class Item extends Component {
     Events.emit(Events.names.being_dragged_items_ondrop, this)
   }
   onMouseDown(e){
-    this.focus()
     if(!this.selected){
       this.props.groupInfo.parent.deselect()
-      this.check()
     }
+    this.focus()
+    this.check()  //order is important
     this.props.groupInfo.parent.onDrag(e, this)
   }
   onClick(e){
@@ -556,7 +552,6 @@ class Item extends Component {
   }
   uncheck(){
     this.refs.input.checked = false
-    if(this.selected) this.deselect()
     let lastChecked = this.props.groupInfo.checked
     if(lastChecked!=this) return
     this.props.groupInfo.checked = null
@@ -570,9 +565,8 @@ class Item extends Component {
     this.props.groupInfo.focused = this
   }
   blur(){
-    let lastFocused = this.props.groupInfo.focused
-    if(lastFocused!=this) return
     let ele = this.refs.element
+    if(ele.className.indexOf(css.focused)==-1) return
     ele.className = ele.className.replace(new RegExp(css.focused, 'g'), '')
     this.props.groupInfo.focused = null
     if(ut.browser.indexOf('Edge')!=-1){

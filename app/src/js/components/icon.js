@@ -55,9 +55,6 @@ class Icon extends Component{
     this.full_name = full_name
     this.first_name = first_name
   }
-  componentWillUnmount(){
-    // console.log('unmount icon: '+ this.className);
-  }
   shouldComponentUpdate(nextProps, nextState) {
     if(this.className == nextProps.className)
       return false

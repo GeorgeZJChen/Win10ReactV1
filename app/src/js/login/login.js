@@ -69,28 +69,27 @@ class Login extends Component{
     this.refs.btnLogin.style.cursor = 'default'
     ReactDOM.render(<Loader size='medium'/>, this.refs.btnLogin)
 
-    ReactDOM.render(<Desktop/>, document.getElementById('win10_main'))
-
-    Events.once(Events.names.desktopReady, (message)=>{
+    ReactDOM.render(<Desktop login={this}/>, document.getElementById('win10_main'))
+  }
+  unmount(){
+    setTimeout(()=>{
+      // To speed up render: when user opens startmenu, it will not be the first time of rendering
+      let smsw = document.getElementById('start_menu_switch_X7VIV')
+      if(!smsw) return
+      smsw.click()
       setTimeout(()=>{
-        // To speed up render: when user opens startmenu, it will not be the first time of rendering
-        let smsw = document.getElementById('start_menu_switch_X7VIV')
-        if(!smsw) return
         smsw.click()
-        setTimeout(()=>{
-          smsw.click()
-        },100)
-      },500)
+      },100)
+    },500)
 
+    setTimeout(()=>{
+      this.setState({
+        opacity: 0
+      })
       setTimeout(()=>{
-        this.setState({
-          opacity: 0
-        })
-        setTimeout(()=>{
-          ReactDOM.unmountComponentAtNode(document.getElementById(this.parentId))
-        }, 500)
-      }, 1000)
-    })
+        ReactDOM.unmountComponentAtNode(document.getElementById(this.parentId))
+      }, 500)
+    }, 1000)
   }
   imgReady(){
     this.setState({

@@ -4,20 +4,25 @@ import Events from '../components/event.js'
 import Icon from '../components/icon.js'
 import css from '../../css/desktop/taskbar.css'
 
-class TaskItems extends Component{
+class Tasks extends Component{
   constructor(props){
     super(props)
     this.state = {
       renderFlag: true
     }
-  }
-  componentDidMount() {
-    Events.on(Events.names.to_task_items_add_new_task, (task)=>{
+    this.renderNewTask = ()=>{
       this.setState((prevState)=>{
         return {renderFlag: !prevState.renderFlag}
       })
-    })
+    }
   }
+  componentDidMount() {
+    Events.on(Events.names.to_task_items_add_new_task, this.renderNewTask)
+  }
+  componentWillUnmount(){
+    Events.removeListener(Events.names.to_task_items_add_new_task, this.renderNewTask)
+  }
+
   render(){
     return(
       <React.Fragment>
@@ -73,6 +78,11 @@ class Item extends Component{
       display: 'none'
     }
     this.index = props.index
+    this.renderNewTask = ()=>{
+      this.setState((prevState)=>{
+        return {renderFlag: !prevState.renderFlag}
+      })
+    }
   }
   imgOnload(){
     this.setState((prevState)=>{
@@ -169,4 +179,4 @@ class BackgroundItem extends Component{
   }
 }
 
-export default TaskItems
+export default Tasks

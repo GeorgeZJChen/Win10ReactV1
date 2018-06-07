@@ -619,16 +619,9 @@ var MyEvents = function (_EventEmitter) {
 var myEvents = new MyEvents();
 var ec = 1000;
 myEvents.names = { //register names
-  desktopReady: ec++ + '',
-  to_taskbar_add_new_task: ec++ + '',
-  to_task_items_add_new_task: ec++ + '',
-  to_start_menu_loaded_data: ec++ + '',
-  to_desktop_items_loaded_data: ec++ + '',
-  handle_task_items_onclick: ec++ + '',
   being_dragged_items_onenter: ec++ + '',
   being_dragged_items_onleave: ec++ + '',
-  being_dragged_items_ondrop: ec++ + '',
-  to_windows_add_window: ec++ + ''
+  being_dragged_items_ondrop: ec++ + ''
 };
 
 exports.default = myEvents;
@@ -755,11 +748,6 @@ var Icon = function (_Component) {
   }
 
   _createClass(Icon, [{
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      // console.log('unmount icon: '+ this.className);
-    }
-  }, {
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps, nextState) {
       if (this.className == nextProps.className) return false;
@@ -913,16 +901,43 @@ var Select = function (_Component) {
   _createClass(Select, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      var _this2 = this;
+
       if (this.props.returnSelf) this.props.returnSelf(this);
       this.refs.element.addEventListener('touchmove', function (e) {
         e.preventDefault();
       }, { passive: false });
+
+      setTimeout(function () {
+        var toSelect = _this2.props.container.refs.items;
+        toSelect.refs.element.addEventListener('mousedown', function () {
+          _this2.__mousedown_on_items_to_select_or_this__ = 1;
+        });
+        toSelect.refs.element.addEventListener('touchstart', function () {
+          _this2.__mousedown_on_items_to_select_or_this__ = 1;
+        });
+        document.addEventListener('mousedown', function () {
+          if (!_this2.__mousedown_on_items_to_select_or_this__) _this2.props.deselect();
+          delete _this2.__mousedown_on_items_to_select_or_this__;
+        });
+        document.addEventListener('touchstart', function () {
+          if (!_this2.__mousedown_on_items_to_select_or_this__) _this2.props.deselect();
+          delete _this2.__mousedown_on_items_to_select_or_this__;
+        });
+      }, 50);
+    }
+  }, {
+    key: 'onClick',
+    value: function onClick() {
+      if (!this.__select_moved__) this.props.deselect();
+      delete this.__select_moved__;
     }
   }, {
     key: 'onMouseDown',
     value: function onMouseDown(e) {
-      var _this2 = this;
+      var _this3 = this;
 
+      this.__mousedown_on_items_to_select_or_this__ = 1;
       var x = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
       var y = e.pageY || (e.changedTouches ? e.changedTouches[0].pageY : 0);
       var area = this.refs.area;
@@ -940,7 +955,7 @@ var Select = function (_Component) {
         if (!moved && Math.abs(my - y) < 4 && Math.abs(mx - x) < 4) return;
         if (!moved) {
           moved = true;
-          _this2.setState({
+          _this3.setState({
             activated: 1
           });
         }
@@ -972,7 +987,7 @@ var Select = function (_Component) {
         area.style.left = left + 'px';
         area.style.width = width + 'px';
         area.style.height = height + 'px';
-        _this2.props.select(x, y, sx, sy);
+        _this3.props.select(x, y, sx, sy);
       };
       var up = function up(e) {
         document.removeEventListener('mousemove', move, false);
@@ -981,16 +996,15 @@ var Select = function (_Component) {
         document.removeEventListener("touchend", up, false);
         document.removeEventListener("touchcancel", up, false);
         if (moved) {
+          _this3.__select_moved__ = 1;
           area.style.top = 0;
           area.style.left = 0;
           area.style.width = 0;
           area.style.height = 0;
-          _this2.setState({
+          _this3.setState({
             activated: 0
           });
           moved = false;
-        } else {
-          _this2.props.deselect();
         }
       };
       document.addEventListener('mousemove', move, false);
@@ -1002,15 +1016,17 @@ var Select = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this4 = this;
 
       return _react2.default.createElement(
         'div',
-        { className: _select2.default.selectCt, ref: 'element',
+        { className: _select2.default.selectCt, ref: 'element', onClick: function onClick(e) {
+            return _this4.onClick(e);
+          },
           onMouseDown: function onMouseDown(e) {
-            return _this3.onMouseDown(e);
+            return _this4.onMouseDown(e);
           }, onTouchStart: function onTouchStart(e) {
-            return _this3.onMouseDown(e);
+            return _this4.onMouseDown(e);
           },
           style: { zIndex: this.state.activated ? this.props.zIndex : '' } },
         _react2.default.createElement('div', { className: _select2.default.selectArea, ref: 'area', style: { display: this.state.activated ? 'block' : 'none' } })
@@ -1049,14 +1065,6 @@ var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/i
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _loader = __webpack_require__(/*! ../components/loader.js */ "./app/src/js/components/loader.js");
-
-var _loader2 = _interopRequireDefault(_loader);
-
-var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
-
-var _event2 = _interopRequireDefault(_event);
-
 var _select = __webpack_require__(/*! ../components/select.js */ "./app/src/js/components/select.js");
 
 var _select2 = _interopRequireDefault(_select);
@@ -1087,40 +1095,25 @@ var DesktopContainer = function (_Component) {
   function DesktopContainer(props) {
     _classCallCheck(this, DesktopContainer);
 
-    var _this = _possibleConstructorReturn(this, (DesktopContainer.__proto__ || Object.getPrototypeOf(DesktopContainer)).call(this, props));
-
-    _this.state = {};
-
-    return _this;
+    return _possibleConstructorReturn(this, (DesktopContainer.__proto__ || Object.getPrototypeOf(DesktopContainer)).call(this, props));
   }
 
   _createClass(DesktopContainer, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      _event2.default.once(_event2.default.names.to_desktop_items_loaded_data, function (data) {
-        setTimeout(function () {
-          _this2.refs.items.init(data);
-        }, 50);
-      });
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       return _react2.default.createElement(
         'div',
         { className: _desktopContainer2.default.desktopCt, ref: 'element' },
         _react2.default.createElement(_select2.default, { select: function select(x, y, sx, sy) {
-            return _this3.refs.items.select(x, y, sx, sy);
-          },
+            return _this2.refs.items.select(x, y, sx, sy);
+          }, container: this,
           deselect: function deselect() {
-            return _this3.refs.items.deselect();
+            return _this2.refs.items.deselect();
           }, zIndex: 104 }),
         _react2.default.createElement(_desktopItem2.default, { container: this, ref: 'items' }),
-        _react2.default.createElement(_window2.default, { container: this })
+        _react2.default.createElement(_window2.default, { container: this, ref: 'windows' })
       );
     }
   }]);
@@ -1192,7 +1185,6 @@ var Items = function (_Component) {
       initiated: 0,
       items: []
     };
-
     return _this;
   }
 
@@ -1235,9 +1227,6 @@ var Items = function (_Component) {
       });
     }
   }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {}
-  }, {
     key: 'render',
     value: function render() {
       var _this3 = this;
@@ -1246,7 +1235,7 @@ var Items = function (_Component) {
         'div',
         { className: _desktopContainer2.default.itemsCt, ref: 'element' },
         this.state.initiated ? this.state.items.map(function (item, index) {
-          return _react2.default.createElement(Item, { data: item, key: index, groupInfo: _this3.groupInfo });
+          return _react2.default.createElement(Item, { data: item, key: index, groupInfo: _this3.groupInfo, parent: _this3 });
         }) : ''
       );
     }
@@ -1394,6 +1383,7 @@ var Items = function (_Component) {
   }, {
     key: 'select',
     value: function select(x, y, sx, sy) {
+      this.__click_on_dragged_item_or_select_moved__ = 1;
       if (!this.state.initiated) return;
 
       var p = this.groupInfo;
@@ -1608,7 +1598,6 @@ var Items = function (_Component) {
           _event2.default.removeListener(_event2.default.names.being_dragged_items_onenter, onEnterListener);
           _event2.default.removeListener(_event2.default.names.being_dragged_items_ondrop, onDropListener);
           _event2.default.removeListener(_event2.default.names.being_dragged_items_onleave, onLeaveListener);
-
           //move items
           if (!ondroppable) {
             var ux = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
@@ -1724,11 +1713,11 @@ var Item = function (_Component2) {
   }, {
     key: 'onMouseDown',
     value: function onMouseDown(e) {
-      this.focus();
       if (!this.selected) {
         this.props.groupInfo.parent.deselect();
-        this.check();
       }
+      this.focus();
+      this.check(); //order is important
       this.props.groupInfo.parent.onDrag(e, this);
     }
   }, {
@@ -1756,7 +1745,6 @@ var Item = function (_Component2) {
     key: 'uncheck',
     value: function uncheck() {
       this.refs.input.checked = false;
-      if (this.selected) this.deselect();
       var lastChecked = this.props.groupInfo.checked;
       if (lastChecked != this) return;
       this.props.groupInfo.checked = null;
@@ -1776,9 +1764,8 @@ var Item = function (_Component2) {
     value: function blur() {
       var _this6 = this;
 
-      var lastFocused = this.props.groupInfo.focused;
-      if (lastFocused != this) return;
       var ele = this.refs.element;
+      if (ele.className.indexOf(_desktopContainer2.default.focused) == -1) return;
       ele.className = ele.className.replace(new RegExp(_desktopContainer2.default.focused, 'g'), '');
       this.props.groupInfo.focused = null;
       if (_Utils2.default.browser.indexOf('Edge') != -1) {
@@ -2010,10 +1997,6 @@ var _loader = __webpack_require__(/*! ../components/loader.js */ "./app/src/js/c
 
 var _loader2 = _interopRequireDefault(_loader);
 
-var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
-
-var _event2 = _interopRequireDefault(_event);
-
 var _taskbar = __webpack_require__(/*! ./taskbar.js */ "./app/src/js/desktop/taskbar.js");
 
 var _taskbar2 = _interopRequireDefault(_taskbar);
@@ -2072,9 +2055,9 @@ var Desktop = function (_Component) {
             return _this2.wallpaperReady = 1;
           } }),
         _react2.default.createElement('input', { id: 'start_menu_switch_X7VIV', type: 'checkbox', ref: 'start_menu_switch' }),
-        _react2.default.createElement(_startMenu2.default, null),
-        _react2.default.createElement(_taskbar2.default, { tasks: this.state.tasks }),
-        _react2.default.createElement(_desktopContainer2.default, null)
+        _react2.default.createElement(_startMenu2.default, { ref: 'startMenu' }),
+        _react2.default.createElement(_taskbar2.default, { tasks: this.state.tasks, ref: 'taskbar' }),
+        _react2.default.createElement(_desktopContainer2.default, { ref: 'desktopCt' })
       );
     }
   }, {
@@ -2116,7 +2099,7 @@ var Desktop = function (_Component) {
 
       var checkImagesReady = function checkImagesReady() {
         if (_this4.wallpaperReady) {
-          _event2.default.emit(_event2.default.names.desktopReady, 'Ready');
+          if (_this4.props.login) _this4.props.login.unmount();
         } else {
           setTimeout(checkImagesReady, 200);
         }
@@ -2158,11 +2141,13 @@ var Desktop = function (_Component) {
     key: 'renderNewTask',
     value: function renderNewTask(task) {
       this.state.tasks.push(task);
-      _event2.default.emit(_event2.default.names.to_taskbar_add_new_task, task);
+      this.refs.taskbar.refs.tasks.renderNewTask(task);
     }
   }, {
     key: 'loadStartMenu',
     value: function loadStartMenu() {
+      var _this6 = this;
+
       var url = 'static/data/start-menu.json';
       (0, _axios2.default)({
         method: 'get',
@@ -2171,7 +2156,7 @@ var Desktop = function (_Component) {
       }).then(function (res) {
         try {
           if (!res.data) throw new Error();
-          _event2.default.emit(_event2.default.names.to_start_menu_loaded_data, res.data);
+          _this6.refs.startMenu.init(res.data);
         } catch (e) {
           console.error('Data format error');
         }
@@ -2182,6 +2167,8 @@ var Desktop = function (_Component) {
   }, {
     key: 'loadDesktopItems',
     value: function loadDesktopItems() {
+      var _this7 = this;
+
       var url = 'static/data/desktop-items.json';
       (0, _axios2.default)({
         method: 'get',
@@ -2190,7 +2177,7 @@ var Desktop = function (_Component) {
       }).then(function (res) {
         try {
           if (!res.data) throw new Error();
-          _event2.default.emit(_event2.default.names.to_desktop_items_loaded_data, res.data);
+          _this7.refs.desktopCt.refs.items.init(res.data);
         } catch (e) {
           console.error('Data format error');
         }
@@ -3140,10 +3127,6 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _startMenuComps = __webpack_require__(/*! ./start-menu-comps.js */ "./app/src/js/desktop/start-menu-comps.js");
 
-var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
-
-var _event2 = _interopRequireDefault(_event);
-
 var _startMenu = __webpack_require__(/*! ../../css/desktop/start-menu.css */ "./app/src/css/desktop/start-menu.css");
 
 var _startMenu2 = _interopRequireDefault(_startMenu);
@@ -3173,14 +3156,10 @@ var StartMenu = function (_Component) {
   }
 
   _createClass(StartMenu, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      _event2.default.once(_event2.default.names.to_start_menu_loaded_data, function (data) {
-        _this2.setState({
-          data: data
-        });
+    key: 'init',
+    value: function init(data) {
+      this.setState({
+        data: data
       });
     }
   }, {
@@ -3270,292 +3249,6 @@ exports.default = Task;
 
 /***/ }),
 
-/***/ "./app/src/js/desktop/taskItems.js":
-/*!*****************************************!*\
-  !*** ./app/src/js/desktop/taskItems.js ***!
-  \*****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-
-var _reactDom2 = _interopRequireDefault(_reactDom);
-
-var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
-
-var _event2 = _interopRequireDefault(_event);
-
-var _icon = __webpack_require__(/*! ../components/icon.js */ "./app/src/js/components/icon.js");
-
-var _icon2 = _interopRequireDefault(_icon);
-
-var _taskbar = __webpack_require__(/*! ../../css/desktop/taskbar.css */ "./app/src/css/desktop/taskbar.css");
-
-var _taskbar2 = _interopRequireDefault(_taskbar);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var TaskItems = function (_Component) {
-  _inherits(TaskItems, _Component);
-
-  function TaskItems(props) {
-    _classCallCheck(this, TaskItems);
-
-    var _this = _possibleConstructorReturn(this, (TaskItems.__proto__ || Object.getPrototypeOf(TaskItems)).call(this, props));
-
-    _this.state = {
-      renderFlag: true
-    };
-    return _this;
-  }
-
-  _createClass(TaskItems, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      _event2.default.on(_event2.default.names.to_task_items_add_new_task, function (task) {
-        _this2.setState(function (prevState) {
-          return { renderFlag: !prevState.renderFlag };
-        });
-      });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this3 = this;
-
-      return _react2.default.createElement(
-        _react2.default.Fragment,
-        null,
-        this.props.tasks.map(function (task, index) {
-          if (_this3.props.type == 0) {
-            //render on taskbar
-            if (task.isTaskbarTask) {
-              if (task.taskbarIcon.URL) return _react2.default.createElement(Item, { key: task.id, id: task.id, className: 'unknown', URL: task.taskbarIcon.URL, isImage: true, index: index });else return _react2.default.createElement(Item, { key: task.id, id: task.id, className: task.taskbarIcon.className, index: index });
-            }
-          } else {
-            //render background task
-            if (task.isBackgroundTask) {
-              var t = _this3.props.type;
-              var d = task.backgroundIcon ? task.backgroundIcon.display : 0;
-              if (t == 1 && d == 1 || d == 0 && t != 1) return;
-              if (task.backgroundIcon.URL) return _react2.default.createElement(BackgroundItem, { key: task.id, URL: task.backgroundIcon.URL, id: task.id, className: 'unknown bg',
-                isImage: true, index: index, type: _this3.props.type });else return _react2.default.createElement(BackgroundItem, { key: task.id, id: task.id, className: task.backgroundIcon.className,
-                index: index, type: _this3.props.type });
-            }
-          }
-        })
-      );
-    }
-  }]);
-
-  return TaskItems;
-}(_react.Component);
-
-var Item = function (_Component2) {
-  _inherits(Item, _Component2);
-
-  function Item(props) {
-    _classCallCheck(this, Item);
-
-    var _this4 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
-
-    _this4.state = {
-      imgReady: 0,
-      renderFlag: true
-    };
-    _this4.imgStyle = {
-      width: 'auto',
-      height: '70%',
-      maxWidth: '85%',
-      position: 'relative',
-      left: '50%',
-      top: '50%',
-      transform: 'translate(-50%,-50%)',
-      display: 'block',
-      pointerEvents: 'none'
-    };
-    _this4.imgStyleNotReady = {
-      display: 'none'
-    };
-    _this4.index = props.index;
-    return _this4;
-  }
-
-  _createClass(Item, [{
-    key: 'imgOnload',
-    value: function imgOnload() {
-      this.setState(function (prevState) {
-        return {
-          imgReady: 1,
-          renderFlag: !prevState.renderFlag
-        };
-      });
-    }
-  }, {
-    key: 'onclick',
-    value: function onclick(e) {
-      _event2.default.emit(_event2.default.names.handle_task_items_onclick, e, this.props.id);
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this5 = this;
-
-      if (this.props.isImage) {
-        return _react2.default.createElement(
-          'div',
-          { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask, key: this.props.id, onClick: function onClick(e) {
-              return _this5.onclick(e);
-            } },
-          _react2.default.createElement(
-            'span',
-            { className: _taskbar2.default.iconCt },
-            this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: this.props.className }),
-            _react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady, src: this.props.URL, onLoad: function onLoad() {
-                _this5.imgOnload();
-              } })
-          )
-        );
-      } else return _react2.default.createElement(
-        'div',
-        { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask, key: this.props.id, onClick: function onClick(e) {
-            return _this5.onclick(e);
-          } },
-        _react2.default.createElement(
-          'span',
-          { className: _taskbar2.default.iconCt },
-          _react2.default.createElement(_icon2.default, { className: this.props.className })
-        )
-      );
-    }
-  }, {
-    key: 'shouldComponentUpdate',
-    value: function shouldComponentUpdate(nextProps, nextState) {
-      if (this.index == nextProps.index && this.state.renderFlag == nextState.renderFlag) return false;
-      return true;
-    }
-  }]);
-
-  return Item;
-}(_react.Component);
-
-var BackgroundItem = function (_Component3) {
-  _inherits(BackgroundItem, _Component3);
-
-  function BackgroundItem(props) {
-    _classCallCheck(this, BackgroundItem);
-
-    var _this6 = _possibleConstructorReturn(this, (BackgroundItem.__proto__ || Object.getPrototypeOf(BackgroundItem)).call(this, props));
-
-    _this6.index = props.index;
-    _this6.state = {
-      imgReady: 0,
-      renderFlag: true
-    };
-    _this6.imgStyle = {
-      width: 'auto',
-      height: '85%',
-      maxWidth: '90%',
-      position: 'relative',
-      left: '50%',
-      top: '50%',
-      transform: 'translate(-50%,-50%)',
-      display: 'block',
-      pointerEvents: 'none'
-    };
-    _this6.imgStyleNotReady = {
-      display: 'none'
-    };
-    return _this6;
-  }
-
-  _createClass(BackgroundItem, [{
-    key: 'imgOnload',
-    value: function imgOnload() {
-      this.setState(function (prevState) {
-        return {
-          imgReady: 1,
-          renderFlag: !prevState.renderFlag
-        };
-      });
-    }
-  }, {
-    key: 'onclick',
-    value: function onclick(e) {
-      _event2.default.emit(_event2.default.names.handle_task_items_onclick, e, this.props.id);
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this7 = this;
-
-      var t = '';
-      if (this.props.type == 1) t = _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item;else if (this.props.type == 2) t = _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink;else if (this.props.type == 3) t = _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink;
-      if (this.props.isImage) {
-        return _react2.default.createElement(
-          'div',
-          { className: t, key: this.props.id, onClick: function onClick(e) {
-              return _this7.onclick(e);
-            } },
-          _react2.default.createElement(
-            'span',
-            { className: _taskbar2.default.iconCtBg },
-            this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: this.props.className }),
-            _react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady, src: this.props.URL, onLoad: function onLoad() {
-                _this7.imgOnload();
-              } })
-          )
-        );
-      } else {
-        return _react2.default.createElement(
-          'div',
-          { className: t, key: this.props.id, onClick: function onClick(e) {
-              return _this7.onclick(e);
-            } },
-          _react2.default.createElement(
-            'span',
-            { className: _taskbar2.default.iconCtBg },
-            _react2.default.createElement(_icon2.default, { className: this.props.className })
-          )
-        );
-      }
-    }
-  }, {
-    key: 'shouldComponentUpdate',
-    value: function shouldComponentUpdate(nextProps, nextState) {
-      if (this.index == nextProps.index && this.state.renderFlag == nextState.renderFlag) return false;
-      return true;
-    }
-  }]);
-
-  return BackgroundItem;
-}(_react.Component);
-
-exports.default = TaskItems;
-
-/***/ }),
-
 /***/ "./app/src/js/desktop/taskbar.js":
 /*!***************************************!*\
   !*** ./app/src/js/desktop/taskbar.js ***!
@@ -3588,9 +3281,9 @@ var _task = __webpack_require__(/*! ./task.js */ "./app/src/js/desktop/task.js")
 
 var _task2 = _interopRequireDefault(_task);
 
-var _taskItems = __webpack_require__(/*! ./taskItems.js */ "./app/src/js/desktop/taskItems.js");
+var _tasks = __webpack_require__(/*! ./tasks.js */ "./app/src/js/desktop/tasks.js");
 
-var _taskItems2 = _interopRequireDefault(_taskItems);
+var _tasks2 = _interopRequireDefault(_tasks);
 
 var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
 
@@ -3634,18 +3327,6 @@ var Taskbar = function (_Component) {
   }
 
   _createClass(Taskbar, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      _event2.default.on(_event2.default.names.to_taskbar_add_new_task, function (task) {
-        _event2.default.emit(_event2.default.names.to_task_items_add_new_task, task);
-      });
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      // clearInterval(this.dateIntvId)
-    }
-  }, {
     key: 'onMouseEnter',
     value: function onMouseEnter(e) {
       _event2.default.emit(_event2.default.names.being_dragged_items_onenter, this);
@@ -3706,7 +3387,7 @@ var Taskbar = function (_Component) {
             _react2.default.createElement(
               'div',
               { className: _taskbar2.default.tbTasks },
-              _react2.default.createElement(_taskItems2.default, { tasks: this.props.tasks, type: 0 })
+              _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 0, ref: 'tasks' })
             )
           )
         ),
@@ -3749,8 +3430,8 @@ var Taskbar = function (_Component) {
               _react2.default.createElement(
                 'div',
                 { className: _taskbar2.default.itemsBgHidden },
-                _react2.default.createElement(_taskItems2.default, { tasks: this.props.tasks, type: 1 }),
-                _react2.default.createElement(_taskItems2.default, { tasks: this.props.tasks, type: 2 })
+                _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 1 }),
+                _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 2 })
               )
             ),
             _react2.default.createElement(
@@ -3771,7 +3452,7 @@ var Taskbar = function (_Component) {
                   )
                 )
               ),
-              _react2.default.createElement(_taskItems2.default, { tasks: this.props.tasks, type: 3 })
+              _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 3 })
             )
           )
         )
@@ -3783,6 +3464,301 @@ var Taskbar = function (_Component) {
 }(_react.Component);
 
 exports.default = Taskbar;
+
+/***/ }),
+
+/***/ "./app/src/js/desktop/tasks.js":
+/*!*************************************!*\
+  !*** ./app/src/js/desktop/tasks.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
+
+var _event2 = _interopRequireDefault(_event);
+
+var _icon = __webpack_require__(/*! ../components/icon.js */ "./app/src/js/components/icon.js");
+
+var _icon2 = _interopRequireDefault(_icon);
+
+var _taskbar = __webpack_require__(/*! ../../css/desktop/taskbar.css */ "./app/src/css/desktop/taskbar.css");
+
+var _taskbar2 = _interopRequireDefault(_taskbar);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Tasks = function (_Component) {
+  _inherits(Tasks, _Component);
+
+  function Tasks(props) {
+    _classCallCheck(this, Tasks);
+
+    var _this = _possibleConstructorReturn(this, (Tasks.__proto__ || Object.getPrototypeOf(Tasks)).call(this, props));
+
+    _this.state = {
+      renderFlag: true
+    };
+    _this.renderNewTask = function () {
+      _this.setState(function (prevState) {
+        return { renderFlag: !prevState.renderFlag };
+      });
+    };
+    return _this;
+  }
+
+  _createClass(Tasks, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      _event2.default.on(_event2.default.names.to_task_items_add_new_task, this.renderNewTask);
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      _event2.default.removeListener(_event2.default.names.to_task_items_add_new_task, this.renderNewTask);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      return _react2.default.createElement(
+        _react2.default.Fragment,
+        null,
+        this.props.tasks.map(function (task, index) {
+          if (_this2.props.type == 0) {
+            //render on taskbar
+            if (task.isTaskbarTask) {
+              if (task.taskbarIcon.URL) return _react2.default.createElement(Item, { key: task.id, id: task.id, className: 'unknown', URL: task.taskbarIcon.URL, isImage: true, index: index });else return _react2.default.createElement(Item, { key: task.id, id: task.id, className: task.taskbarIcon.className, index: index });
+            }
+          } else {
+            //render background task
+            if (task.isBackgroundTask) {
+              var t = _this2.props.type;
+              var d = task.backgroundIcon ? task.backgroundIcon.display : 0;
+              if (t == 1 && d == 1 || d == 0 && t != 1) return;
+              if (task.backgroundIcon.URL) return _react2.default.createElement(BackgroundItem, { key: task.id, URL: task.backgroundIcon.URL, id: task.id, className: 'unknown bg',
+                isImage: true, index: index, type: _this2.props.type });else return _react2.default.createElement(BackgroundItem, { key: task.id, id: task.id, className: task.backgroundIcon.className,
+                index: index, type: _this2.props.type });
+            }
+          }
+        })
+      );
+    }
+  }]);
+
+  return Tasks;
+}(_react.Component);
+
+var Item = function (_Component2) {
+  _inherits(Item, _Component2);
+
+  function Item(props) {
+    _classCallCheck(this, Item);
+
+    var _this3 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
+
+    _this3.state = {
+      imgReady: 0,
+      renderFlag: true
+    };
+    _this3.imgStyle = {
+      width: 'auto',
+      height: '70%',
+      maxWidth: '85%',
+      position: 'relative',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%,-50%)',
+      display: 'block',
+      pointerEvents: 'none'
+    };
+    _this3.imgStyleNotReady = {
+      display: 'none'
+    };
+    _this3.index = props.index;
+    _this3.renderNewTask = function () {
+      _this3.setState(function (prevState) {
+        return { renderFlag: !prevState.renderFlag };
+      });
+    };
+    return _this3;
+  }
+
+  _createClass(Item, [{
+    key: 'imgOnload',
+    value: function imgOnload() {
+      this.setState(function (prevState) {
+        return {
+          imgReady: 1,
+          renderFlag: !prevState.renderFlag
+        };
+      });
+    }
+  }, {
+    key: 'onclick',
+    value: function onclick(e) {
+      _event2.default.emit(_event2.default.names.handle_task_items_onclick, e, this.props.id);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this4 = this;
+
+      if (this.props.isImage) {
+        return _react2.default.createElement(
+          'div',
+          { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask, key: this.props.id, onClick: function onClick(e) {
+              return _this4.onclick(e);
+            } },
+          _react2.default.createElement(
+            'span',
+            { className: _taskbar2.default.iconCt },
+            this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: this.props.className }),
+            _react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady, src: this.props.URL, onLoad: function onLoad() {
+                _this4.imgOnload();
+              } })
+          )
+        );
+      } else return _react2.default.createElement(
+        'div',
+        { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask, key: this.props.id, onClick: function onClick(e) {
+            return _this4.onclick(e);
+          } },
+        _react2.default.createElement(
+          'span',
+          { className: _taskbar2.default.iconCt },
+          _react2.default.createElement(_icon2.default, { className: this.props.className })
+        )
+      );
+    }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate(nextProps, nextState) {
+      if (this.index == nextProps.index && this.state.renderFlag == nextState.renderFlag) return false;
+      return true;
+    }
+  }]);
+
+  return Item;
+}(_react.Component);
+
+var BackgroundItem = function (_Component3) {
+  _inherits(BackgroundItem, _Component3);
+
+  function BackgroundItem(props) {
+    _classCallCheck(this, BackgroundItem);
+
+    var _this5 = _possibleConstructorReturn(this, (BackgroundItem.__proto__ || Object.getPrototypeOf(BackgroundItem)).call(this, props));
+
+    _this5.index = props.index;
+    _this5.state = {
+      imgReady: 0,
+      renderFlag: true
+    };
+    _this5.imgStyle = {
+      width: 'auto',
+      height: '85%',
+      maxWidth: '90%',
+      position: 'relative',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%,-50%)',
+      display: 'block',
+      pointerEvents: 'none'
+    };
+    _this5.imgStyleNotReady = {
+      display: 'none'
+    };
+    return _this5;
+  }
+
+  _createClass(BackgroundItem, [{
+    key: 'imgOnload',
+    value: function imgOnload() {
+      this.setState(function (prevState) {
+        return {
+          imgReady: 1,
+          renderFlag: !prevState.renderFlag
+        };
+      });
+    }
+  }, {
+    key: 'onclick',
+    value: function onclick(e) {
+      _event2.default.emit(_event2.default.names.handle_task_items_onclick, e, this.props.id);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this6 = this;
+
+      var t = '';
+      if (this.props.type == 1) t = _taskbar2.default.itemBg + ' ' + _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item;else if (this.props.type == 2) t = _taskbar2.default.itemBgH + ' ' + _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink;else if (this.props.type == 3) t = _taskbar2.default.item + ' ' + _taskbar2.default.itemBg + ' ' + _taskbar2.default.shrink;
+      if (this.props.isImage) {
+        return _react2.default.createElement(
+          'div',
+          { className: t, key: this.props.id, onClick: function onClick(e) {
+              return _this6.onclick(e);
+            } },
+          _react2.default.createElement(
+            'span',
+            { className: _taskbar2.default.iconCtBg },
+            this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: this.props.className }),
+            _react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady, src: this.props.URL, onLoad: function onLoad() {
+                _this6.imgOnload();
+              } })
+          )
+        );
+      } else {
+        return _react2.default.createElement(
+          'div',
+          { className: t, key: this.props.id, onClick: function onClick(e) {
+              return _this6.onclick(e);
+            } },
+          _react2.default.createElement(
+            'span',
+            { className: _taskbar2.default.iconCtBg },
+            _react2.default.createElement(_icon2.default, { className: this.props.className })
+          )
+        );
+      }
+    }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate(nextProps, nextState) {
+      if (this.index == nextProps.index && this.state.renderFlag == nextState.renderFlag) return false;
+      return true;
+    }
+  }]);
+
+  return BackgroundItem;
+}(_react.Component);
+
+exports.default = Tasks;
 
 /***/ }),
 
@@ -3841,11 +3817,13 @@ var Windows = function (_Component) {
     _this.state = {
       wins: new Set(),
       winsData: new Set(),
+      maxIndex: 0,
+      selected: null,
       renderFlag: 1
     };
-    _this.add = _this.add.bind(_this);
+    _this.deselectFront = _this.deselectFront.bind(_this);
     setTimeout(function () {
-      _event2.default.emit(_event2.default.names.to_windows_add_window, {
+      _this.add({
         name: 'New window 1',
         id: 'id_1',
         icon: { className: 'folder sm' }
@@ -3857,12 +3835,30 @@ var Windows = function (_Component) {
   _createClass(Windows, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      _event2.default.on(_event2.default.names.to_windows_add_window, this.add);
+      document.addEventListener('mousedown', this.deselectFront);
+      document.addEventListener('touchstart', this.deselectFront);
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      _event2.default.removeListener(_event2.default.names.to_windows_add_window, this.add);
+      document.removeEventListener('mousedown', this.deselectFront);
+      document.removeEventListener('touchstart', this.deselectFront);
+    }
+  }, {
+    key: 'deselectFront',
+    value: function deselectFront(e) {
+      if (!this.__mousedown_on_window__) {
+        if (this.state.selected) this.state.selected.deselect();
+      }
+      delete this.__mousedown_on_window__;
+    }
+  }, {
+    key: 'selectFront',
+    value: function selectFront() {
+      if (!this.state.selected) {
+        var fw = this.getFront();
+        if (fw) fw.select();
+      }
     }
   }, {
     key: 'add',
@@ -3877,9 +3873,21 @@ var Windows = function (_Component) {
     value: function remove(win) {
       this.state.wins.delete(win);
       this.state.winsData.delete(win.props.data);
+      if (this.state.selected == win) this.state.selected = null;
       this.setState(function (prevState) {
         return { renderFlag: ~prevState.renderFlag };
       });
+    }
+  }, {
+    key: 'getFront',
+    value: function getFront() {
+      var frontWin = { zIndex: 0 };
+      this.state.wins.forEach(function (win) {
+        if (win.zIndex > frontWin.zIndex) {
+          frontWin = win;
+        }
+      });
+      return frontWin;
     }
   }, {
     key: 'render',
@@ -3912,16 +3920,26 @@ var Win = function (_Component2) {
     var _this3 = _possibleConstructorReturn(this, (Win.__proto__ || Object.getPrototypeOf(Win)).call(this, props));
 
     _this3.state = {
-      color: _this3.props.data.color || ''
+      color: props.data.color || ''
     };
-    _this3.btnGroup = props.data.btnGroup || [1, 1, 1];
+    _this3.container = props.container.refs.element;
+    _this3.parentState = props.parent.state;
+
     _this3.id = props.data.id;
+    _this3.btnGroup = props.data.btnGroup || [1, 1, 1];
+    _this3.width = props.data.width || 600;
+    _this3.height = props.data.height || 400;
+    _this3.getPosition(props.center);
 
     _this3.close = _this3.close.bind(_this3);
     _this3.minimise = _this3.minimise.bind(_this3);
-    _this3.maximum = _this3.maximise.bind(_this3);
+    _this3.maximise = _this3.maximise.bind(_this3);
+    _this3.onMouseDown = _this3.onMouseDown.bind(_this3);
 
-    console.log('new');
+    _this3.maximised = 0;
+    _this3.minimised = 0;
+
+    _this3.onMouseDownLabel = _this3.onMouseDownLabel.bind(_this3);
     return _this3;
   }
 
@@ -3929,17 +3947,20 @@ var Win = function (_Component2) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.setStyle({
+        top: this.top + 'px',
+        left: this.left + 'px',
+        width: this.width + 'px',
+        height: this.height + 'px',
         visibility: "visible"
       });
       this.select();
-      console.log('mount');
     }
   }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: _window2.default.window, ref: 'element' },
+        { className: _window2.default.window, ref: 'element', onMouseDown: this.onMouseDown },
         _react2.default.createElement(
           'div',
           { className: _window2.default.label },
@@ -3949,17 +3970,20 @@ var Win = function (_Component2) {
             this.props.data.icon.URL ? [_react2.default.createElement('img', { src: this.props.data.icon.URL, className: _window2.default.iconImg, key: 0, onLoad: this.imgOnLoad, style: { display: this.state.imgReady ? '' : 'none' } }), this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: "unknown", key: 1 })] : _react2.default.createElement(_icon2.default, { className: this.props.data.icon.className })
           ),
           _react2.default.createElement('div', { className: _window2.default.labelName, 'data-title': this.props.data.name,
-            style: { marginRight: this.btnGroup[0] * 46 + this.btnGroup[1] * 46 + this.btnGroup[2] * 46 + 5 } })
+            style: { marginRight: this.btnGroup[0] * 46 + this.btnGroup[1] * 46 + this.btnGroup[2] * 46 + 5 },
+            onMouseDown: this.onMouseDownLabel, onTouchStart: this.onMouseDownLabel,
+            onDoubleClick: this.maximise
+          })
         ),
         _react2.default.createElement(
           'div',
           { className: _window2.default.btnGroup },
-          [this.btnGroup[0] ? _react2.default.createElement('div', { className: _window2.default.btn + ' ' + _window2.default.btnMinimise, onClick: this.minimise, key: 'btn_1' }) : '', this.btnGroup[1] ? _react2.default.createElement('div', { className: _window2.default.btn + ' ' + _window2.default.btnMaximise, onClick: this.maximum, key: 'btn_2' }) : '', this.btnGroup[2] ? _react2.default.createElement('div', { className: _window2.default.btn + ' ' + _window2.default.btnClose, onClick: this.close, key: 'btn_3' }) : '']
+          [this.btnGroup[0] ? _react2.default.createElement('div', { className: _window2.default.btn + ' ' + _window2.default.btnMinimise, onClick: this.minimise, key: 'btn_1' }) : '', this.btnGroup[1] ? _react2.default.createElement('div', { className: _window2.default.btn + ' ' + _window2.default.btnMaximise, onClick: this.maximise, ref: 'maximise', key: 'btn_2' }) : '', this.btnGroup[2] ? _react2.default.createElement('div', { className: _window2.default.btn + ' ' + _window2.default.btnClose, onClick: this.close, key: 'btn_3' }) : '']
         ),
         _react2.default.createElement('div', { className: _window2.default.content }),
         _react2.default.createElement(
           'div',
-          { className: _window2.default.resize },
+          { className: _window2.default.resize, ref: 'resize' },
           _react2.default.createElement('div', { className: _window2.default.barL }),
           _react2.default.createElement('div', { className: _window2.default.barT }),
           _react2.default.createElement('div', { className: _window2.default.barR }),
@@ -3972,6 +3996,12 @@ var Win = function (_Component2) {
       );
     }
   }, {
+    key: 'onMouseDown',
+    value: function onMouseDown(e) {
+      this.props.parent.__mousedown_on_window__ = 1;
+      if (!this.selected) this.select();
+    }
+  }, {
     key: 'close',
     value: function close() {
       this.props.parent.remove(this);
@@ -3981,23 +4011,143 @@ var Win = function (_Component2) {
     value: function minimise() {}
   }, {
     key: 'maximise',
-    value: function maximise() {}
+    value: function maximise() {
+      var ct = this.container;
+      var maxBtn = this.refs.maximise;
+      if (!this.maximised) {
+        this.maximised = 1;
+        this.setStyle({
+          left: 0,
+          top: 0,
+          width: ct.offsetWidth + 'px',
+          height: ct.offsetHeight + 'px'
+        });
+        maxBtn.className += ' ' + _window2.default.restore;
+      } else {
+        this.maximised = 0;
+        this.setStyle({
+          left: this.left + 'px',
+          top: this.top + 'px',
+          width: this.width + 'px',
+          height: this.height + 'px'
+        });
+        maxBtn.className = maxBtn.className.replace(new RegExp(' ' + _window2.default.restore, 'g'), '');
+      }
+    }
   }, {
     key: 'select',
     value: function select() {
+      if (this.parentState.selected == this) return;
+      if (this.parentState.selected) this.parentState.selected.deselect();
+      this.parentState.selected = this;
       this.setStyle({
         backgroundColor: this.props.data.color,
-        color: this.props.data.color
+        color: this.props.data.color,
+        zIndex: ++this.parentState.maxIndex
       });
+      this.zIndex = this.parentState.maxIndex;
+      this.refs.element.className = this.refs.element.className.replace(new RegExp(' ' + _window2.default.deselected, 'g'), '');
     }
   }, {
     key: 'deselect',
     value: function deselect() {
-
+      if (this.parentState.selected != this) return;
+      this.parentState.selected = null;
       this.setStyle({
         backgroundColor: this.props.data.color2,
         color: this.props.data.color2
       });
+      this.refs.element.className += ' ' + _window2.default.deselected;
+    }
+  }, {
+    key: 'onMouseDownLabel',
+    value: function onMouseDownLabel(e) {
+      this.onDrag(e);
+    }
+  }, {
+    key: 'onDrag',
+    value: function onDrag(e) {
+      var _this4 = this;
+
+      var x = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
+      var y = e.pageY || (e.changedTouches ? e.changedTouches[0].pageY : 0);
+      var ele = this.refs.element;
+      var beginLeft = this.left;
+      var beginTop = this.top;
+
+      var moved = false;
+      var move = function move(e) {
+        var mx = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
+        var my = e.pageY || (e.changedTouches ? e.changedTouches[0].pageY : 0);
+        if (!moved && Math.abs(my - y) < 4 && Math.abs(mx - x) < 4) return;
+        if (!moved) {
+          moved = true;
+          _this4.refs.resize.style.visibility = 'hidden';
+        }
+        if (!_this4.maximised) {
+          _this4.left = mx - x + beginLeft;
+          _this4.top = my - y + beginTop;
+          _this4.setStyle({
+            left: _this4.left + 'px',
+            top: _this4.top + 'px'
+          });
+        } else {
+          _this4.maximise();
+          var width = _this4.width;
+          var ctWidth = _this4.container.offsetWidth;
+          var left = void 0;
+          if (x < width / 2) left = 0;else if (x > ctWidth - width / 2) left = ctWidth - width;else left = x - width / 2;
+          _this4.setStyle({
+            left: left + 'px',
+            top: 0,
+            width: _this4.width,
+            height: _this4.height
+          });
+          beginLeft = left;
+          beginTop = 0;
+        }
+      };
+      var tm = function tm(e) {
+        e.preventDefault();
+      };
+      var up = function up(e) {
+        document.removeEventListener('touchmove', tm, { passive: false });
+        document.removeEventListener('mousemove', move, false);
+        document.removeEventListener('mouseup', up, false);
+        document.removeEventListener("touchmove", move, false);
+        document.removeEventListener("touchend", up, false);
+        document.removeEventListener("touchcancel", up, false);
+        if (moved) {
+          _this4.refs.resize.style.visibility = '';
+
+          if (_this4.top < -10) {
+            _this4.top = 0;
+            _this4.maximise();
+          } else if (_this4.top < 0) {
+            _this4.top = 0;
+            _this4.setStyle({
+              top: 0
+            });
+          } else if (_this4.top > _this4.container.offsetHeight - 10) {
+            _this4.top = _this4.container.offsetHeight - 25;
+            _this4.setStyle({
+              top: _this4.top + 'px'
+            });
+          }
+          if (_this4.left > _this4.container.offsetWidth - 40) {
+            _this4.left = _this4.container.offsetWidth - 40;
+            _this4.setStyle({
+              left: _this4.left + 'px'
+            });
+          }
+        }
+      };
+      document.addEventListener('touchmove', tm, { passive: false });
+      document.addEventListener('mousemove', move, false);
+      document.addEventListener('mouseup', up, false);
+      document.addEventListener("touchmove", move, false);
+      document.addEventListener("touchend", up, false);
+      document.addEventListener("touchcancel", up, false);
     }
   }, {
     key: 'setStyle',
@@ -4005,6 +4155,18 @@ var Win = function (_Component2) {
       for (var key in style) {
         if (style[key] == undefined || style[key] == null) style[key] = '';
         this.refs.element.style[key] = style[key];
+      }
+    }
+  }, {
+    key: 'getPosition',
+    value: function getPosition(center) {
+      var container = this.container;
+      if (center) {
+        this.left = Math.floor((container.offsetWidth - this.width) / 2);
+        this.top = Math.floor((container.offsetHeight - this.height) / 2);
+      } else {
+        this.left = Math.floor((container.offsetWidth - this.width) * (Math.random() * 0.5 + 0.25));
+        this.top = Math.floor((container.offsetHeight - this.height) * (Math.random() * 0.5 + 0.25));
       }
     }
   }]);
@@ -4148,8 +4310,6 @@ var Login = function (_Component) {
   }, {
     key: 'login',
     value: function login() {
-      var _this4 = this;
-
       this.refs.greetings.innerHTML = 'Welcome!';
       this.refs.greetings.style.fontSize = '24px';
       this.refs.btnLogin.style.position = "relative";
@@ -4157,28 +4317,31 @@ var Login = function (_Component) {
       this.refs.btnLogin.style.cursor = 'default';
       _reactDom2.default.render(_react2.default.createElement(_loader2.default, { size: 'medium' }), this.refs.btnLogin);
 
-      _reactDom2.default.render(_react2.default.createElement(_desktop2.default, null), document.getElementById('win10_main'));
+      _reactDom2.default.render(_react2.default.createElement(_desktop2.default, { login: this }), document.getElementById('win10_main'));
+    }
+  }, {
+    key: 'unmount',
+    value: function unmount() {
+      var _this4 = this;
 
-      _event2.default.once(_event2.default.names.desktopReady, function (message) {
+      setTimeout(function () {
+        // To speed up render: when user opens startmenu, it will not be the first time of rendering
+        var smsw = document.getElementById('start_menu_switch_X7VIV');
+        if (!smsw) return;
+        smsw.click();
         setTimeout(function () {
-          // To speed up render: when user opens startmenu, it will not be the first time of rendering
-          var smsw = document.getElementById('start_menu_switch_X7VIV');
-          if (!smsw) return;
           smsw.click();
-          setTimeout(function () {
-            smsw.click();
-          }, 100);
-        }, 500);
+        }, 100);
+      }, 500);
 
+      setTimeout(function () {
+        _this4.setState({
+          opacity: 0
+        });
         setTimeout(function () {
-          _this4.setState({
-            opacity: 0
-          });
-          setTimeout(function () {
-            _reactDom2.default.unmountComponentAtNode(document.getElementById(_this4.parentId));
-          }, 500);
-        }, 1000);
-      });
+          _reactDom2.default.unmountComponentAtNode(document.getElementById(_this4.parentId));
+        }, 500);
+      }, 1000);
     }
   }, {
     key: 'imgReady',
@@ -6416,7 +6579,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".window_window-ct_1Kh32{position:absolute;z-index:106}.window_window_2ML4A{position:absolute;cursor:default;box-shadow:0 1px 13px 0 rgba(0,0,0,.4);border:1px solid;min-width:170px;min-height:130px;background-color:#515c6b;color:#515c6b;visibility:hidden;width:600px;height:400px;top:50px;left:70px;box-sizing:border-box;display:flex;flex-flow:column;overflow:visible}.window_content_3zSiF{width:100%;height:100%;flex:1;background:#fff;z-index:5;overflow:auto}.window_label_3pVDU{height:26px;width:100%;margin-top:3px;display:flex;z-index:8}.window_label-icon_3CM7l{width:20px;height:20px;z-index:2;margin:1px 4px 5px 2px;display:block;overflow:hidden;position:relative}.window_window_2ML4A.window_deselected_19EFs>.window_btn-group_2AJZd,.window_window_2ML4A.window_deselected_19EFs>.window_label_3pVDU{color:#999}.window_window_2ML4A.window_deselected_19EFs{background-color:#fff;color:#fff}.window_label-name_E7Eut{height:26px;display:block;line-height:22px;color:#fff;flex:1}.window_label-name_E7Eut:before{content:attr(data-title);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:350px}.window_btn-group_2AJZd{position:absolute;float:right;top:-1px;right:0;z-index:10;color:#fff}.window_btn_1a_9s{width:46px;height:30px;line-height:29px;text-align:center;transition:background-color .15s;display:inline-block;position:relative}.window_btn_1a_9s:hover{background-color:hsla(0,0%,100%,.15)}.window_btn_1a_9s:active{background-color:hsla(0,0%,100%,.25);transition:none}.window_btn-minimise_dVosQ:before{content:\"\";position:absolute;border-top:4px solid;width:45px;top:50%;left:50%;transform:translate(-50%,-50%) scale(.25)}.window_btn-maximise_3wyeG:before{top:50%;left:50%}.window_btn-maximise_3wyeG.window_restore_WexhK:before,.window_btn-maximise_3wyeG:before{content:\"\";position:absolute;border:3px solid;width:30px;height:30px;transform:translate(-50%,-50%) scale(.27)}.window_btn-maximise_3wyeG.window_restore_WexhK:before{top:53%;left:48%}.window_btn-maximise_3wyeG.window_restore_WexhK:after{content:\"\";position:absolute;border:4px solid;width:37px;height:37px;top:47%;left:52%;border-radius:40% 0 40% 75%;border-bottom-color:transparent;border-left-color:transparent;transform:translate(-50%,-50%) scale(.25)}.window_btn-close_XJTd9:hover{background-color:#da3636}.window_btn-close_XJTd9:active{background-color:rgba(218,54,54,.7)}.window_btn-close_XJTd9:before{transform:translate(-50%,-50%) rotate(45deg) scale(.33)}.window_btn-close_XJTd9:after,.window_btn-close_XJTd9:before{content:\"\";position:absolute;border-left:3px solid;height:40px;top:50%;left:50%}.window_btn-close_XJTd9:after{transform:translate(-50%,-50%) rotate(-45deg) scale(.33)}.window_resize_197NP{position:absolute;width:100%;height:100%;z-index:3}.window_bar-l_ODyHu{left:-7px}.window_bar-l_ODyHu,.window_bar-r_QsEqC{position:absolute;z-index:1;height:100%;width:7px;cursor:ew-resize}.window_bar-r_QsEqC{right:-7px}.window_bar-t_3_dYG{top:-4px}.window_bar-b_28NSx,.window_bar-t_3_dYG{position:absolute;z-index:1;height:7px;width:100%;cursor:ns-resize}.window_bar-b_28NSx{bottom:-7px}.window_dot-l-t_17ZnN{cursor:nw-resize;top:-5px}.window_dot-l-b_3yiP5,.window_dot-l-t_17ZnN{position:absolute;z-index:2;width:7px;height:7px;left:-5px}.window_dot-l-b_3yiP5{cursor:sw-resize;bottom:-5px}.window_dot-r-t_26u88{cursor:ne-resize;top:-5px}.window_dot-r-b_19ksi,.window_dot-r-t_26u88{position:absolute;z-index:2;width:7px;height:7px;right:-5px}.window_dot-r-b_19ksi{cursor:nw-resize;bottom:-5px}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/window.css"],"names":[],"mappings":"AAAA,wBACE,kBAAmB,AACnB,WAAa,CACd,AACD,qBACE,kBAAmB,AACnB,eAAgB,AAChB,uCAAgD,AAChD,iBAAkB,AAClB,gBAAiB,AACjB,iBAAkB,AAClB,yBAA0B,AAC1B,cAAe,AACf,kBAAmB,AACnB,YAAa,AACb,aAAc,AACd,SAAU,AACV,UAAW,AACX,sBAAuB,AACvB,aAAc,AACd,iBAAkB,AAClB,gBAAkB,CACnB,AACD,sBACE,WAAY,AACZ,YAAa,AACb,OAAQ,AACR,gBAAiB,AACjB,UAAW,AACX,aAAe,CAChB,AACD,oBACE,YAAa,AACb,WAAY,AACZ,eAAgB,AAChB,aAAc,AACd,SAAW,CACZ,AACD,yBACE,WAAY,AACZ,YAAa,AACb,UAAW,AACX,uBAAwB,AACxB,cAAe,AACf,gBAAiB,AACjB,iBAAmB,CACpB,AACD,sIACE,UAAY,CACb,AACD,6CACE,sBAAuB,AACvB,UAAY,CACb,AACD,yBACE,YAAa,AACb,cAAe,AACf,iBAAkB,AAClB,WAAY,AACZ,MAAQ,CACT,AACD,gCACE,yBAA0B,AAC1B,eAAgB,AAChB,mBAAoB,AACpB,gBAAiB,AACjB,uBAAwB,AACxB,eAAiB,CAClB,AACD,wBACE,kBAAmB,AACnB,YAAa,AACb,SAAU,AACV,QAAS,AACT,WAAY,AACZ,UAAY,CACb,AACD,kBACE,WAAY,AACZ,YAAa,AACb,iBAAkB,AAClB,kBAAmB,AACnB,iCAAmC,AACnC,qBAAsB,AACtB,iBAAmB,CACpB,AACD,wBACE,oCAA4C,CAC7C,AACD,yBACE,qCAA4C,AAC5C,eAAiB,CAClB,AACD,kCACE,WAAY,AACZ,kBAAmB,AACnB,qBAAsB,AACtB,WAAY,AACZ,QAAS,AACT,SAAU,AACV,yCAA2C,CAC5C,AACD,kCAME,QAAS,AACT,QAAU,CAEX,AACD,yFATE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AAGb,yCAA4C,CAW7C,AATD,uDAME,QAAS,AACT,QAAU,CAEX,AACD,sDACE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AACb,QAAS,AACT,SAAU,AACV,4BAA6B,AAC7B,gCAAiC,AACjC,8BAA+B,AAC/B,yCAA2C,CAC5C,AACD,8BACE,wBAAmC,CACpC,AACD,+BACE,mCAAyC,CAC1C,AACD,+BAOE,uDAA0D,CAC3D,AACD,6DARE,WAAY,AACZ,kBAAmB,AACnB,sBAAuB,AACvB,YAAa,AACb,QAAS,AACT,QAAU,CAWX,AARD,8BAOE,wDAA2D,CAC5D,AAED,qBACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,SAAW,CACZ,AACD,oBAME,SAAW,CACZ,AACD,wCAPE,kBAAmB,AACnB,UAAW,AACX,YAAa,AACb,UAAW,AACX,gBAAkB,CAUnB,AAPD,oBAME,UAAY,CACb,AACD,oBAME,QAAU,CACX,AACD,wCAPE,kBAAmB,AACnB,UAAW,AACX,WAAY,AACZ,WAAY,AACZ,gBAAkB,CAUnB,AAPD,oBAME,WAAa,CACd,AACD,sBAKE,iBAAkB,AAClB,QAAU,CAEX,AACD,4CARE,kBAAmB,AACnB,UAAW,AACX,UAAW,AACX,WAAY,AAGZ,SAAW,CAUZ,AARD,sBAKE,iBAAkB,AAClB,WAAa,CAEd,AACD,sBAKE,iBAAkB,AAElB,QAAU,CACX,AACD,4CARE,kBAAmB,AACnB,UAAW,AACX,UAAW,AACX,WAAY,AAEZ,UAAY,CAWb,AARD,sBAKE,iBAAkB,AAElB,WAAa,CACd","file":"window.css","sourcesContent":[".window-ct{\r\n  position: absolute;\r\n  z-index: 106;\r\n}\r\n.window{\r\n  position: absolute;\r\n  cursor: default;\r\n  box-shadow: 0px 1px 13px 0px rgba(0, 0, 0, 0.4);\r\n  border: 1px solid;\r\n  min-width: 170px;\r\n  min-height: 130px;\r\n  background-color: #515c6b;\r\n  color: #515c6b;\r\n  visibility: hidden;\r\n  width: 600px;\r\n  height: 400px;\r\n  top: 50px;\r\n  left: 70px;\r\n  box-sizing: border-box;\r\n  display: flex;\r\n  flex-flow: column;\r\n  overflow: visible;\r\n}\r\n.content{\r\n  width: 100%;\r\n  height: 100%;\r\n  flex: 1;\r\n  background: #fff;\r\n  z-index: 5;\r\n  overflow: auto;\r\n}\r\n.label{\r\n  height: 26px;\r\n  width: 100%;\r\n  margin-top: 3px;\r\n  display: flex;\r\n  z-index: 8;\r\n}\r\n.label-icon{\r\n  width: 20px;\r\n  height: 20px;\r\n  z-index: 2;\r\n  margin: 1px 4px 5px 2px;\r\n  display: block;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n.window.deselected>.label, .window.deselected>.btn-group{\r\n  color: #999;\r\n}\r\n.window.deselected{\r\n  background-color: #fff;\r\n  color: #fff;\r\n}\r\n.label-name{\r\n  height: 26px;\r\n  display: block;\r\n  line-height: 22px;\r\n  color: #fff;\r\n  flex: 1;\r\n}\r\n.label-name:before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  white-space: nowrap;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  max-width: 350px;\r\n}\r\n.btn-group{\r\n  position: absolute;\r\n  float: right;\r\n  top: -1px;\r\n  right: 0;\r\n  z-index: 10;\r\n  color: #fff;\r\n}\r\n.btn{\r\n  width: 46px;\r\n  height: 30px;\r\n  line-height: 29px;\r\n  text-align: center;\r\n  transition: background-color 0.15s;\r\n  display: inline-block;\r\n  position: relative;\r\n}\r\n.btn:hover{\r\n  background-color: rgba(255, 255, 255, 0.15);\r\n}\r\n.btn:active{\r\n  background-color: rgba(255, 255, 255, 0.25);\r\n  transition: none;\r\n}\r\n.btn-minimise:before{\r\n  content: \"\";\r\n  position: absolute;\r\n  border-top: 4px solid;\r\n  width: 45px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) scale(.25);\r\n}\r\n.btn-maximise:before{\r\n  content: '';\r\n  position: absolute;\r\n  border: 3px solid;\r\n  width: 30px;\r\n  height: 30px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) scale(0.27);\r\n}\r\n.btn-maximise.restore:before{\r\n  content: '';\r\n  position: absolute;\r\n  border: 3px solid;\r\n  width: 30px;\r\n  height: 30px;\r\n  top: 53%;\r\n  left: 48%;\r\n  transform: translate(-50%,-50%) scale(0.27);\r\n}\r\n.btn-maximise.restore:after{\r\n  content: \"\";\r\n  position: absolute;\r\n  border: 4px solid;\r\n  width: 37px;\r\n  height: 37px;\r\n  top: 47%;\r\n  left: 52%;\r\n  border-radius: 40% 0 40% 75%;\r\n  border-bottom-color: transparent;\r\n  border-left-color: transparent;\r\n  transform: translate(-50%,-50%) scale(.25);\r\n}\r\n.btn-close:hover{\r\n  background-color: rgb(218, 54, 54);\r\n}\r\n.btn-close:active{\r\n  background-color: rgba(218, 54, 54, 0.7);\r\n}\r\n.btn-close:before{\r\n  content: '';\r\n  position: absolute;\r\n  border-left: 3px solid;\r\n  height: 40px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) rotate(45deg) scale(0.33);\r\n}\r\n.btn-close:after{\r\n  content: '';\r\n  position: absolute;\r\n  border-left: 3px solid;\r\n  height: 40px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) rotate(-45deg) scale(0.33);\r\n}\r\n\r\n.resize{\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 3;\r\n}\r\n.bar-l{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 100%;\r\n  width: 7px;\r\n  cursor: ew-resize;\r\n  left: -7px;\r\n}\r\n.bar-r{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 100%;\r\n  width: 7px;\r\n  cursor: ew-resize;\r\n  right: -7px;\r\n}\r\n.bar-t{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 7px;\r\n  width: 100%;\r\n  cursor: ns-resize;\r\n  top: -4px;\r\n}\r\n.bar-b{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 7px;\r\n  width: 100%;\r\n  cursor: ns-resize;\r\n  bottom: -7px;\r\n}\r\n.dot-l-t{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: nw-resize;\r\n  top: -5px;\r\n  left: -5px;\r\n}\r\n.dot-l-b{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: sw-resize;\r\n  bottom: -5px;\r\n  left: -5px;\r\n}\r\n.dot-r-t{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: ne-resize;\r\n  right: -5px;\r\n  top: -5px;\r\n}\r\n.dot-r-b{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: nw-resize;\r\n  right: -5px;\r\n  bottom: -5px;\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".window_window-ct_1Kh32{position:absolute;z-index:106}.window_window_2ML4A{position:absolute;cursor:default;box-shadow:0 1px 13px 0 rgba(0,0,0,.4);border:1px solid;min-width:170px;min-height:130px;background-color:#515c6b;color:#515c6b;visibility:hidden;width:600px;height:400px;top:50px;left:70px;box-sizing:border-box;display:flex;flex-flow:column;overflow:visible}.window_content_3zSiF{width:100%;height:100%;flex:1;background:#fff;z-index:5;overflow:auto}.window_label_3pVDU{height:26px;width:100%;margin-top:3px;display:flex;z-index:8}.window_label-icon_3CM7l{width:20px;height:20px;z-index:2;margin:1px 4px 5px 2px;display:block;overflow:hidden;position:relative}.window_window_2ML4A.window_deselected_19EFs>.window_btn-group_2AJZd,.window_window_2ML4A.window_deselected_19EFs>.window_label-name_E7Eut{color:#999}.window_window_2ML4A.window_deselected_19EFs{background-color:#fff;color:#999}.window_label-name_E7Eut{height:26px;display:block;line-height:22px;color:#fff;flex:1}.window_label-name_E7Eut:before{content:attr(data-title);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:350px}.window_btn-group_2AJZd{position:absolute;float:right;top:-1px;right:0;z-index:10;color:#fff}.window_btn_1a_9s{width:46px;height:30px;line-height:29px;text-align:center;transition:background-color .15s;display:inline-block;position:relative}.window_btn_1a_9s:hover{background-color:hsla(0,0%,100%,.15)}.window_btn_1a_9s:active{background-color:hsla(0,0%,100%,.25);transition:none}.window_btn-minimise_dVosQ:before{content:\"\";position:absolute;border-top:4px solid;width:45px;top:50%;left:50%;transform:translate(-50%,-50%) scale(.25)}.window_btn-maximise_3wyeG:before{content:\"\";position:absolute;border:3px solid;width:30px;height:30px;top:50%;left:50%;transform:translate(-50%,-50%) scale(.27)}.window_btn-maximise_3wyeG.window_restore_WexhK:before{content:\"\";position:absolute;border:3px solid;width:30px;height:30px;top:53%;left:48%;transform:translate(-50%,-50%) scale(.25)}.window_btn-maximise_3wyeG.window_restore_WexhK:after{content:\"\";position:absolute;border:4px solid;width:37px;height:37px;top:47%;left:52%;border-radius:40% 0 40% 75%;border-bottom-color:transparent;border-left-color:transparent;transform:translate(-50%,-50%) scale(.25)}.window_btn-close_XJTd9:hover{background-color:#da3636}.window_btn-close_XJTd9:active{background-color:rgba(218,54,54,.7)}.window_btn-close_XJTd9:before{transform:translate(-50%,-50%) rotate(45deg) scale(.33)}.window_btn-close_XJTd9:after,.window_btn-close_XJTd9:before{content:\"\";position:absolute;border-left:3px solid;height:40px;top:50%;left:50%}.window_btn-close_XJTd9:after{transform:translate(-50%,-50%) rotate(-45deg) scale(.33)}.window_window_2ML4A.window_deselected_19EFs .window_btn_1a_9s:hover{background-color:rgba(0,0,0,.1);color:#000}.window_window_2ML4A.window_deselected_19EFs .window_btn_1a_9s.window_btn-close_XJTd9:hover{background-color:#da3636;color:#fff}.window_resize_197NP{position:absolute;width:100%;height:100%;z-index:3}.window_bar-l_ODyHu{left:-7px}.window_bar-l_ODyHu,.window_bar-r_QsEqC{position:absolute;z-index:1;height:100%;width:7px;cursor:ew-resize}.window_bar-r_QsEqC{right:-7px}.window_bar-t_3_dYG{top:-4px}.window_bar-b_28NSx,.window_bar-t_3_dYG{position:absolute;z-index:1;height:7px;width:100%;cursor:ns-resize}.window_bar-b_28NSx{bottom:-7px}.window_dot-l-t_17ZnN{cursor:nw-resize;top:-5px}.window_dot-l-b_3yiP5,.window_dot-l-t_17ZnN{position:absolute;z-index:2;width:7px;height:7px;left:-5px}.window_dot-l-b_3yiP5{cursor:sw-resize;bottom:-5px}.window_dot-r-t_26u88{cursor:ne-resize;top:-5px}.window_dot-r-b_19ksi,.window_dot-r-t_26u88{position:absolute;z-index:2;width:7px;height:7px;right:-5px}.window_dot-r-b_19ksi{cursor:nw-resize;bottom:-5px}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/window.css"],"names":[],"mappings":"AAAA,wBACE,kBAAmB,AACnB,WAAa,CACd,AACD,qBACE,kBAAmB,AACnB,eAAgB,AAChB,uCAAgD,AAChD,iBAAkB,AAClB,gBAAiB,AACjB,iBAAkB,AAClB,yBAA0B,AAC1B,cAAe,AACf,kBAAmB,AACnB,YAAa,AACb,aAAc,AACd,SAAU,AACV,UAAW,AACX,sBAAuB,AACvB,aAAc,AACd,iBAAkB,AAClB,gBAAkB,CACnB,AACD,sBACE,WAAY,AACZ,YAAa,AACb,OAAQ,AACR,gBAAiB,AACjB,UAAW,AACX,aAAe,CAChB,AACD,oBACE,YAAa,AACb,WAAY,AACZ,eAAgB,AAChB,aAAc,AACd,SAAW,CACZ,AACD,yBACE,WAAY,AACZ,YAAa,AACb,UAAW,AACX,uBAAwB,AACxB,cAAe,AACf,gBAAiB,AACjB,iBAAmB,CACpB,AACD,2IACE,UAAY,CACb,AACD,6CACE,sBAAuB,AACvB,UAAY,CACb,AACD,yBACE,YAAa,AACb,cAAe,AACf,iBAAkB,AAClB,WAAY,AACZ,MAAQ,CACT,AACD,gCACE,yBAA0B,AAC1B,eAAgB,AAChB,mBAAoB,AACpB,gBAAiB,AACjB,uBAAwB,AACxB,eAAiB,CAClB,AACD,wBACE,kBAAmB,AACnB,YAAa,AACb,SAAU,AACV,QAAS,AACT,WAAY,AACZ,UAAY,CACb,AACD,kBACE,WAAY,AACZ,YAAa,AACb,iBAAkB,AAClB,kBAAmB,AACnB,iCAAmC,AACnC,qBAAsB,AACtB,iBAAmB,CACpB,AACD,wBACE,oCAA4C,CAC7C,AACD,yBACE,qCAA4C,AAC5C,eAAiB,CAClB,AACD,kCACE,WAAY,AACZ,kBAAmB,AACnB,qBAAsB,AACtB,WAAY,AACZ,QAAS,AACT,SAAU,AACV,yCAA2C,CAC5C,AACD,kCACE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AACb,QAAS,AACT,SAAU,AACV,yCAA4C,CAC7C,AACD,uDACE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AACb,QAAS,AACT,SAAU,AACV,yCAA4C,CAC7C,AACD,sDACE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AACb,QAAS,AACT,SAAU,AACV,4BAA6B,AAC7B,gCAAiC,AACjC,8BAA+B,AAC/B,yCAA2C,CAC5C,AACD,8BACE,wBAAmC,CACpC,AACD,+BACE,mCAAyC,CAC1C,AACD,+BAOE,uDAA0D,CAC3D,AACD,6DARE,WAAY,AACZ,kBAAmB,AACnB,sBAAuB,AACvB,YAAa,AACb,QAAS,AACT,QAAU,CAWX,AARD,8BAOE,wDAA2D,CAC5D,AACD,qEACE,gCAAkC,AAClC,UAAkB,CACnB,AACD,4FACE,yBAAmC,AACnC,UAAY,CACb,AACD,qBACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,SAAW,CACZ,AACD,oBAME,SAAW,CACZ,AACD,wCAPE,kBAAmB,AACnB,UAAW,AACX,YAAa,AACb,UAAW,AACX,gBAAkB,CAUnB,AAPD,oBAME,UAAY,CACb,AACD,oBAME,QAAU,CACX,AACD,wCAPE,kBAAmB,AACnB,UAAW,AACX,WAAY,AACZ,WAAY,AACZ,gBAAkB,CAUnB,AAPD,oBAME,WAAa,CACd,AACD,sBAKE,iBAAkB,AAClB,QAAU,CAEX,AACD,4CARE,kBAAmB,AACnB,UAAW,AACX,UAAW,AACX,WAAY,AAGZ,SAAW,CAUZ,AARD,sBAKE,iBAAkB,AAClB,WAAa,CAEd,AACD,sBAKE,iBAAkB,AAElB,QAAU,CACX,AACD,4CARE,kBAAmB,AACnB,UAAW,AACX,UAAW,AACX,WAAY,AAEZ,UAAY,CAWb,AARD,sBAKE,iBAAkB,AAElB,WAAa,CACd","file":"window.css","sourcesContent":[".window-ct{\r\n  position: absolute;\r\n  z-index: 106;\r\n}\r\n.window{\r\n  position: absolute;\r\n  cursor: default;\r\n  box-shadow: 0px 1px 13px 0px rgba(0, 0, 0, 0.4);\r\n  border: 1px solid;\r\n  min-width: 170px;\r\n  min-height: 130px;\r\n  background-color: #515c6b;\r\n  color: #515c6b;\r\n  visibility: hidden;\r\n  width: 600px;\r\n  height: 400px;\r\n  top: 50px;\r\n  left: 70px;\r\n  box-sizing: border-box;\r\n  display: flex;\r\n  flex-flow: column;\r\n  overflow: visible;\r\n}\r\n.content{\r\n  width: 100%;\r\n  height: 100%;\r\n  flex: 1;\r\n  background: #fff;\r\n  z-index: 5;\r\n  overflow: auto;\r\n}\r\n.label{\r\n  height: 26px;\r\n  width: 100%;\r\n  margin-top: 3px;\r\n  display: flex;\r\n  z-index: 8;\r\n}\r\n.label-icon{\r\n  width: 20px;\r\n  height: 20px;\r\n  z-index: 2;\r\n  margin: 1px 4px 5px 2px;\r\n  display: block;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n.window.deselected>.label-name, .window.deselected>.btn-group{\r\n  color: #999;\r\n}\r\n.window.deselected{\r\n  background-color: #fff;\r\n  color: #999;\r\n}\r\n.label-name{\r\n  height: 26px;\r\n  display: block;\r\n  line-height: 22px;\r\n  color: #fff;\r\n  flex: 1;\r\n}\r\n.label-name:before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  white-space: nowrap;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  max-width: 350px;\r\n}\r\n.btn-group{\r\n  position: absolute;\r\n  float: right;\r\n  top: -1px;\r\n  right: 0;\r\n  z-index: 10;\r\n  color: #fff;\r\n}\r\n.btn{\r\n  width: 46px;\r\n  height: 30px;\r\n  line-height: 29px;\r\n  text-align: center;\r\n  transition: background-color 0.15s;\r\n  display: inline-block;\r\n  position: relative;\r\n}\r\n.btn:hover{\r\n  background-color: rgba(255, 255, 255, 0.15);\r\n}\r\n.btn:active{\r\n  background-color: rgba(255, 255, 255, 0.25);\r\n  transition: none;\r\n}\r\n.btn-minimise:before{\r\n  content: \"\";\r\n  position: absolute;\r\n  border-top: 4px solid;\r\n  width: 45px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) scale(.25);\r\n}\r\n.btn-maximise:before{\r\n  content: '';\r\n  position: absolute;\r\n  border: 3px solid;\r\n  width: 30px;\r\n  height: 30px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) scale(0.27);\r\n}\r\n.btn-maximise.restore:before{\r\n  content: '';\r\n  position: absolute;\r\n  border: 3px solid;\r\n  width: 30px;\r\n  height: 30px;\r\n  top: 53%;\r\n  left: 48%;\r\n  transform: translate(-50%,-50%) scale(0.25);\r\n}\r\n.btn-maximise.restore:after{\r\n  content: \"\";\r\n  position: absolute;\r\n  border: 4px solid;\r\n  width: 37px;\r\n  height: 37px;\r\n  top: 47%;\r\n  left: 52%;\r\n  border-radius: 40% 0 40% 75%;\r\n  border-bottom-color: transparent;\r\n  border-left-color: transparent;\r\n  transform: translate(-50%,-50%) scale(.25);\r\n}\r\n.btn-close:hover{\r\n  background-color: rgb(218, 54, 54);\r\n}\r\n.btn-close:active{\r\n  background-color: rgba(218, 54, 54, 0.7);\r\n}\r\n.btn-close:before{\r\n  content: '';\r\n  position: absolute;\r\n  border-left: 3px solid;\r\n  height: 40px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) rotate(45deg) scale(0.33);\r\n}\r\n.btn-close:after{\r\n  content: '';\r\n  position: absolute;\r\n  border-left: 3px solid;\r\n  height: 40px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) rotate(-45deg) scale(0.33);\r\n}\r\n.window.deselected .btn:hover{\r\n  background-color: rgba(0,0,0,0.1);\r\n  color: rgb(0,0,0);\r\n}\r\n.window.deselected .btn.btn-close:hover{\r\n  background-color: rgb(218, 54, 54);\r\n  color: #fff;\r\n}\r\n.resize{\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 3;\r\n}\r\n.bar-l{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 100%;\r\n  width: 7px;\r\n  cursor: ew-resize;\r\n  left: -7px;\r\n}\r\n.bar-r{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 100%;\r\n  width: 7px;\r\n  cursor: ew-resize;\r\n  right: -7px;\r\n}\r\n.bar-t{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 7px;\r\n  width: 100%;\r\n  cursor: ns-resize;\r\n  top: -4px;\r\n}\r\n.bar-b{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 7px;\r\n  width: 100%;\r\n  cursor: ns-resize;\r\n  bottom: -7px;\r\n}\r\n.dot-l-t{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: nw-resize;\r\n  top: -5px;\r\n  left: -5px;\r\n}\r\n.dot-l-b{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: sw-resize;\r\n  bottom: -5px;\r\n  left: -5px;\r\n}\r\n.dot-r-t{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: ne-resize;\r\n  right: -5px;\r\n  top: -5px;\r\n}\r\n.dot-r-b{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: nw-resize;\r\n  right: -5px;\r\n  bottom: -5px;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -6428,10 +6591,10 @@ exports.locals = {
 	"label-icon": "window_label-icon_3CM7l",
 	"labelIcon": "window_label-icon_3CM7l",
 	"deselected": "window_deselected_19EFs",
-	"btn-group": "window_btn-group_2AJZd",
-	"btnGroup": "window_btn-group_2AJZd",
 	"label-name": "window_label-name_E7Eut",
 	"labelName": "window_label-name_E7Eut",
+	"btn-group": "window_btn-group_2AJZd",
+	"btnGroup": "window_btn-group_2AJZd",
 	"btn": "window_btn_1a_9s",
 	"btn-minimise": "window_btn-minimise_dVosQ",
 	"btnMinimise": "window_btn-minimise_dVosQ",

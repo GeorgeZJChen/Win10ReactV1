@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
 import {ItemsColumnOne, ItemsColumnTwo, ItemsColumnThree} from './start-menu-comps.js'
-import Events from '../components/event.js'
 
 import css from '../../css/desktop/start-menu.css'
 
@@ -15,11 +14,9 @@ class StartMenu extends Component{
       data: null
     }
   }
-  componentDidMount() {
-    Events.once(Events.names.to_start_menu_loaded_data, (data)=>{
-      this.setState({
-        data: data
-      })
+  init(data){
+    this.setState({
+      data: data
     })
   }
   render(){
