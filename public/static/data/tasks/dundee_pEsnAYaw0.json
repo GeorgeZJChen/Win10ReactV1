@@ -2,9 +2,9 @@
   "id": "dundee_pEsnAYaw0",
   "name": "University",
   "isBackgroundTask": 0,
+  "display": 0,
   "backgroundIcon": {
-    "className":"",
-    "display": 0
+    "className":""
   },
   "isTaskbarTask": 1,
   "taskbarIcon": {

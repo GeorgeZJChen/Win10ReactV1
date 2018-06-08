@@ -84,7 +84,7 @@ class Desktop extends Component{
       }).then((res)=>{
         try {
           if(!res.data) throw new Error()
-          this.renderNewTask(res.data)
+          this._addTask(res.data)
         } catch (e) {
           console.error('Data format error');
         }
@@ -96,12 +96,12 @@ class Desktop extends Component{
   addSystemTasks(){
     let system_tasks = Task.systemTasks
     for (let key in system_tasks) {
-      this.renderNewTask(system_tasks[key])
+      this._addTask(system_tasks[key])
     }
   }
-  renderNewTask(task){
+  _addTask(task){
     this.state.tasks.push(task)
-    this.refs.taskbar.refs.tasks.renderNewTask(task)
+    this.refs.taskbar.updateTask(task)
   }
   loadStartMenu(){
     const url = 'static/data/start-menu.json'

@@ -8,21 +8,15 @@ class Tasks extends Component{
   constructor(props){
     super(props)
     this.state = {
-      renderFlag: true
+      renderFlag: 1
     }
-    this.renderNewTask = ()=>{
-      this.setState((prevState)=>{
-        return {renderFlag: !prevState.renderFlag}
-      })
-    }
-  }
-  componentDidMount() {
-    Events.on(Events.names.to_task_items_add_new_task, this.renderNewTask)
-  }
-  componentWillUnmount(){
-    Events.removeListener(Events.names.to_task_items_add_new_task, this.renderNewTask)
-  }
 
+  }
+  update(){
+    this.setState((prevState)=>{
+      return {renderFlag: ~prevState.renderFlag}
+    })
+  }
   render(){
     return(
       <React.Fragment>
@@ -38,7 +32,7 @@ class Tasks extends Component{
             } else {  //render background task
               if (task.isBackgroundTask) {
                 let t = this.props.type
-                let d = task.backgroundIcon?task.backgroundIcon.display:0
+                let d = task.display
                 if((t==1&&d==1)||(d==0&&t!=1)) return
                 if(task.backgroundIcon.URL)
                   return <BackgroundItem key={task.id} URL={task.backgroundIcon.URL}  id={task.id} className={'unknown bg'}
@@ -60,8 +54,7 @@ class Item extends Component{
   constructor(props){
     super(props)
     this.state = {
-      imgReady: 0,
-      renderFlag: true
+      imgReady: 0
     }
     this.imgStyle ={
       width: 'auto',
@@ -78,18 +71,10 @@ class Item extends Component{
       display: 'none'
     }
     this.index = props.index
-    this.renderNewTask = ()=>{
-      this.setState((prevState)=>{
-        return {renderFlag: !prevState.renderFlag}
-      })
-    }
   }
   imgOnload(){
-    this.setState((prevState)=>{
-      return{
-        imgReady: 1,
-        renderFlag: !prevState.renderFlag
-      }
+    this.setState({
+        imgReady: 1
     })
   }
   onclick(e){
@@ -121,7 +106,7 @@ class BackgroundItem extends Component{
     this.index = props.index
     this.state = {
       imgReady: 0,
-      renderFlag: true
+      renderFlag: 1
     }
     this.imgStyle ={
       width: 'auto',

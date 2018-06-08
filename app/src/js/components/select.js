@@ -37,6 +37,11 @@ class Select extends Component{
           this.props.deselect()
         delete this.__mousedown_on_items_to_select_or_this__
       })
+      document.addEventListener('mouseup',()=>{
+        setTimeout(()=>{
+          delete this.__select_moved__
+        },20)
+      })
     },50)
   }
   onClick(){
@@ -63,6 +68,7 @@ class Select extends Component{
       if(!moved&&Math.abs(my-y)<4&&Math.abs(mx-x)<4) return
       if(!moved){
         moved = true
+        this.__select_moved__ = 1
         this.setState({
           activated: 1
         })
@@ -104,7 +110,6 @@ class Select extends Component{
       document.removeEventListener("touchend", up, false)
       document.removeEventListener("touchcancel", up, false)
       if(moved){
-        this.__select_moved__ = 1
         area.style.top = 0
         area.style.left = 0
         area.style.width = 0
@@ -124,7 +129,7 @@ class Select extends Component{
 
   render(){
     return (
-      <div className={css.selectCt} ref="element" onClick = {(e)=>this.onClick(e)}
+      <div className={css.selectCt} ref="element" onClick = {()=>this.onClick()} onTouchEnd={()=>this.onClick()}
         onMouseDown={(e)=>this.onMouseDown(e)} onTouchStart={(e)=>this.onMouseDown(e)}
         style={{zIndex: this.state.activated?this.props.zIndex:''}}>
         <div className={css.selectArea} ref="area" style={{display: this.state.activated?'block':'none'}}></div>

@@ -924,6 +924,11 @@ var Select = function (_Component) {
           if (!_this2.__mousedown_on_items_to_select_or_this__) _this2.props.deselect();
           delete _this2.__mousedown_on_items_to_select_or_this__;
         });
+        document.addEventListener('mouseup', function () {
+          setTimeout(function () {
+            delete _this2.__select_moved__;
+          }, 20);
+        });
       }, 50);
     }
   }, {
@@ -955,6 +960,7 @@ var Select = function (_Component) {
         if (!moved && Math.abs(my - y) < 4 && Math.abs(mx - x) < 4) return;
         if (!moved) {
           moved = true;
+          _this3.__select_moved__ = 1;
           _this3.setState({
             activated: 1
           });
@@ -996,7 +1002,6 @@ var Select = function (_Component) {
         document.removeEventListener("touchend", up, false);
         document.removeEventListener("touchcancel", up, false);
         if (moved) {
-          _this3.__select_moved__ = 1;
           area.style.top = 0;
           area.style.left = 0;
           area.style.width = 0;
@@ -1020,8 +1025,10 @@ var Select = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: _select2.default.selectCt, ref: 'element', onClick: function onClick(e) {
-            return _this4.onClick(e);
+        { className: _select2.default.selectCt, ref: 'element', onClick: function onClick() {
+            return _this4.onClick();
+          }, onTouchEnd: function onTouchEnd() {
+            return _this4.onClick();
           },
           onMouseDown: function onMouseDown(e) {
             return _this4.onMouseDown(e);
@@ -1378,12 +1385,10 @@ var Items = function (_Component) {
       });
       p.selectedColumns[0] = -1;
       p.selectedColumns[1] = -1;
-      if (p.checked) p.checked.uncheck();
     }
   }, {
     key: 'select',
     value: function select(x, y, sx, sy) {
-      this.__click_on_dragged_item_or_select_moved__ = 1;
       if (!this.state.initiated) return;
 
       var p = this.groupInfo;
@@ -1748,6 +1753,7 @@ var Item = function (_Component2) {
       var lastChecked = this.props.groupInfo.checked;
       if (lastChecked != this) return;
       this.props.groupInfo.checked = null;
+      this.deselect();
     }
   }, {
     key: 'focus',
@@ -2120,7 +2126,7 @@ var Desktop = function (_Component) {
         }).then(function (res) {
           try {
             if (!res.data) throw new Error();
-            _this5.renderNewTask(res.data);
+            _this5._addTask(res.data);
           } catch (e) {
             console.error('Data format error');
           }
@@ -2134,14 +2140,14 @@ var Desktop = function (_Component) {
     value: function addSystemTasks() {
       var system_tasks = _task2.default.systemTasks;
       for (var key in system_tasks) {
-        this.renderNewTask(system_tasks[key]);
+        this._addTask(system_tasks[key]);
       }
     }
   }, {
-    key: 'renderNewTask',
-    value: function renderNewTask(task) {
+    key: '_addTask',
+    value: function _addTask(task) {
       this.state.tasks.push(task);
-      this.refs.taskbar.refs.tasks.renderNewTask(task);
+      this.refs.taskbar.updateTask(task);
     }
   }, {
     key: 'loadStartMenu',
@@ -2942,7 +2948,7 @@ var Scrollbar = function (_Component8) {
     value: function setUpScroll(toScroll) {
       this.toScroll = toScroll;
 
-      var _computeScroll = this.computeScroll(this.toScroll),
+      var _computeScroll = this.computeScroll(this.props.parent.refs.toScroll),
           _computeScroll2 = _slicedToArray(_computeScroll, 2),
           u = _computeScroll2[0],
           m = _computeScroll2[1];
@@ -2966,6 +2972,7 @@ var Scrollbar = function (_Component8) {
   }, {
     key: 'onScroll',
     value: function onScroll(toScroll) {
+      if (!toScroll && !this.toScroll) this.setUpScroll(this.props.parent.refs.toScroll);
       toScroll = toScroll || this.toScroll;
 
       var _computeScroll3 = this.computeScroll(toScroll),
@@ -3327,6 +3334,21 @@ var Taskbar = function (_Component) {
   }
 
   _createClass(Taskbar, [{
+    key: 'updateTask',
+    value: function updateTask(task) {
+      if (task.isTaskbarTask) {
+        this.refs.taskbarTasks.update();
+      }
+      if (task.isBackgroundTask) {
+        if (task.display) {
+          this.refs.backgroundTasksDisplay.update();
+          this.refs.backgroundTasksDisplayDup.update();
+        } else {
+          this.refs.backgroundTasksHidden.update();
+        }
+      }
+    }
+  }, {
     key: 'onMouseEnter',
     value: function onMouseEnter(e) {
       _event2.default.emit(_event2.default.names.being_dragged_items_onenter, this);
@@ -3387,7 +3409,7 @@ var Taskbar = function (_Component) {
             _react2.default.createElement(
               'div',
               { className: _taskbar2.default.tbTasks },
-              _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 0, ref: 'tasks' })
+              _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 0, ref: 'taskbarTasks' })
             )
           )
         ),
@@ -3430,8 +3452,8 @@ var Taskbar = function (_Component) {
               _react2.default.createElement(
                 'div',
                 { className: _taskbar2.default.itemsBgHidden },
-                _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 1 }),
-                _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 2 })
+                _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 1, ref: 'backgroundTasksHidden' }),
+                _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 2, ref: 'backgroundTasksDisplayDup' })
               )
             ),
             _react2.default.createElement(
@@ -3452,7 +3474,7 @@ var Taskbar = function (_Component) {
                   )
                 )
               ),
-              _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 3 })
+              _react2.default.createElement(_tasks2.default, { tasks: this.props.tasks, type: 3, ref: 'backgroundTasksDisplay' })
             )
           )
         )
@@ -3520,25 +3542,18 @@ var Tasks = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Tasks.__proto__ || Object.getPrototypeOf(Tasks)).call(this, props));
 
     _this.state = {
-      renderFlag: true
+      renderFlag: 1
     };
-    _this.renderNewTask = function () {
-      _this.setState(function (prevState) {
-        return { renderFlag: !prevState.renderFlag };
-      });
-    };
+
     return _this;
   }
 
   _createClass(Tasks, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      _event2.default.on(_event2.default.names.to_task_items_add_new_task, this.renderNewTask);
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      _event2.default.removeListener(_event2.default.names.to_task_items_add_new_task, this.renderNewTask);
+    key: 'update',
+    value: function update() {
+      this.setState(function (prevState) {
+        return { renderFlag: ~prevState.renderFlag };
+      });
     }
   }, {
     key: 'render',
@@ -3558,7 +3573,7 @@ var Tasks = function (_Component) {
             //render background task
             if (task.isBackgroundTask) {
               var t = _this2.props.type;
-              var d = task.backgroundIcon ? task.backgroundIcon.display : 0;
+              var d = task.display;
               if (t == 1 && d == 1 || d == 0 && t != 1) return;
               if (task.backgroundIcon.URL) return _react2.default.createElement(BackgroundItem, { key: task.id, URL: task.backgroundIcon.URL, id: task.id, className: 'unknown bg',
                 isImage: true, index: index, type: _this2.props.type });else return _react2.default.createElement(BackgroundItem, { key: task.id, id: task.id, className: task.backgroundIcon.className,
@@ -3582,8 +3597,7 @@ var Item = function (_Component2) {
     var _this3 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
 
     _this3.state = {
-      imgReady: 0,
-      renderFlag: true
+      imgReady: 0
     };
     _this3.imgStyle = {
       width: 'auto',
@@ -3600,22 +3614,14 @@ var Item = function (_Component2) {
       display: 'none'
     };
     _this3.index = props.index;
-    _this3.renderNewTask = function () {
-      _this3.setState(function (prevState) {
-        return { renderFlag: !prevState.renderFlag };
-      });
-    };
     return _this3;
   }
 
   _createClass(Item, [{
     key: 'imgOnload',
     value: function imgOnload() {
-      this.setState(function (prevState) {
-        return {
-          imgReady: 1,
-          renderFlag: !prevState.renderFlag
-        };
+      this.setState({
+        imgReady: 1
       });
     }
   }, {
@@ -3677,7 +3683,7 @@ var BackgroundItem = function (_Component3) {
     _this5.index = props.index;
     _this5.state = {
       imgReady: 0,
-      renderFlag: true
+      renderFlag: 1
     };
     _this5.imgStyle = {
       width: 'auto',
@@ -3895,15 +3901,24 @@ var Windows = function (_Component) {
       var _this2 = this;
 
       return _react2.default.createElement(
-        'div',
-        { className: _window2.default.windowCt, ref: 'element' },
-        function () {
-          var arr = [];
-          _this2.state.winsData.forEach(function (data) {
-            arr.push(_react2.default.createElement(Win, { data: data, key: data.id, parent: _this2, container: _this2.props.container }));
-          });
-          return arr;
-        }()
+        _react2.default.Fragment,
+        null,
+        _react2.default.createElement(
+          'div',
+          { className: _window2.default.shadow, ref: 'shadow' },
+          _react2.default.createElement('div', { className: _window2.default.shadowInner })
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: _window2.default.windowCt, ref: 'element' },
+          function () {
+            var arr = [];
+            _this2.state.winsData.forEach(function (data) {
+              arr.push(_react2.default.createElement(Win, { data: data, key: data.id, parent: _this2, container: _this2.props.container }));
+            });
+            return arr;
+          }()
+        )
       );
     }
   }]);
@@ -3935,6 +3950,7 @@ var Win = function (_Component2) {
     _this3.minimise = _this3.minimise.bind(_this3);
     _this3.maximise = _this3.maximise.bind(_this3);
     _this3.onMouseDown = _this3.onMouseDown.bind(_this3);
+    _this3.resize = _this3.resize.bind(_this3);
 
     _this3.maximised = 0;
     _this3.minimised = 0;
@@ -3960,7 +3976,7 @@ var Win = function (_Component2) {
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: _window2.default.window, ref: 'element', onMouseDown: this.onMouseDown },
+        { className: _window2.default.window, ref: 'element', onMouseDown: this.onMouseDown, onTouchStart: this.onMouseDown },
         _react2.default.createElement(
           'div',
           { className: _window2.default.label },
@@ -3970,7 +3986,7 @@ var Win = function (_Component2) {
             this.props.data.icon.URL ? [_react2.default.createElement('img', { src: this.props.data.icon.URL, className: _window2.default.iconImg, key: 0, onLoad: this.imgOnLoad, style: { display: this.state.imgReady ? '' : 'none' } }), this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: "unknown", key: 1 })] : _react2.default.createElement(_icon2.default, { className: this.props.data.icon.className })
           ),
           _react2.default.createElement('div', { className: _window2.default.labelName, 'data-title': this.props.data.name,
-            style: { marginRight: this.btnGroup[0] * 46 + this.btnGroup[1] * 46 + this.btnGroup[2] * 46 + 5 },
+            style: { marginRight: this.btnGroup[0] * 46 + this.btnGroup[1] * 46 + this.btnGroup[2] * 46 },
             onMouseDown: this.onMouseDownLabel, onTouchStart: this.onMouseDownLabel,
             onDoubleClick: this.maximise
           })
@@ -3983,15 +3999,15 @@ var Win = function (_Component2) {
         _react2.default.createElement('div', { className: _window2.default.content }),
         _react2.default.createElement(
           'div',
-          { className: _window2.default.resize, ref: 'resize' },
-          _react2.default.createElement('div', { className: _window2.default.barL }),
-          _react2.default.createElement('div', { className: _window2.default.barT }),
-          _react2.default.createElement('div', { className: _window2.default.barR }),
-          _react2.default.createElement('div', { className: _window2.default.barB }),
-          _react2.default.createElement('div', { className: _window2.default.dotLT }),
-          _react2.default.createElement('div', { className: _window2.default.dotRT }),
-          _react2.default.createElement('div', { className: _window2.default.dotRB }),
-          _react2.default.createElement('div', { className: _window2.default.dotLB })
+          { className: _window2.default.resize, ref: 'resize', onMouseDown: this.resize, onTouchStart: this.resize },
+          _react2.default.createElement('div', { className: _window2.default.barLeft }),
+          _react2.default.createElement('div', { className: _window2.default.barTop }),
+          _react2.default.createElement('div', { className: _window2.default.barRight }),
+          _react2.default.createElement('div', { className: _window2.default.barBottom }),
+          _react2.default.createElement('div', { className: _window2.default.dotLeftTop }),
+          _react2.default.createElement('div', { className: _window2.default.dotRightTop }),
+          _react2.default.createElement('div', { className: _window2.default.dotRightBottom }),
+          _react2.default.createElement('div', { className: _window2.default.dotLeftBottom })
         )
       );
     }
@@ -4023,8 +4039,10 @@ var Win = function (_Component2) {
           height: ct.offsetHeight + 'px'
         });
         maxBtn.className += ' ' + _window2.default.restore;
+        this.refs.resize.style.visibility = 'hidden';
       } else {
         this.maximised = 0;
+        this.clinging = 0;
         this.setStyle({
           left: this.left + 'px',
           top: this.top + 'px',
@@ -4032,6 +4050,7 @@ var Win = function (_Component2) {
           height: this.height + 'px'
         });
         maxBtn.className = maxBtn.className.replace(new RegExp(' ' + _window2.default.restore, 'g'), '');
+        this.refs.resize.style.visibility = 'visible';
       }
     }
   }, {
@@ -4072,8 +4091,12 @@ var Win = function (_Component2) {
       var x = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
       var y = e.pageY || (e.changedTouches ? e.changedTouches[0].pageY : 0);
       var ele = this.refs.element;
-      var beginLeft = this.left;
-      var beginTop = this.top;
+      var beginLeft = this.refs.element.offsetLeft;
+      var beginTop = this.refs.element.offsetTop;
+      var left = void 0;
+      var top = void 0;
+      var shadow = void 0;
+      var shadowShowing = 0;
 
       var moved = false;
       var move = function move(e) {
@@ -4083,28 +4106,94 @@ var Win = function (_Component2) {
         if (!moved) {
           moved = true;
           _this4.refs.resize.style.visibility = 'hidden';
+          shadow = _this4.props.parent.refs.shadow;
+          shadow.style.display = 'block';
         }
-        if (!_this4.maximised) {
-          _this4.left = mx - x + beginLeft;
-          _this4.top = my - y + beginTop;
-          _this4.setStyle({
-            left: _this4.left + 'px',
-            top: _this4.top + 'px'
-          });
-        } else {
+        if (_this4.maximised) {
           _this4.maximise();
           var width = _this4.width;
           var ctWidth = _this4.container.offsetWidth;
-          var left = void 0;
-          if (x < width / 2) left = 0;else if (x > ctWidth - width / 2) left = ctWidth - width;else left = x - width / 2;
+          var _left = void 0;
+          if (x < width / 2) _left = 0;else if (x > ctWidth - width / 2) _left = ctWidth - width;else _left = x - width / 2;
+          beginLeft = _left;
+          beginTop = 0;
+          // this.top = 0
+          // this.left = _left
+          _this4.setStyle({
+            left: _left + 'px',
+            top: 0,
+            width: _this4.width + 'px',
+            height: _this4.height + 'px'
+          });
+        } else if (_this4.clinging) {
+          if (my > 40) {
+            _this4.clinging = 0;
+            var _left2 = mx - x + beginLeft;
+            if (_left2 + _this4.width < mx - 10) _left2 = mx - _this4.width / 2;
+            _this4.setStyle({
+              left: _left2 + 'px',
+              top: 0,
+              width: _this4.width + 'px',
+              height: _this4.height + 'px'
+            });
+          } else {
+            _this4.setStyle({
+              left: mx - x + beginLeft + 'px',
+              top: 0
+            });
+          }
+        } else {
+          left = mx - x + beginLeft;
+          top = my - y + beginTop;
           _this4.setStyle({
             left: left + 'px',
-            top: 0,
-            width: _this4.width,
-            height: _this4.height
+            top: top + 'px'
           });
-          beginLeft = left;
-          beginTop = 0;
+
+          var showShadow = 0;
+          if (top < -10) {
+            if (shadow.className.indexOf(_window2.default.top) == -1) shadow.className += ' ' + _window2.default.top;
+            showShadow = 1;
+          } else if (top > 0) {
+            shadow.className = shadow.className.replace(new RegExp(' ' + _window2.default.top, 'g'), '');
+          }
+          if (mx <= 1) {
+            if (shadow.className.indexOf(_window2.default.left) == -1) shadow.className += ' ' + _window2.default.left;
+            showShadow = 1;
+          } else if (mx > 15) {
+            shadow.className = shadow.className.replace(new RegExp(' ' + _window2.default.left, 'g'), '');
+          }
+          if (mx >= _this4.container.offsetWidth - 1) {
+            if (shadow.className.indexOf(_window2.default.right) == -1) shadow.className += ' ' + _window2.default.right;
+            showShadow = 1;
+          } else if (mx < _this4.container.offsetWidth - 15) {
+            shadow.className = shadow.className.replace(new RegExp(' ' + _window2.default.right, 'g'), '');
+          }
+          if (showShadow && !shadowShowing) {
+            shadowShowing = 1;
+            shadow.style.opacity = 1;
+            shadow.style.top = Math.max(my, 0) + 'px';
+            shadow.style.left = Math.min(Math.max(mx, 0), _this4.container.offsetWidth) + 'px';
+            shadow.style.width = 0;
+            shadow.style.height = 0;
+            shadow.style.transition = 'none';
+            setTimeout(function () {
+              shadow.style.top = '';
+              shadow.style.left = '';
+              shadow.style.width = '';
+              shadow.style.height = '';
+              shadow.style.transition = '';
+            }, 50);
+          } else if (!showShadow && shadowShowing) {
+            shadowShowing = 0;
+          }
+          if (!shadowShowing) {
+            shadow.style.opacity = 0;
+            shadow.style.top = shadow.offsetTop + 'px';
+            shadow.style.left = shadow.offsetLeft + 'px';
+            shadow.style.width = shadow.offsetWidth + 'px';
+            shadow.style.height = shadow.offsetHeight + 'px';
+          }
         }
       };
       var tm = function tm(e) {
@@ -4119,27 +4208,192 @@ var Win = function (_Component2) {
         document.removeEventListener("touchcancel", up, false);
         if (moved) {
           _this4.refs.resize.style.visibility = '';
+          shadow.style.display = '';
 
-          if (_this4.top < -10) {
-            _this4.top = 0;
-            _this4.maximise();
-          } else if (_this4.top < 0) {
-            _this4.top = 0;
+          var cn = shadow.className;
+          var ct = _this4.container;
+          if (cn.indexOf(_window2.default.top) != -1) {
+            if (cn.indexOf(_window2.default.left) != -1) {
+              _this4.clinging = 1;
+              _this4.setStyle({
+                top: 0,
+                left: 0,
+                width: ct.offsetWidth / 2 + 'px',
+                height: ct.offsetHeight / 2 + 'px'
+              });
+            } else if (cn.indexOf(_window2.default.right) != -1) {
+              _this4.clinging = 1;
+              _this4.setStyle({
+                top: 0,
+                left: ct.offsetWidth / 2 + 'px',
+                width: ct.offsetWidth / 2 + 'px',
+                height: ct.offsetHeight / 2 + 'px'
+              });
+            } else {
+              _this4.maximise();
+            }
+          } else if (cn.indexOf(_window2.default.left) != -1) {
+            _this4.clinging = 1;
+            _this4.setStyle({
+              top: 0,
+              left: 0,
+              width: ct.offsetWidth / 2 + 'px',
+              height: ct.offsetHeight + 'px'
+            });
+          } else if (cn.indexOf(_window2.default.right) != -1) {
+            _this4.clinging = 1;
+            _this4.setStyle({
+              top: 0,
+              left: ct.offsetWidth / 2 + 'px',
+              width: ct.offsetWidth / 2 + 'px',
+              height: ct.offsetHeight + 'px'
+            });
+          } else if (top < 0) {
+            top = 0;
             _this4.setStyle({
               top: 0
             });
-          } else if (_this4.top > _this4.container.offsetHeight - 10) {
-            _this4.top = _this4.container.offsetHeight - 25;
+          } else if (top > _this4.container.offsetHeight - 10) {
+            top = _this4.container.offsetHeight - 25;
             _this4.setStyle({
-              top: _this4.top + 'px'
+              top: top + 'px'
             });
           }
-          if (_this4.left > _this4.container.offsetWidth - 40) {
-            _this4.left = _this4.container.offsetWidth - 40;
+          if (left > _this4.container.offsetWidth - 40 && cn.indexOf(_window2.default.right) == -1) {
+            left = _this4.container.offsetWidth - 40;
             _this4.setStyle({
-              left: _this4.left + 'px'
+              left: left + 'px'
             });
           }
+          if (!_this4.maximised && !_this4.clinging) {
+            _this4.top = top;
+            _this4.left = left;
+          }
+          shadow.removeAttribute('style');
+          shadow.className = _window2.default.shadow;
+        }
+      };
+      document.addEventListener('touchmove', tm, { passive: false });
+      document.addEventListener('mousemove', move, false);
+      document.addEventListener('mouseup', up, false);
+      document.addEventListener("touchmove", move, false);
+      document.addEventListener("touchend", up, false);
+      document.addEventListener("touchcancel", up, false);
+    }
+  }, {
+    key: 'resize',
+    value: function resize(e) {
+      var _this5 = this;
+
+      var x = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
+      var y = e.pageY || (e.changedTouches ? e.changedTouches[0].pageY : 0);
+      var cls = e.target.className;
+      var top = this.refs.element.offsetTop;
+      var left = this.refs.element.offsetLeft;
+      var width = this.refs.element.offsetWidth;
+      var height = this.refs.element.offsetHeight;
+      var minHeight = void 0;
+      var minWidth = void 0;
+      var maxHeight = void 0;
+      var maxWidth = void 0;
+      var shadow = this.props.parent.refs.shadow;
+      var shadowShowing = void 0;
+      var moved = false;
+      var move = function move(e) {
+        var mx = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
+        var my = e.pageY || (e.changedTouches ? e.changedTouches[0].pageY : 0);
+        if (!moved && Math.abs(my - y) < 4 && Math.abs(mx - x) < 4) return;
+        if (!moved) {
+          moved = true;
+          var style = getComputedStyle(_this5.refs.element);
+          minWidth = style.minWidth.replace('px', '') * 1;
+          minHeight = style.minHeight.replace('px', '') * 1;
+        }
+        var vx = mx - x;
+        var vy = my - y;
+        if (_this5.clinging) {
+          _this5.clinging = 0;
+          _this5.setStyle({
+            width: width + "px",
+            height: height + 'px',
+            left: left + "px",
+            top: top + 'px'
+          });
+        }
+        if (cls.indexOf("left") != -1) {
+          if (vx > width - minWidth) vx = width - minWidth;
+          _this5.setStyle({
+            width: width - vx + "px",
+            left: left + vx + "px"
+          });
+        } else if (cls.indexOf("right") != -1) {
+          _this5.setStyle({
+            width: width + vx + "px"
+          });
+        }
+        if (cls.indexOf("top") != -1) {
+          if (vy > height - minHeight) vy = height - minHeight;
+          if (top + vy < -10) {
+            if (cls.indexOf('dot') == -1) {
+              if (!shadowShowing) {
+                shadowShowing = 1;
+                shadow.style.display = 'block';
+                shadow.style.opacity = 1;
+                shadow.style.top = Math.max(my, 0) + 'px';
+                shadow.style.left = Math.min(Math.max(mx, 0), _this5.container.offsetWidth) + 'px';
+                shadow.style.width = 0;
+                shadow.style.height = 0;
+                shadow.style.transition = 'none';
+                setTimeout(function () {
+                  shadow.style.top = 0;
+                  shadow.style.left = left - 14 + 'px';
+                  shadow.style.width = _this5.width + 28 + 'px';
+                  shadow.style.height = _this5.container.offsetHeight + 'px';
+                  shadow.style.transition = '';
+                }, 50);
+              }
+            }
+          } else if (shadowShowing) {
+            shadow.style.opacity = 0;
+            shadowShowing = 0;
+          }
+          _this5.setStyle({
+            height: height - vy + "px",
+            top: top + vy + "px"
+          });
+        } else if (cls.indexOf("bottom") != -1) {
+          _this5.setStyle({
+            height: height + vy + "px"
+          });
+        }
+      };
+      var tm = function tm(e) {
+        e.preventDefault();
+      };
+      var up = function up(e) {
+        document.removeEventListener('touchmove', tm, { passive: false });
+        document.removeEventListener('mousemove', move, false);
+        document.removeEventListener('mouseup', up, false);
+        document.removeEventListener("touchmove", move, false);
+        document.removeEventListener("touchend", up, false);
+        document.removeEventListener("touchcancel", up, false);
+        if (moved) {
+          if (_this5.refs.element.offsetTop < -10) {
+            _this5.setStyle({
+              top: 0,
+              height: _this5.container.offsetHeight + 'px'
+            });
+            _this5.clinging = 1;
+          } else {
+            _this5.width = _this5.refs.element.offsetWidth;
+            _this5.height = _this5.refs.element.offsetHeight;
+            _this5.left = _this5.refs.element.offsetLeft;
+            _this5.top = _this5.refs.element.offsetTop;
+          }
+          shadow.style.opacity = 0;
+          setTimeout(function () {
+            shadow.removeAttribute('style');
+          }, 200);
         }
       };
       document.addEventListener('touchmove', tm, { passive: false });
@@ -6579,7 +6833,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".window_window-ct_1Kh32{position:absolute;z-index:106}.window_window_2ML4A{position:absolute;cursor:default;box-shadow:0 1px 13px 0 rgba(0,0,0,.4);border:1px solid;min-width:170px;min-height:130px;background-color:#515c6b;color:#515c6b;visibility:hidden;width:600px;height:400px;top:50px;left:70px;box-sizing:border-box;display:flex;flex-flow:column;overflow:visible}.window_content_3zSiF{width:100%;height:100%;flex:1;background:#fff;z-index:5;overflow:auto}.window_label_3pVDU{height:26px;width:100%;margin-top:3px;display:flex;z-index:8}.window_label-icon_3CM7l{width:20px;height:20px;z-index:2;margin:1px 4px 5px 2px;display:block;overflow:hidden;position:relative}.window_window_2ML4A.window_deselected_19EFs>.window_btn-group_2AJZd,.window_window_2ML4A.window_deselected_19EFs>.window_label-name_E7Eut{color:#999}.window_window_2ML4A.window_deselected_19EFs{background-color:#fff;color:#999}.window_label-name_E7Eut{height:26px;display:block;line-height:22px;color:#fff;flex:1}.window_label-name_E7Eut:before{content:attr(data-title);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:350px}.window_btn-group_2AJZd{position:absolute;float:right;top:-1px;right:0;z-index:10;color:#fff}.window_btn_1a_9s{width:46px;height:30px;line-height:29px;text-align:center;transition:background-color .15s;display:inline-block;position:relative}.window_btn_1a_9s:hover{background-color:hsla(0,0%,100%,.15)}.window_btn_1a_9s:active{background-color:hsla(0,0%,100%,.25);transition:none}.window_btn-minimise_dVosQ:before{content:\"\";position:absolute;border-top:4px solid;width:45px;top:50%;left:50%;transform:translate(-50%,-50%) scale(.25)}.window_btn-maximise_3wyeG:before{content:\"\";position:absolute;border:3px solid;width:30px;height:30px;top:50%;left:50%;transform:translate(-50%,-50%) scale(.27)}.window_btn-maximise_3wyeG.window_restore_WexhK:before{content:\"\";position:absolute;border:3px solid;width:30px;height:30px;top:53%;left:48%;transform:translate(-50%,-50%) scale(.25)}.window_btn-maximise_3wyeG.window_restore_WexhK:after{content:\"\";position:absolute;border:4px solid;width:37px;height:37px;top:47%;left:52%;border-radius:40% 0 40% 75%;border-bottom-color:transparent;border-left-color:transparent;transform:translate(-50%,-50%) scale(.25)}.window_btn-close_XJTd9:hover{background-color:#da3636}.window_btn-close_XJTd9:active{background-color:rgba(218,54,54,.7)}.window_btn-close_XJTd9:before{transform:translate(-50%,-50%) rotate(45deg) scale(.33)}.window_btn-close_XJTd9:after,.window_btn-close_XJTd9:before{content:\"\";position:absolute;border-left:3px solid;height:40px;top:50%;left:50%}.window_btn-close_XJTd9:after{transform:translate(-50%,-50%) rotate(-45deg) scale(.33)}.window_window_2ML4A.window_deselected_19EFs .window_btn_1a_9s:hover{background-color:rgba(0,0,0,.1);color:#000}.window_window_2ML4A.window_deselected_19EFs .window_btn_1a_9s.window_btn-close_XJTd9:hover{background-color:#da3636;color:#fff}.window_resize_197NP{position:absolute;width:100%;height:100%;z-index:3}.window_bar-l_ODyHu{left:-7px}.window_bar-l_ODyHu,.window_bar-r_QsEqC{position:absolute;z-index:1;height:100%;width:7px;cursor:ew-resize}.window_bar-r_QsEqC{right:-7px}.window_bar-t_3_dYG{top:-4px}.window_bar-b_28NSx,.window_bar-t_3_dYG{position:absolute;z-index:1;height:7px;width:100%;cursor:ns-resize}.window_bar-b_28NSx{bottom:-7px}.window_dot-l-t_17ZnN{cursor:nw-resize;top:-5px}.window_dot-l-b_3yiP5,.window_dot-l-t_17ZnN{position:absolute;z-index:2;width:7px;height:7px;left:-5px}.window_dot-l-b_3yiP5{cursor:sw-resize;bottom:-5px}.window_dot-r-t_26u88{cursor:ne-resize;top:-5px}.window_dot-r-b_19ksi,.window_dot-r-t_26u88{position:absolute;z-index:2;width:7px;height:7px;right:-5px}.window_dot-r-b_19ksi{cursor:nw-resize;bottom:-5px}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/window.css"],"names":[],"mappings":"AAAA,wBACE,kBAAmB,AACnB,WAAa,CACd,AACD,qBACE,kBAAmB,AACnB,eAAgB,AAChB,uCAAgD,AAChD,iBAAkB,AAClB,gBAAiB,AACjB,iBAAkB,AAClB,yBAA0B,AAC1B,cAAe,AACf,kBAAmB,AACnB,YAAa,AACb,aAAc,AACd,SAAU,AACV,UAAW,AACX,sBAAuB,AACvB,aAAc,AACd,iBAAkB,AAClB,gBAAkB,CACnB,AACD,sBACE,WAAY,AACZ,YAAa,AACb,OAAQ,AACR,gBAAiB,AACjB,UAAW,AACX,aAAe,CAChB,AACD,oBACE,YAAa,AACb,WAAY,AACZ,eAAgB,AAChB,aAAc,AACd,SAAW,CACZ,AACD,yBACE,WAAY,AACZ,YAAa,AACb,UAAW,AACX,uBAAwB,AACxB,cAAe,AACf,gBAAiB,AACjB,iBAAmB,CACpB,AACD,2IACE,UAAY,CACb,AACD,6CACE,sBAAuB,AACvB,UAAY,CACb,AACD,yBACE,YAAa,AACb,cAAe,AACf,iBAAkB,AAClB,WAAY,AACZ,MAAQ,CACT,AACD,gCACE,yBAA0B,AAC1B,eAAgB,AAChB,mBAAoB,AACpB,gBAAiB,AACjB,uBAAwB,AACxB,eAAiB,CAClB,AACD,wBACE,kBAAmB,AACnB,YAAa,AACb,SAAU,AACV,QAAS,AACT,WAAY,AACZ,UAAY,CACb,AACD,kBACE,WAAY,AACZ,YAAa,AACb,iBAAkB,AAClB,kBAAmB,AACnB,iCAAmC,AACnC,qBAAsB,AACtB,iBAAmB,CACpB,AACD,wBACE,oCAA4C,CAC7C,AACD,yBACE,qCAA4C,AAC5C,eAAiB,CAClB,AACD,kCACE,WAAY,AACZ,kBAAmB,AACnB,qBAAsB,AACtB,WAAY,AACZ,QAAS,AACT,SAAU,AACV,yCAA2C,CAC5C,AACD,kCACE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AACb,QAAS,AACT,SAAU,AACV,yCAA4C,CAC7C,AACD,uDACE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AACb,QAAS,AACT,SAAU,AACV,yCAA4C,CAC7C,AACD,sDACE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AACb,QAAS,AACT,SAAU,AACV,4BAA6B,AAC7B,gCAAiC,AACjC,8BAA+B,AAC/B,yCAA2C,CAC5C,AACD,8BACE,wBAAmC,CACpC,AACD,+BACE,mCAAyC,CAC1C,AACD,+BAOE,uDAA0D,CAC3D,AACD,6DARE,WAAY,AACZ,kBAAmB,AACnB,sBAAuB,AACvB,YAAa,AACb,QAAS,AACT,QAAU,CAWX,AARD,8BAOE,wDAA2D,CAC5D,AACD,qEACE,gCAAkC,AAClC,UAAkB,CACnB,AACD,4FACE,yBAAmC,AACnC,UAAY,CACb,AACD,qBACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,SAAW,CACZ,AACD,oBAME,SAAW,CACZ,AACD,wCAPE,kBAAmB,AACnB,UAAW,AACX,YAAa,AACb,UAAW,AACX,gBAAkB,CAUnB,AAPD,oBAME,UAAY,CACb,AACD,oBAME,QAAU,CACX,AACD,wCAPE,kBAAmB,AACnB,UAAW,AACX,WAAY,AACZ,WAAY,AACZ,gBAAkB,CAUnB,AAPD,oBAME,WAAa,CACd,AACD,sBAKE,iBAAkB,AAClB,QAAU,CAEX,AACD,4CARE,kBAAmB,AACnB,UAAW,AACX,UAAW,AACX,WAAY,AAGZ,SAAW,CAUZ,AARD,sBAKE,iBAAkB,AAClB,WAAa,CAEd,AACD,sBAKE,iBAAkB,AAElB,QAAU,CACX,AACD,4CARE,kBAAmB,AACnB,UAAW,AACX,UAAW,AACX,WAAY,AAEZ,UAAY,CAWb,AARD,sBAKE,iBAAkB,AAElB,WAAa,CACd","file":"window.css","sourcesContent":[".window-ct{\r\n  position: absolute;\r\n  z-index: 106;\r\n}\r\n.window{\r\n  position: absolute;\r\n  cursor: default;\r\n  box-shadow: 0px 1px 13px 0px rgba(0, 0, 0, 0.4);\r\n  border: 1px solid;\r\n  min-width: 170px;\r\n  min-height: 130px;\r\n  background-color: #515c6b;\r\n  color: #515c6b;\r\n  visibility: hidden;\r\n  width: 600px;\r\n  height: 400px;\r\n  top: 50px;\r\n  left: 70px;\r\n  box-sizing: border-box;\r\n  display: flex;\r\n  flex-flow: column;\r\n  overflow: visible;\r\n}\r\n.content{\r\n  width: 100%;\r\n  height: 100%;\r\n  flex: 1;\r\n  background: #fff;\r\n  z-index: 5;\r\n  overflow: auto;\r\n}\r\n.label{\r\n  height: 26px;\r\n  width: 100%;\r\n  margin-top: 3px;\r\n  display: flex;\r\n  z-index: 8;\r\n}\r\n.label-icon{\r\n  width: 20px;\r\n  height: 20px;\r\n  z-index: 2;\r\n  margin: 1px 4px 5px 2px;\r\n  display: block;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n.window.deselected>.label-name, .window.deselected>.btn-group{\r\n  color: #999;\r\n}\r\n.window.deselected{\r\n  background-color: #fff;\r\n  color: #999;\r\n}\r\n.label-name{\r\n  height: 26px;\r\n  display: block;\r\n  line-height: 22px;\r\n  color: #fff;\r\n  flex: 1;\r\n}\r\n.label-name:before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  white-space: nowrap;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  max-width: 350px;\r\n}\r\n.btn-group{\r\n  position: absolute;\r\n  float: right;\r\n  top: -1px;\r\n  right: 0;\r\n  z-index: 10;\r\n  color: #fff;\r\n}\r\n.btn{\r\n  width: 46px;\r\n  height: 30px;\r\n  line-height: 29px;\r\n  text-align: center;\r\n  transition: background-color 0.15s;\r\n  display: inline-block;\r\n  position: relative;\r\n}\r\n.btn:hover{\r\n  background-color: rgba(255, 255, 255, 0.15);\r\n}\r\n.btn:active{\r\n  background-color: rgba(255, 255, 255, 0.25);\r\n  transition: none;\r\n}\r\n.btn-minimise:before{\r\n  content: \"\";\r\n  position: absolute;\r\n  border-top: 4px solid;\r\n  width: 45px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) scale(.25);\r\n}\r\n.btn-maximise:before{\r\n  content: '';\r\n  position: absolute;\r\n  border: 3px solid;\r\n  width: 30px;\r\n  height: 30px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) scale(0.27);\r\n}\r\n.btn-maximise.restore:before{\r\n  content: '';\r\n  position: absolute;\r\n  border: 3px solid;\r\n  width: 30px;\r\n  height: 30px;\r\n  top: 53%;\r\n  left: 48%;\r\n  transform: translate(-50%,-50%) scale(0.25);\r\n}\r\n.btn-maximise.restore:after{\r\n  content: \"\";\r\n  position: absolute;\r\n  border: 4px solid;\r\n  width: 37px;\r\n  height: 37px;\r\n  top: 47%;\r\n  left: 52%;\r\n  border-radius: 40% 0 40% 75%;\r\n  border-bottom-color: transparent;\r\n  border-left-color: transparent;\r\n  transform: translate(-50%,-50%) scale(.25);\r\n}\r\n.btn-close:hover{\r\n  background-color: rgb(218, 54, 54);\r\n}\r\n.btn-close:active{\r\n  background-color: rgba(218, 54, 54, 0.7);\r\n}\r\n.btn-close:before{\r\n  content: '';\r\n  position: absolute;\r\n  border-left: 3px solid;\r\n  height: 40px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) rotate(45deg) scale(0.33);\r\n}\r\n.btn-close:after{\r\n  content: '';\r\n  position: absolute;\r\n  border-left: 3px solid;\r\n  height: 40px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) rotate(-45deg) scale(0.33);\r\n}\r\n.window.deselected .btn:hover{\r\n  background-color: rgba(0,0,0,0.1);\r\n  color: rgb(0,0,0);\r\n}\r\n.window.deselected .btn.btn-close:hover{\r\n  background-color: rgb(218, 54, 54);\r\n  color: #fff;\r\n}\r\n.resize{\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 3;\r\n}\r\n.bar-l{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 100%;\r\n  width: 7px;\r\n  cursor: ew-resize;\r\n  left: -7px;\r\n}\r\n.bar-r{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 100%;\r\n  width: 7px;\r\n  cursor: ew-resize;\r\n  right: -7px;\r\n}\r\n.bar-t{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 7px;\r\n  width: 100%;\r\n  cursor: ns-resize;\r\n  top: -4px;\r\n}\r\n.bar-b{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 7px;\r\n  width: 100%;\r\n  cursor: ns-resize;\r\n  bottom: -7px;\r\n}\r\n.dot-l-t{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: nw-resize;\r\n  top: -5px;\r\n  left: -5px;\r\n}\r\n.dot-l-b{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: sw-resize;\r\n  bottom: -5px;\r\n  left: -5px;\r\n}\r\n.dot-r-t{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: ne-resize;\r\n  right: -5px;\r\n  top: -5px;\r\n}\r\n.dot-r-b{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: nw-resize;\r\n  right: -5px;\r\n  bottom: -5px;\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".window_window-ct_1Kh32{position:absolute;z-index:106}.window_window_2ML4A{position:absolute;cursor:default;box-shadow:0 1px 13px 0 rgba(0,0,0,.4);border:1px solid;min-width:170px;min-height:130px;background-color:#515c6b;color:#515c6b;visibility:hidden;width:600px;height:400px;top:50px;left:70px;box-sizing:border-box;display:flex;flex-flow:column;overflow:visible}.window_content_3zSiF{width:100%;height:100%;flex:1;background:#fff;z-index:5;overflow:auto}.window_label_3pVDU{height:26px;width:100%;margin-top:3px;display:flex;z-index:8;color:#fff}.window_shadow_3mHdY.window_top_1b_2l{opacity:1;top:0;left:0;width:100%;height:100%}.window_shadow_3mHdY.window_left_1ctfE{opacity:1;top:0;left:0;width:50%;height:100%}.window_shadow_3mHdY.window_right_33T0b{opacity:1;top:0;left:50%;width:50%;height:100%}.window_shadow_3mHdY.window_top_1b_2l.window_left_1ctfE,.window_shadow_3mHdY.window_top_1b_2l.window_right_33T0b{width:50%;height:50%}.window_shadow_3mHdY{opacity:0;z-index:105;position:absolute;box-sizing:border-box;padding:7px;display:none;visibility:visible;width:0;height:0;transition:all .2s;transition-timing-function:ease-out}.window_shadow-inner_2-Im9{position:relative;width:100%;height:100%;background:hsla(0,0%,100%,.05);box-shadow:0 0 20px 5px rgba(0,0,0,.3),inset 0 0 1px 1px hsla(0,0%,100%,.15)}.window_label-icon_3CM7l{min-width:20px;width:20px;height:20px;z-index:2;margin:1px 4px 5px 2px;display:block;overflow:hidden;position:relative}.window_window_2ML4A.window_deselected_19EFs>.window_btn-group_2AJZd,.window_window_2ML4A.window_deselected_19EFs>.window_label_3pVDU{color:#999}.window_window_2ML4A.window_deselected_19EFs{background-color:#fff;color:#999}.window_label-name_E7Eut{height:26px;display:block;line-height:22px;flex:1;padding-right:8px}.window_label-name_E7Eut:before{content:attr(data-title);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:350px}.window_btn-group_2AJZd{position:absolute;float:right;top:-1px;right:0;z-index:10;color:#fff;background-color:inherit}.window_btn_1a_9s{width:46px;height:30px;line-height:29px;text-align:center;transition:background-color .15s;display:inline-block;position:relative}.window_btn_1a_9s:hover{background-color:hsla(0,0%,100%,.15)}.window_btn_1a_9s:active{background-color:hsla(0,0%,100%,.25);transition:none}.window_btn-minimise_dVosQ:before{content:\"\";position:absolute;border-top:4px solid;width:45px;top:50%;left:50%;transform:translate(-50%,-50%) scale(.25)}.window_btn-maximise_3wyeG:before{content:\"\";position:absolute;border:3px solid;width:30px;height:30px;top:50%;left:50%;transform:translate(-50%,-50%) scale(.27)}.window_btn-maximise_3wyeG.window_restore_WexhK:before{content:\"\";position:absolute;border:3px solid;width:30px;height:30px;top:53%;left:48%;transform:translate(-50%,-50%) scale(.25)}.window_btn-maximise_3wyeG.window_restore_WexhK:after{content:\"\";position:absolute;border:4px solid;width:37px;height:37px;top:47%;left:52%;border-radius:40% 0 40% 75%;border-bottom-color:transparent;border-left-color:transparent;transform:translate(-50%,-50%) scale(.25)}.window_btn-close_XJTd9:hover{background-color:#da3636}.window_btn-close_XJTd9:active{background-color:rgba(218,54,54,.7)}.window_btn-close_XJTd9:before{transform:translate(-50%,-50%) rotate(45deg) scale(.33)}.window_btn-close_XJTd9:after,.window_btn-close_XJTd9:before{content:\"\";position:absolute;border-left:3px solid;height:40px;top:50%;left:50%}.window_btn-close_XJTd9:after{transform:translate(-50%,-50%) rotate(-45deg) scale(.33)}.window_window_2ML4A.window_deselected_19EFs .window_btn_1a_9s:hover{background-color:rgba(0,0,0,.1);color:#000}.window_window_2ML4A.window_deselected_19EFs .window_btn_1a_9s.window_btn-close_XJTd9:hover{background-color:#da3636;color:#fff}.window_resize_197NP{position:absolute;width:100%;height:100%;z-index:3}.window_bar-left_2KXh5{left:-7px}.window_bar-left_2KXh5,.window_bar-right_1Mekj{position:absolute;z-index:1;height:100%;width:7px;cursor:ew-resize}.window_bar-right_1Mekj{right:-7px}.window_bar-top_XNkq-{top:-4px}.window_bar-bottom_2uBYs,.window_bar-top_XNkq-{position:absolute;z-index:1;height:7px;width:100%;cursor:ns-resize}.window_bar-bottom_2uBYs{bottom:-7px}.window_dot-left-top_3VcO5{cursor:nw-resize;top:-5px}.window_dot-left-bottom_K1Zjw,.window_dot-left-top_3VcO5{position:absolute;z-index:2;width:7px;height:7px;left:-5px}.window_dot-left-bottom_K1Zjw{cursor:sw-resize;bottom:-5px}.window_dot-right-top_1pQwK{cursor:ne-resize;top:-5px}.window_dot-right-bottom_2s96e,.window_dot-right-top_1pQwK{position:absolute;z-index:2;width:7px;height:7px;right:-5px}.window_dot-right-bottom_2s96e{cursor:nw-resize;bottom:-5px}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/window.css"],"names":[],"mappings":"AAAA,wBACE,kBAAmB,AACnB,WAAa,CACd,AACD,qBACE,kBAAmB,AACnB,eAAgB,AAChB,uCAAgD,AAChD,iBAAkB,AAClB,gBAAiB,AACjB,iBAAkB,AAClB,yBAA0B,AAC1B,cAAe,AACf,kBAAmB,AACnB,YAAa,AACb,aAAc,AACd,SAAU,AACV,UAAW,AACX,sBAAuB,AACvB,aAAc,AACd,iBAAkB,AAClB,gBAAkB,CACnB,AACD,sBACE,WAAY,AACZ,YAAa,AACb,OAAQ,AACR,gBAAiB,AACjB,UAAW,AACX,aAAe,CAChB,AACD,oBACE,YAAa,AACb,WAAY,AACZ,eAAgB,AAChB,aAAc,AACd,UAAW,AACX,UAAY,CACb,AACD,sCACE,UAAW,AACX,MAAO,AACP,OAAQ,AACR,WAAY,AACZ,WAAa,CACd,AACD,uCACE,UAAW,AACX,MAAO,AACP,OAAQ,AACR,UAAW,AACX,WAAa,CACd,AACD,wCACE,UAAW,AACX,MAAO,AACP,SAAU,AACV,UAAW,AACX,WAAa,CACd,AACD,iHACE,UAAW,AACX,UAAY,CACb,AACD,qBACE,UAAW,AACX,YAAa,AACb,kBAAmB,AACnB,sBAAuB,AACvB,YAAa,AACb,aAAc,AACd,mBAAoB,AACpB,QAAS,AACT,SAAU,AACV,mBAAqB,AACrB,mCAAqC,CACtC,AACD,2BACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,+BAAsC,AACtC,4EAAiG,CAClG,AACD,yBACE,eAAgB,AAChB,WAAY,AACZ,YAAa,AACb,UAAW,AACX,uBAAwB,AACxB,cAAe,AACf,gBAAiB,AACjB,iBAAmB,CACpB,AACD,sIACE,UAAY,CACb,AACD,6CACE,sBAAuB,AACvB,UAAY,CACb,AACD,yBACE,YAAa,AACb,cAAe,AACf,iBAAkB,AAClB,OAAQ,AACR,iBAAmB,CACpB,AACD,gCACE,yBAA0B,AAC1B,eAAgB,AAChB,mBAAoB,AACpB,gBAAiB,AACjB,uBAAwB,AACxB,eAAiB,CAClB,AACD,wBACE,kBAAmB,AACnB,YAAa,AACb,SAAU,AACV,QAAS,AACT,WAAY,AACZ,WAAY,AACZ,wBAA0B,CAC3B,AACD,kBACE,WAAY,AACZ,YAAa,AACb,iBAAkB,AAClB,kBAAmB,AACnB,iCAAmC,AACnC,qBAAsB,AACtB,iBAAmB,CACpB,AACD,wBACE,oCAA4C,CAC7C,AACD,yBACE,qCAA4C,AAC5C,eAAiB,CAClB,AACD,kCACE,WAAY,AACZ,kBAAmB,AACnB,qBAAsB,AACtB,WAAY,AACZ,QAAS,AACT,SAAU,AACV,yCAA2C,CAC5C,AACD,kCACE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AACb,QAAS,AACT,SAAU,AACV,yCAA4C,CAC7C,AACD,uDACE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AACb,QAAS,AACT,SAAU,AACV,yCAA4C,CAC7C,AACD,sDACE,WAAY,AACZ,kBAAmB,AACnB,iBAAkB,AAClB,WAAY,AACZ,YAAa,AACb,QAAS,AACT,SAAU,AACV,4BAA6B,AAC7B,gCAAiC,AACjC,8BAA+B,AAC/B,yCAA2C,CAC5C,AACD,8BACE,wBAAmC,CACpC,AACD,+BACE,mCAAyC,CAC1C,AACD,+BAOE,uDAA0D,CAC3D,AACD,6DARE,WAAY,AACZ,kBAAmB,AACnB,sBAAuB,AACvB,YAAa,AACb,QAAS,AACT,QAAU,CAWX,AARD,8BAOE,wDAA2D,CAC5D,AACD,qEACE,gCAAkC,AAClC,UAAkB,CACnB,AACD,4FACE,yBAAmC,AACnC,UAAY,CACb,AACD,qBACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,SAAW,CACZ,AACD,uBAME,SAAW,CACZ,AACD,+CAPE,kBAAmB,AACnB,UAAW,AACX,YAAa,AACb,UAAW,AACX,gBAAkB,CAUnB,AAPD,wBAME,UAAY,CACb,AACD,sBAME,QAAU,CACX,AACD,+CAPE,kBAAmB,AACnB,UAAW,AACX,WAAY,AACZ,WAAY,AACZ,gBAAkB,CAUnB,AAPD,yBAME,WAAa,CACd,AACD,2BAKE,iBAAkB,AAClB,QAAU,CAEX,AACD,yDARE,kBAAmB,AACnB,UAAW,AACX,UAAW,AACX,WAAY,AAGZ,SAAW,CAUZ,AARD,8BAKE,iBAAkB,AAClB,WAAa,CAEd,AACD,4BAKE,iBAAkB,AAElB,QAAU,CACX,AACD,2DARE,kBAAmB,AACnB,UAAW,AACX,UAAW,AACX,WAAY,AAEZ,UAAY,CAWb,AARD,+BAKE,iBAAkB,AAElB,WAAa,CACd","file":"window.css","sourcesContent":[".window-ct{\r\n  position: absolute;\r\n  z-index: 106;\r\n}\r\n.window{\r\n  position: absolute;\r\n  cursor: default;\r\n  box-shadow: 0px 1px 13px 0px rgba(0, 0, 0, 0.4);\r\n  border: 1px solid;\r\n  min-width: 170px;\r\n  min-height: 130px;\r\n  background-color: #515c6b;\r\n  color: #515c6b;\r\n  visibility: hidden;\r\n  width: 600px;\r\n  height: 400px;\r\n  top: 50px;\r\n  left: 70px;\r\n  box-sizing: border-box;\r\n  display: flex;\r\n  flex-flow: column;\r\n  overflow: visible;\r\n}\r\n.content{\r\n  width: 100%;\r\n  height: 100%;\r\n  flex: 1;\r\n  background: #fff;\r\n  z-index: 5;\r\n  overflow: auto;\r\n}\r\n.label{\r\n  height: 26px;\r\n  width: 100%;\r\n  margin-top: 3px;\r\n  display: flex;\r\n  z-index: 8;\r\n  color: #fff;\r\n}\r\n.shadow.top{\r\n  opacity: 1;\r\n  top: 0;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n.shadow.left{\r\n  opacity: 1;\r\n  top: 0;\r\n  left: 0;\r\n  width: 50%;\r\n  height: 100%;\r\n}\r\n.shadow.right{\r\n  opacity: 1;\r\n  top: 0;\r\n  left: 50%;\r\n  width: 50%;\r\n  height: 100%;\r\n}\r\n.shadow.top.left, .shadow.top.right{\r\n  width: 50%;\r\n  height: 50%;\r\n}\r\n.shadow{\r\n  opacity: 0;\r\n  z-index: 105;\r\n  position: absolute;\r\n  box-sizing: border-box;\r\n  padding: 7px;\r\n  display: none;\r\n  visibility: visible;\r\n  width: 0;\r\n  height: 0;\r\n  transition: all 0.2s;\r\n  transition-timing-function: ease-out;\r\n}\r\n.shadow-inner{\r\n  position: relative;\r\n  width: 100%;\r\n  height: 100%;\r\n  background: rgba(255, 255, 255, 0.05);\r\n  box-shadow: 0px 0px 20px 5px rgba(0, 0, 0, 0.3), inset 0px 0px 1px 1px rgba(255, 255, 255, 0.15);\r\n}\r\n.label-icon{\r\n  min-width: 20px;\r\n  width: 20px;\r\n  height: 20px;\r\n  z-index: 2;\r\n  margin: 1px 4px 5px 2px;\r\n  display: block;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n.window.deselected>.label, .window.deselected>.btn-group{\r\n  color: #999;\r\n}\r\n.window.deselected{\r\n  background-color: #fff;\r\n  color: #999;\r\n}\r\n.label-name{\r\n  height: 26px;\r\n  display: block;\r\n  line-height: 22px;\r\n  flex: 1;\r\n  padding-right: 8px;\r\n}\r\n.label-name:before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  white-space: nowrap;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  max-width: 350px;\r\n}\r\n.btn-group{\r\n  position: absolute;\r\n  float: right;\r\n  top: -1px;\r\n  right: 0;\r\n  z-index: 10;\r\n  color: #fff;\r\n  background-color: inherit;\r\n}\r\n.btn{\r\n  width: 46px;\r\n  height: 30px;\r\n  line-height: 29px;\r\n  text-align: center;\r\n  transition: background-color 0.15s;\r\n  display: inline-block;\r\n  position: relative;\r\n}\r\n.btn:hover{\r\n  background-color: rgba(255, 255, 255, 0.15);\r\n}\r\n.btn:active{\r\n  background-color: rgba(255, 255, 255, 0.25);\r\n  transition: none;\r\n}\r\n.btn-minimise:before{\r\n  content: \"\";\r\n  position: absolute;\r\n  border-top: 4px solid;\r\n  width: 45px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) scale(.25);\r\n}\r\n.btn-maximise:before{\r\n  content: '';\r\n  position: absolute;\r\n  border: 3px solid;\r\n  width: 30px;\r\n  height: 30px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) scale(0.27);\r\n}\r\n.btn-maximise.restore:before{\r\n  content: '';\r\n  position: absolute;\r\n  border: 3px solid;\r\n  width: 30px;\r\n  height: 30px;\r\n  top: 53%;\r\n  left: 48%;\r\n  transform: translate(-50%,-50%) scale(0.25);\r\n}\r\n.btn-maximise.restore:after{\r\n  content: \"\";\r\n  position: absolute;\r\n  border: 4px solid;\r\n  width: 37px;\r\n  height: 37px;\r\n  top: 47%;\r\n  left: 52%;\r\n  border-radius: 40% 0 40% 75%;\r\n  border-bottom-color: transparent;\r\n  border-left-color: transparent;\r\n  transform: translate(-50%,-50%) scale(.25);\r\n}\r\n.btn-close:hover{\r\n  background-color: rgb(218, 54, 54);\r\n}\r\n.btn-close:active{\r\n  background-color: rgba(218, 54, 54, 0.7);\r\n}\r\n.btn-close:before{\r\n  content: '';\r\n  position: absolute;\r\n  border-left: 3px solid;\r\n  height: 40px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) rotate(45deg) scale(0.33);\r\n}\r\n.btn-close:after{\r\n  content: '';\r\n  position: absolute;\r\n  border-left: 3px solid;\r\n  height: 40px;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%,-50%) rotate(-45deg) scale(0.33);\r\n}\r\n.window.deselected .btn:hover{\r\n  background-color: rgba(0,0,0,0.1);\r\n  color: rgb(0,0,0);\r\n}\r\n.window.deselected .btn.btn-close:hover{\r\n  background-color: rgb(218, 54, 54);\r\n  color: #fff;\r\n}\r\n.resize{\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 3;\r\n}\r\n.bar-left{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 100%;\r\n  width: 7px;\r\n  cursor: ew-resize;\r\n  left: -7px;\r\n}\r\n.bar-right{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 100%;\r\n  width: 7px;\r\n  cursor: ew-resize;\r\n  right: -7px;\r\n}\r\n.bar-top{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 7px;\r\n  width: 100%;\r\n  cursor: ns-resize;\r\n  top: -4px;\r\n}\r\n.bar-bottom{\r\n  position: absolute;\r\n  z-index: 1;\r\n  height: 7px;\r\n  width: 100%;\r\n  cursor: ns-resize;\r\n  bottom: -7px;\r\n}\r\n.dot-left-top{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: nw-resize;\r\n  top: -5px;\r\n  left: -5px;\r\n}\r\n.dot-left-bottom{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: sw-resize;\r\n  bottom: -5px;\r\n  left: -5px;\r\n}\r\n.dot-right-top{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: ne-resize;\r\n  right: -5px;\r\n  top: -5px;\r\n}\r\n.dot-right-bottom{\r\n  position: absolute;\r\n  z-index: 2;\r\n  width: 7px;\r\n  height: 7px;\r\n  cursor: nw-resize;\r\n  right: -5px;\r\n  bottom: -5px;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -6588,13 +6842,19 @@ exports.locals = {
 	"window": "window_window_2ML4A",
 	"content": "window_content_3zSiF",
 	"label": "window_label_3pVDU",
+	"shadow": "window_shadow_3mHdY",
+	"top": "window_top_1b_2l",
+	"left": "window_left_1ctfE",
+	"right": "window_right_33T0b",
+	"shadow-inner": "window_shadow-inner_2-Im9",
+	"shadowInner": "window_shadow-inner_2-Im9",
 	"label-icon": "window_label-icon_3CM7l",
 	"labelIcon": "window_label-icon_3CM7l",
 	"deselected": "window_deselected_19EFs",
-	"label-name": "window_label-name_E7Eut",
-	"labelName": "window_label-name_E7Eut",
 	"btn-group": "window_btn-group_2AJZd",
 	"btnGroup": "window_btn-group_2AJZd",
+	"label-name": "window_label-name_E7Eut",
+	"labelName": "window_label-name_E7Eut",
 	"btn": "window_btn_1a_9s",
 	"btn-minimise": "window_btn-minimise_dVosQ",
 	"btnMinimise": "window_btn-minimise_dVosQ",
@@ -6604,22 +6864,22 @@ exports.locals = {
 	"btn-close": "window_btn-close_XJTd9",
 	"btnClose": "window_btn-close_XJTd9",
 	"resize": "window_resize_197NP",
-	"bar-l": "window_bar-l_ODyHu",
-	"barL": "window_bar-l_ODyHu",
-	"bar-r": "window_bar-r_QsEqC",
-	"barR": "window_bar-r_QsEqC",
-	"bar-t": "window_bar-t_3_dYG",
-	"barT": "window_bar-t_3_dYG",
-	"bar-b": "window_bar-b_28NSx",
-	"barB": "window_bar-b_28NSx",
-	"dot-l-t": "window_dot-l-t_17ZnN",
-	"dotLT": "window_dot-l-t_17ZnN",
-	"dot-l-b": "window_dot-l-b_3yiP5",
-	"dotLB": "window_dot-l-b_3yiP5",
-	"dot-r-t": "window_dot-r-t_26u88",
-	"dotRT": "window_dot-r-t_26u88",
-	"dot-r-b": "window_dot-r-b_19ksi",
-	"dotRB": "window_dot-r-b_19ksi"
+	"bar-left": "window_bar-left_2KXh5",
+	"barLeft": "window_bar-left_2KXh5",
+	"bar-right": "window_bar-right_1Mekj",
+	"barRight": "window_bar-right_1Mekj",
+	"bar-top": "window_bar-top_XNkq-",
+	"barTop": "window_bar-top_XNkq-",
+	"bar-bottom": "window_bar-bottom_2uBYs",
+	"barBottom": "window_bar-bottom_2uBYs",
+	"dot-left-top": "window_dot-left-top_3VcO5",
+	"dotLeftTop": "window_dot-left-top_3VcO5",
+	"dot-left-bottom": "window_dot-left-bottom_K1Zjw",
+	"dotLeftBottom": "window_dot-left-bottom_K1Zjw",
+	"dot-right-top": "window_dot-right-top_1pQwK",
+	"dotRightTop": "window_dot-right-top_1pQwK",
+	"dot-right-bottom": "window_dot-right-bottom_2s96e",
+	"dotRightBottom": "window_dot-right-bottom_2s96e"
 };
 
 /***/ }),
@@ -6636,7 +6896,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".login_full-screen_2en_t{width:100%;height:100%;position:absolute;top:0;left:0}.login_container_1OBna{opacity:1;background-color:#0067b8;color:#fff;z-index:99999990}.login_transition_3U86N{transition:all .15s ease-in}.login_container_1OBna.login_close_EC7ug{opacity:0}.login_background-img_3f0i7{min-width:850px;min-height:604px;opacity:1;position:fixed}.login_blocker_1g377{background-color:#0067b8;transition:opacity 1s ease-out}.login_login-cover_2FOFz{transition:opacity .3s ease-out;z-index:1}.login_login-cover-container_2lfKU{position:absolute;max-width:450px;text-align:center;top:50%;left:50%;transform:translate(-50%,-50%)}.login_portrait_3BiRN{width:200px;height:200px;border-radius:50%;background-color:hsla(0,0%,68%,.7);overflow:hidden;display:inline-block;position:relative}.login_portrait-default_O6tAo{width:62px;height:62px;border:6px solid #fff;border-radius:50%;margin-top:-22px;box-sizing:border-box}.login_portrait-default-b_1LChd,.login_portrait-default_O6tAo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.login_portrait-default-b_1LChd{height:46px;width:92px;margin-top:49px;overflow:hidden}.login_portrait-default-b_1LChd:before{content:\"\";height:92px;width:92px;box-sizing:border-box;border:6px solid #fff;border-radius:50%;position:absolute;left:0}.login_username_3sni2{font-size:45px;text-align:center;display:inline-block;margin-top:10px;max-width:450px;font-weight:lighter}.login_greetings_2OEhe{font-size:14px;display:inline-block;text-align:left;margin-top:25px}.login_btn-login_3_k2f{font-size:18px;display:inline-block;text-align:center;margin-top:20px;cursor:pointer}.login_btn-login_3_k2f:hover{color:#ccc}.login_btn-login_3_k2f:active{color:#a5a5a5}.login_date-cover_1r39F{transition:all .15s ease-in;z-index:2}.login_date_1mJIi{position:absolute;bottom:50px;left:20px;font-weight:lighter}.login_date-time_HcCKB{font-size:90px}.login_date-date_C9Ewt{font-size:36px}.login_btn_2cC-o{opacity:.7;background-color:rgba(81,92,107,.4);cursor:pointer}.login_btn_2cC-o:hover{opacity:.9;background-color:rgba(81,92,107,.5)}.login_btn_2cC-o:active{background-color:rgba(81,92,107,.6)}.login_lock_2CIJD{opacity:.5;position:absolute;left:70px;width:55px;height:55px;transform:translateY(-22%)scale(.55)}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/login/login.css"],"names":[],"mappings":"AAAA,yBACE,WAAY,AACZ,YAAa,AACb,kBAAmB,AACnB,MAAO,AACP,MAAQ,CACT,AACD,uBACE,UAAW,AACX,yBAAmC,AACnC,WAAY,AACZ,gBAAkB,CACnB,AACD,wBACE,2BAA8B,CAC/B,AACD,yCACE,SAAW,CACZ,AACD,4BACE,gBAAiB,AACjB,iBAAkB,AAClB,UAAW,AACX,cAAgB,CACjB,AACD,qBACE,yBAAmC,AACnC,8BAAgC,CACjC,AACD,yBACE,gCAAkC,AAClC,SAAW,CACZ,AACD,mCACE,kBAAmB,AACnB,gBAAiB,AACjB,kBAAmB,AACnB,QAAS,AACT,SAAU,AACV,8BAAiC,CAClC,AACD,sBACE,YAAa,AACb,aAAc,AACd,kBAAmB,AACnB,mCAA2C,AAC3C,gBAAiB,AACjB,qBAAsB,AACtB,iBAAmB,CACpB,AACD,8BAKE,WAAY,AACZ,YAAa,AACb,sBAAuB,AACvB,kBAAmB,AACnB,iBAAkB,AAClB,qBAAuB,CACxB,AACD,8DAXE,kBAAmB,AACnB,SAAU,AACV,QAAS,AACT,8BAAiC,CAiBlC,AATD,gCAEE,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,eAAiB,CAIlB,AACD,uCACE,WAAY,AACZ,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,sBAAuB,AACvB,kBAAmB,AACnB,kBAAmB,AACnB,MAAU,CACX,AACD,sBACE,eAAgB,AAChB,kBAAmB,AACnB,qBAAsB,AACtB,gBAAiB,AACjB,gBAAiB,AACjB,mBAAqB,CACtB,AACD,uBACE,eAAgB,AAChB,qBAAsB,AACtB,gBAAiB,AACjB,eAAiB,CAClB,AACD,uBACE,eAAgB,AAChB,qBAAsB,AACtB,kBAAmB,AACnB,gBAAiB,AACjB,cAAgB,CACjB,AACD,6BACE,UAAY,CACb,AACD,8BACE,aAAe,CAChB,AACD,wBACE,4BAA8B,AAC9B,SAAW,CACZ,AACD,kBACE,kBAAmB,AACnB,YAAa,AACb,UAAW,AACX,mBAAqB,CACtB,AACD,uBACE,cAAgB,CACjB,AACD,uBACE,cAAgB,CACjB,AACD,iBACE,WAAa,AACb,oCAAyC,AACzC,cAAgB,CACjB,AACD,uBACE,WAAa,AACb,mCAAyC,CAC1C,AACD,wBACE,mCAAyC,CAC1C,AACD,kBACE,WAAa,AACb,kBAAmB,AACnB,UAAW,AACX,WAAY,AACZ,YAAa,AACb,oCAAuC,CACxC","file":"login.css","sourcesContent":[".full-screen{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n}\r\n.container{\r\n  opacity: 1;\r\n  background-color: rgb(0, 103, 184);\r\n  color: #fff;\r\n  z-index: 99999990;\r\n}\r\n.transition{\r\n  transition: all 0.15s ease-in;\r\n}\r\n.container.close{\r\n  opacity: 0;\r\n}\r\n.background-img{\r\n  min-width: 850px;\r\n  min-height: 604px;\r\n  opacity: 1;\r\n  position: fixed;\r\n}\r\n.blocker{\r\n  background-color: rgb(0, 103, 184);\r\n  transition: opacity 1s ease-out;\r\n}\r\n.login-cover{\r\n  transition: opacity 0.3s ease-out;\r\n  z-index: 1;\r\n}\r\n.login-cover-container{\r\n  position: absolute;\r\n  max-width: 450px;\r\n  text-align: center;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n.portrait{\r\n  width: 200px;\r\n  height: 200px;\r\n  border-radius: 50%;\r\n  background-color: rgba(174, 174, 174, 0.7);\r\n  overflow: hidden;\r\n  display: inline-block;\r\n  position: relative;\r\n}\r\n.portrait-default{\r\n  position: absolute;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%, -50%);\r\n  width: 62px;\r\n  height: 62px;\r\n  border: 6px solid #fff;\r\n  border-radius: 50%;\r\n  margin-top: -22px;\r\n  box-sizing: border-box;\r\n}\r\n.portrait-default-b{\r\n  position: absolute;\r\n  height: 46px;\r\n  width: 92px;\r\n  margin-top: 49px;\r\n  overflow: hidden;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%,-50%);\r\n}\r\n.portrait-default-b::before{\r\n  content: \"\";\r\n  height: 92px;\r\n  width: 92px;\r\n  box-sizing: border-box;\r\n  border: 6px solid #fff;\r\n  border-radius: 50%;\r\n  position: absolute;\r\n  left: 0px;\r\n}\r\n.username{\r\n  font-size: 45px;\r\n  text-align: center;\r\n  display: inline-block;\r\n  margin-top: 10px;\r\n  max-width: 450px;\r\n  font-weight: lighter;\r\n}\r\n.greetings{\r\n  font-size: 14px;\r\n  display: inline-block;\r\n  text-align: left;\r\n  margin-top: 25px;\r\n}\r\n.btn-login{\r\n  font-size: 18px;\r\n  display: inline-block;\r\n  text-align: center;\r\n  margin-top: 20px;\r\n  cursor: pointer;\r\n}\r\n.btn-login:hover{\r\n  color: #ccc;\r\n}\r\n.btn-login:active{\r\n  color: #a5a5a5;\r\n}\r\n.date-cover{\r\n  transition: all 0.15s ease-in;\r\n  z-index: 2;\r\n}\r\n.date{\r\n  position: absolute;\r\n  bottom: 50px;\r\n  left: 20px;\r\n  font-weight: lighter;\r\n}\r\n.date-time{\r\n  font-size: 90px;\r\n}\r\n.date-date{\r\n  font-size: 36px;\r\n}\r\n.btn{\r\n  opacity: 0.7;\r\n  background-color: rgba(81, 92, 107, 0.4);\r\n  cursor: pointer;\r\n}\r\n.btn:hover{\r\n  opacity: 0.9;\r\n  background-color: rgba(81, 92, 107, 0.5);\r\n}\r\n.btn:active{\r\n  background-color: rgba(81, 92, 107, 0.6);\r\n}\r\n.lock{\r\n  opacity: 0.5;\r\n  position: absolute;\r\n  left: 70px;\r\n  width: 55px;\r\n  height: 55px;\r\n  transform: translateY(-22%)scale(0.55);\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".login_full-screen_2en_t{width:100%;height:100%;position:absolute;top:0;left:0}.login_container_1OBna{opacity:1;background-color:#0067b8;color:#fff;z-index:99999990}.login_transition_3U86N{transition:all .15s ease-in}.login_container_1OBna.login_close_EC7ug{opacity:0}.login_background-img_3f0i7{min-width:850px;min-height:604px;opacity:1;position:fixed}.login_blocker_1g377{background-color:#0067b8;transition:opacity 1s ease-out}.login_login-cover_2FOFz{transition:opacity .3s ease-out;z-index:1}.login_login-cover-container_2lfKU{position:absolute;max-width:450px;text-align:center;top:50%;left:50%;transform:translate(-50%,-50%)}.login_portrait_3BiRN{width:200px;height:200px;border-radius:50%;background-color:hsla(0,0%,68%,.7);overflow:hidden;display:inline-block;position:relative}.login_portrait-default_O6tAo{width:62px;height:62px;border:6px solid #fff;border-radius:50%;margin-top:-22px;box-sizing:border-box}.login_portrait-default-b_1LChd,.login_portrait-default_O6tAo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.login_portrait-default-b_1LChd{height:46px;width:92px;margin-top:49px;overflow:hidden}.login_portrait-default-b_1LChd:before{content:\"\";height:92px;width:92px;box-sizing:border-box;border:6px solid #fff;border-radius:50%;position:absolute;left:0}.login_username_3sni2{font-size:45px;text-align:center;display:inline-block;margin-top:10px;max-width:450px;font-weight:lighter}.login_greetings_2OEhe{font-size:14px;display:inline-block;text-align:left;margin-top:25px;font-weight:lighter}.login_btn-login_3_k2f{font-size:18px;display:inline-block;text-align:center;margin-top:20px;cursor:pointer}.login_btn-login_3_k2f:hover{color:#ccc}.login_btn-login_3_k2f:active{color:#a5a5a5}.login_date-cover_1r39F{transition:all .15s ease-in;z-index:2}.login_date_1mJIi{position:absolute;bottom:50px;left:20px;font-weight:lighter}.login_date-time_HcCKB{font-size:90px}.login_date-date_C9Ewt{font-size:36px}.login_btn_2cC-o{opacity:.7;background-color:rgba(81,92,107,.4);cursor:pointer}.login_btn_2cC-o:hover{opacity:.9;background-color:rgba(81,92,107,.5)}.login_btn_2cC-o:active{background-color:rgba(81,92,107,.6)}.login_lock_2CIJD{opacity:.5;position:absolute;left:70px;width:55px;height:55px;transform:translateY(-22%)scale(.55)}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/login/login.css"],"names":[],"mappings":"AAAA,yBACE,WAAY,AACZ,YAAa,AACb,kBAAmB,AACnB,MAAO,AACP,MAAQ,CACT,AACD,uBACE,UAAW,AACX,yBAAmC,AACnC,WAAY,AACZ,gBAAkB,CACnB,AACD,wBACE,2BAA8B,CAC/B,AACD,yCACE,SAAW,CACZ,AACD,4BACE,gBAAiB,AACjB,iBAAkB,AAClB,UAAW,AACX,cAAgB,CACjB,AACD,qBACE,yBAAmC,AACnC,8BAAgC,CACjC,AACD,yBACE,gCAAkC,AAClC,SAAW,CACZ,AACD,mCACE,kBAAmB,AACnB,gBAAiB,AACjB,kBAAmB,AACnB,QAAS,AACT,SAAU,AACV,8BAAiC,CAClC,AACD,sBACE,YAAa,AACb,aAAc,AACd,kBAAmB,AACnB,mCAA2C,AAC3C,gBAAiB,AACjB,qBAAsB,AACtB,iBAAmB,CACpB,AACD,8BAKE,WAAY,AACZ,YAAa,AACb,sBAAuB,AACvB,kBAAmB,AACnB,iBAAkB,AAClB,qBAAuB,CACxB,AACD,8DAXE,kBAAmB,AACnB,SAAU,AACV,QAAS,AACT,8BAAiC,CAiBlC,AATD,gCAEE,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,eAAiB,CAIlB,AACD,uCACE,WAAY,AACZ,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,sBAAuB,AACvB,kBAAmB,AACnB,kBAAmB,AACnB,MAAU,CACX,AACD,sBACE,eAAgB,AAChB,kBAAmB,AACnB,qBAAsB,AACtB,gBAAiB,AACjB,gBAAiB,AACjB,mBAAqB,CACtB,AACD,uBACE,eAAgB,AAChB,qBAAsB,AACtB,gBAAiB,AACjB,gBAAiB,AACjB,mBAAqB,CACtB,AACD,uBACE,eAAgB,AAChB,qBAAsB,AACtB,kBAAmB,AACnB,gBAAiB,AACjB,cAAgB,CACjB,AACD,6BACE,UAAY,CACb,AACD,8BACE,aAAe,CAChB,AACD,wBACE,4BAA8B,AAC9B,SAAW,CACZ,AACD,kBACE,kBAAmB,AACnB,YAAa,AACb,UAAW,AACX,mBAAqB,CACtB,AACD,uBACE,cAAgB,CACjB,AACD,uBACE,cAAgB,CACjB,AACD,iBACE,WAAa,AACb,oCAAyC,AACzC,cAAgB,CACjB,AACD,uBACE,WAAa,AACb,mCAAyC,CAC1C,AACD,wBACE,mCAAyC,CAC1C,AACD,kBACE,WAAa,AACb,kBAAmB,AACnB,UAAW,AACX,WAAY,AACZ,YAAa,AACb,oCAAuC,CACxC","file":"login.css","sourcesContent":[".full-screen{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n}\r\n.container{\r\n  opacity: 1;\r\n  background-color: rgb(0, 103, 184);\r\n  color: #fff;\r\n  z-index: 99999990;\r\n}\r\n.transition{\r\n  transition: all 0.15s ease-in;\r\n}\r\n.container.close{\r\n  opacity: 0;\r\n}\r\n.background-img{\r\n  min-width: 850px;\r\n  min-height: 604px;\r\n  opacity: 1;\r\n  position: fixed;\r\n}\r\n.blocker{\r\n  background-color: rgb(0, 103, 184);\r\n  transition: opacity 1s ease-out;\r\n}\r\n.login-cover{\r\n  transition: opacity 0.3s ease-out;\r\n  z-index: 1;\r\n}\r\n.login-cover-container{\r\n  position: absolute;\r\n  max-width: 450px;\r\n  text-align: center;\r\n  top: 50%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n}\r\n.portrait{\r\n  width: 200px;\r\n  height: 200px;\r\n  border-radius: 50%;\r\n  background-color: rgba(174, 174, 174, 0.7);\r\n  overflow: hidden;\r\n  display: inline-block;\r\n  position: relative;\r\n}\r\n.portrait-default{\r\n  position: absolute;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%, -50%);\r\n  width: 62px;\r\n  height: 62px;\r\n  border: 6px solid #fff;\r\n  border-radius: 50%;\r\n  margin-top: -22px;\r\n  box-sizing: border-box;\r\n}\r\n.portrait-default-b{\r\n  position: absolute;\r\n  height: 46px;\r\n  width: 92px;\r\n  margin-top: 49px;\r\n  overflow: hidden;\r\n  left: 50%;\r\n  top: 50%;\r\n  transform: translate(-50%,-50%);\r\n}\r\n.portrait-default-b::before{\r\n  content: \"\";\r\n  height: 92px;\r\n  width: 92px;\r\n  box-sizing: border-box;\r\n  border: 6px solid #fff;\r\n  border-radius: 50%;\r\n  position: absolute;\r\n  left: 0px;\r\n}\r\n.username{\r\n  font-size: 45px;\r\n  text-align: center;\r\n  display: inline-block;\r\n  margin-top: 10px;\r\n  max-width: 450px;\r\n  font-weight: lighter;\r\n}\r\n.greetings{\r\n  font-size: 14px;\r\n  display: inline-block;\r\n  text-align: left;\r\n  margin-top: 25px;\r\n  font-weight: lighter;\r\n}\r\n.btn-login{\r\n  font-size: 18px;\r\n  display: inline-block;\r\n  text-align: center;\r\n  margin-top: 20px;\r\n  cursor: pointer;\r\n}\r\n.btn-login:hover{\r\n  color: #ccc;\r\n}\r\n.btn-login:active{\r\n  color: #a5a5a5;\r\n}\r\n.date-cover{\r\n  transition: all 0.15s ease-in;\r\n  z-index: 2;\r\n}\r\n.date{\r\n  position: absolute;\r\n  bottom: 50px;\r\n  left: 20px;\r\n  font-weight: lighter;\r\n}\r\n.date-time{\r\n  font-size: 90px;\r\n}\r\n.date-date{\r\n  font-size: 36px;\r\n}\r\n.btn{\r\n  opacity: 0.7;\r\n  background-color: rgba(81, 92, 107, 0.4);\r\n  cursor: pointer;\r\n}\r\n.btn:hover{\r\n  opacity: 0.9;\r\n  background-color: rgba(81, 92, 107, 0.5);\r\n}\r\n.btn:active{\r\n  background-color: rgba(81, 92, 107, 0.6);\r\n}\r\n.lock{\r\n  opacity: 0.5;\r\n  position: absolute;\r\n  left: 70px;\r\n  width: 55px;\r\n  height: 55px;\r\n  transform: translateY(-22%)scale(0.55);\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {

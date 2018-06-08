@@ -35,8 +35,55 @@
   margin-top: 3px;
   display: flex;
   z-index: 8;
+  color: #fff;
+}
+.shadow.top{
+  opacity: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.shadow.left{
+  opacity: 1;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+}
+.shadow.right{
+  opacity: 1;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+}
+.shadow.top.left, .shadow.top.right{
+  width: 50%;
+  height: 50%;
+}
+.shadow{
+  opacity: 0;
+  z-index: 105;
+  position: absolute;
+  box-sizing: border-box;
+  padding: 7px;
+  display: none;
+  visibility: visible;
+  width: 0;
+  height: 0;
+  transition: all 0.2s;
+  transition-timing-function: ease-out;
+}
+.shadow-inner{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0px 0px 20px 5px rgba(0, 0, 0, 0.3), inset 0px 0px 1px 1px rgba(255, 255, 255, 0.15);
 }
 .label-icon{
+  min-width: 20px;
   width: 20px;
   height: 20px;
   z-index: 2;
@@ -45,7 +92,7 @@
   overflow: hidden;
   position: relative;
 }
-.window.deselected>.label-name, .window.deselected>.btn-group{
+.window.deselected>.label, .window.deselected>.btn-group{
   color: #999;
 }
 .window.deselected{
@@ -56,8 +103,8 @@
   height: 26px;
   display: block;
   line-height: 22px;
-  color: #fff;
   flex: 1;
+  padding-right: 8px;
 }
 .label-name:before{
   content: attr(data-title);
@@ -74,6 +121,7 @@
   right: 0;
   z-index: 10;
   color: #fff;
+  background-color: inherit;
 }
 .btn{
   width: 46px;
@@ -171,7 +219,7 @@
   height: 100%;
   z-index: 3;
 }
-.bar-l{
+.bar-left{
   position: absolute;
   z-index: 1;
   height: 100%;
@@ -179,7 +227,7 @@
   cursor: ew-resize;
   left: -7px;
 }
-.bar-r{
+.bar-right{
   position: absolute;
   z-index: 1;
   height: 100%;
@@ -187,7 +235,7 @@
   cursor: ew-resize;
   right: -7px;
 }
-.bar-t{
+.bar-top{
   position: absolute;
   z-index: 1;
   height: 7px;
@@ -195,7 +243,7 @@
   cursor: ns-resize;
   top: -4px;
 }
-.bar-b{
+.bar-bottom{
   position: absolute;
   z-index: 1;
   height: 7px;
@@ -203,7 +251,7 @@
   cursor: ns-resize;
   bottom: -7px;
 }
-.dot-l-t{
+.dot-left-top{
   position: absolute;
   z-index: 2;
   width: 7px;
@@ -212,7 +260,7 @@
   top: -5px;
   left: -5px;
 }
-.dot-l-b{
+.dot-left-bottom{
   position: absolute;
   z-index: 2;
   width: 7px;
@@ -221,7 +269,7 @@
   bottom: -5px;
   left: -5px;
 }
-.dot-r-t{
+.dot-right-top{
   position: absolute;
   z-index: 2;
   width: 7px;
@@ -230,7 +278,7 @@
   right: -5px;
   top: -5px;
 }
-.dot-r-b{
+.dot-right-bottom{
   position: absolute;
   z-index: 2;
   width: 7px;

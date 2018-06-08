@@ -22,6 +22,19 @@ class Taskbar extends Component{
       action: "Attach to"
     }
   }
+  updateTask(task){
+    if(task.isTaskbarTask){
+      this.refs.taskbarTasks.update()
+    }
+    if(task.isBackgroundTask){
+      if(task.display){
+        this.refs.backgroundTasksDisplay.update()
+        this.refs.backgroundTasksDisplayDup.update()
+      }else {
+        this.refs.backgroundTasksHidden.update()
+      }
+    }
+  }
   onMouseEnter(e){
     Events.emit(Events.names.being_dragged_items_onenter, this)
   }
@@ -60,7 +73,7 @@ class Taskbar extends Component{
                 <Icon className={'angle up '+css.switchAU}/>
               </div>
               <div className={css.tbTasks}>
-                <Tasks tasks={this.props.tasks} type={0} ref='tasks'/>
+                <Tasks tasks={this.props.tasks} type={0} ref='taskbarTasks'/>
               </div>
             </div>
           </div>
@@ -79,14 +92,14 @@ class Taskbar extends Component{
                 <div className={css.bgSwitchResponse} id='act-hover-more-bg-switch'></div>
                 <span className={css.iconCtBg} style={{position:'absolute'}}><Icon className='angle up'/></span>
                 <div className={css.itemsBgHidden}>
-                  <Tasks tasks={this.props.tasks} type={1}/>
+                  <Tasks tasks={this.props.tasks} type={1} ref='backgroundTasksHidden'/>
                   {/*duplicates of displaying items*/}
-                  <Tasks tasks={this.props.tasks} type={2}/>
+                  <Tasks tasks={this.props.tasks} type={2} ref='backgroundTasksDisplayDup'/>
                 </div>
               </div>
               <div className={css.itemsBgCt} >
                 <div className={css.item+' '+css.itemBg} onClick={()=>{this.changeLanguage()}}><span className={css.iconCtBg}><span className={css.itemBgLang} ref='item_lang'>英</span></span></div>
-                <Tasks tasks={this.props.tasks} type={3}/>
+                <Tasks tasks={this.props.tasks} type={3} ref='backgroundTasksDisplay'/>
               </div>
             </div>
           </div>

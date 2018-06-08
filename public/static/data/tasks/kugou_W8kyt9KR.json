@@ -2,7 +2,8 @@
   "id": "kugou_W8kyt9KR",
   "name": "Kugou Music",
   "isBackgroundTask": 1,
-  "backgroundIcon": {"className":"kugou bg", "display": 1},
+  "display": 1,
+  "backgroundIcon": {"className":"kugou bg"},
   "isTaskbarTask": 0,
   "taskbarIcon": {"className":""}
 }

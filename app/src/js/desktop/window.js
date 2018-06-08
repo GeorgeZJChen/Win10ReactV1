@@ -73,6 +73,10 @@ class Windows extends Component {
 
   render(){
     return (
+      <React.Fragment>
+      <div className={css.shadow} ref='shadow'>
+        <div className={css.shadowInner}></div>
+      </div>
       <div className={css.windowCt} ref='element'>
         {
           (()=>{
@@ -84,6 +88,7 @@ class Windows extends Component {
           })()
         }
       </div>
+      </React.Fragment>
     )
   }
 }
@@ -107,6 +112,7 @@ class Win extends Component{
     this.minimise = this.minimise.bind(this)
     this.maximise = this.maximise.bind(this)
     this.onMouseDown = this.onMouseDown.bind(this)
+    this.resize = this.resize.bind(this)
 
     this.maximised = 0
     this.minimised = 0
@@ -125,7 +131,7 @@ class Win extends Component{
   }
   render(){
     return(
-      <div className={css.window} ref='element' onMouseDown={this.onMouseDown}>
+      <div className={css.window} ref='element' onMouseDown={this.onMouseDown} onTouchStart={this.onMouseDown}>
         <div className={css.label}>
           <div className={css.labelIcon}>
             {
@@ -139,7 +145,7 @@ class Win extends Component{
             }
           </div>
           <div className={css.labelName} data-title={this.props.data.name}
-            style={{marginRight:(this.btnGroup[0]*46+this.btnGroup[1]*46+this.btnGroup[2]*46+5)}}
+            style={{marginRight:(this.btnGroup[0]*46+this.btnGroup[1]*46+this.btnGroup[2]*46)}}
             onMouseDown={this.onMouseDownLabel} onTouchStart={this.onMouseDownLabel}
             onDoubleClick={this.maximise}
             ></div>
@@ -154,9 +160,9 @@ class Win extends Component{
         }
         </div>
         <div className={css.content}></div>
-        <div className={css.resize} ref='resize'>
-          <div className={css.barL}></div><div className={css.barT}></div><div className={css.barR}></div><div className={css.barB}></div>
-          <div className={css.dotLT}></div><div className={css.dotRT}></div><div className={css.dotRB}></div><div className={css.dotLB}></div>
+        <div className={css.resize} ref='resize' onMouseDown={this.resize} onTouchStart={this.resize}>
+          <div className={css.barLeft}></div><div className={css.barTop}></div><div className={css.barRight}></div><div className={css.barBottom}></div>
+          <div className={css.dotLeftTop}></div><div className={css.dotRightTop}></div><div className={css.dotRightBottom}></div><div className={css.dotLeftBottom}></div>
         </div>
       </div>
     )
@@ -183,8 +189,10 @@ class Win extends Component{
         height: ct.offsetHeight +'px'
       })
       maxBtn.className += ' '+css.restore
+      this.refs.resize.style.visibility = 'hidden'
     }else {
       this.maximised = 0
+      this.clinging = 0
       this.setStyle({
         left: this.left+'px',
         top: this.top+'px',
@@ -192,6 +200,7 @@ class Win extends Component{
         height: this.height +'px'
       })
       maxBtn.className = maxBtn.className.replace(new RegExp(' '+css.restore, 'g'), '')
+      this.refs.resize.style.visibility = 'visible'
     }
   }
   select(){
@@ -222,8 +231,12 @@ class Win extends Component{
     const x = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
     const y = e.pageY || (e.changedTouches?e.changedTouches[0].pageY:0)
     const ele = this.refs.element
-    let beginLeft = this.left
-    let beginTop = this.top
+    let beginLeft = this.refs.element.offsetLeft
+    let beginTop = this.refs.element.offsetTop
+    let left
+    let top
+    let shadow
+    let shadowShowing = 0
 
     let moved = false
     const move = (e)=>{
@@ -233,33 +246,106 @@ class Win extends Component{
       if(!moved){
         moved = true
         this.refs.resize.style.visibility = 'hidden'
+        shadow = this.props.parent.refs.shadow
+        shadow.style.display = 'block'
       }
-      if(!this.maximised){
-        this.left = mx-x +beginLeft
-        this.top = my-y +beginTop
-        this.setStyle({
-          left: this.left +'px',
-          top: this.top +'px'
-        })
-      }else {
+      if(this.maximised){
         this.maximise()
         let width = this.width
         let ctWidth = this.container.offsetWidth
-        let left
+        let _left
         if (x < width / 2)
-          left = 0
+        _left = 0
         else if (x > ctWidth - width / 2)
-          left = ctWidth - width
+        _left = ctWidth - width
         else
-          left = x - width / 2
+        _left = x - width / 2
+        beginLeft = _left
+        beginTop = 0
+        // this.top = 0
+        // this.left = _left
+        this.setStyle({
+          left: _left +'px',
+          top: 0,
+          width: this.width+'px',
+          height: this.height+'px'
+        })
+
+      }
+      else if(this.clinging){
+        if(my > 40){
+          this.clinging = 0
+          let _left = mx-x +beginLeft
+          if(_left+this.width<mx-10)
+            _left = mx - this.width / 2
+          this.setStyle({
+            left: _left +'px',
+            top: 0,
+            width: this.width +'px',
+            height: this.height +'px'
+          })
+        } else {
+          this.setStyle({
+            left: mx-x +beginLeft +'px',
+            top: 0
+          })
+        }
+      }
+      else {
+        left = mx-x +beginLeft
+        top = my-y +beginTop
         this.setStyle({
           left: left +'px',
-          top: 0,
-          width: this.width,
-          height: this.height
+          top: top+'px'
         })
-        beginLeft = left
-        beginTop = 0
+
+        let showShadow = 0
+        if(top<-10){
+          if(shadow.className.indexOf(css.top)==-1)
+            shadow.className += ' '+css.top
+          showShadow = 1
+        }else if(top>0){
+          shadow.className = shadow.className.replace(new RegExp(' '+css.top,'g'),'')
+        }
+        if(mx<=1){
+          if(shadow.className.indexOf(css.left)==-1)
+            shadow.className += ' '+css.left
+          showShadow = 1
+        }else if(mx>15){
+          shadow.className = shadow.className.replace(new RegExp(' '+css.left,'g'),'')
+        }
+        if(mx>=this.container.offsetWidth-1){
+          if(shadow.className.indexOf(css.right)==-1)
+            shadow.className += ' '+css.right
+          showShadow = 1
+        }else if(mx<this.container.offsetWidth-15){
+          shadow.className = shadow.className.replace(new RegExp(' '+css.right,'g'),'')
+        }
+        if(showShadow&&!shadowShowing){
+          shadowShowing = 1
+          shadow.style.opacity = 1
+          shadow.style.top = Math.max(my,0) +'px'
+          shadow.style.left = Math.min(Math.max(mx,0),this.container.offsetWidth) +'px'
+          shadow.style.width = 0
+          shadow.style.height = 0
+          shadow.style.transition = 'none'
+          setTimeout(()=>{
+            shadow.style.top = ''
+            shadow.style.left = ''
+            shadow.style.width = ''
+            shadow.style.height = ''
+            shadow.style.transition = ''
+          },50)
+        }else if (!showShadow&&shadowShowing) {
+          shadowShowing = 0
+        }
+        if(!shadowShowing){
+          shadow.style.opacity = 0
+          shadow.style.top = shadow.offsetTop +'px'
+          shadow.style.left = shadow.offsetLeft +'px'
+          shadow.style.width = shadow.offsetWidth +'px'
+          shadow.style.height = shadow.offsetHeight +'px'
+        }
       }
     }
     const tm = function(e){e.preventDefault()}
@@ -272,27 +358,69 @@ class Win extends Component{
       document.removeEventListener("touchcancel", up, false)
       if(moved){
         this.refs.resize.style.visibility = ''
+        shadow.style.display = ''
 
-        if(this.top<-10){
-          this.top = 0
-          this.maximise()
-        }else if(this.top<0){
-          this.top = 0
+        let cn = shadow.className
+        const ct = this.container
+        if(cn.indexOf(css.top)!=-1){
+          if(cn.indexOf(css.left)!=-1){
+            this.clinging = 1
+            this.setStyle({
+              top: 0,
+              left: 0,
+              width: ct.offsetWidth/2 +'px',
+              height: ct.offsetHeight/2 +'px'
+            })
+          }else if(cn.indexOf(css.right)!=-1){
+            this.clinging = 1
+            this.setStyle({
+              top: 0,
+              left: ct.offsetWidth/2 +'px',
+              width: ct.offsetWidth/2 +'px',
+              height: ct.offsetHeight/2 +'px'
+            })
+          }else{
+            this.maximise()
+          }
+        }else if(cn.indexOf(css.left)!=-1){
+          this.clinging = 1
+          this.setStyle({
+            top: 0,
+            left: 0,
+            width: ct.offsetWidth/2 +'px',
+            height: ct.offsetHeight +'px'
+          })
+        }else if (cn.indexOf(css.right)!=-1){
+          this.clinging = 1
+          this.setStyle({
+            top: 0,
+            left: ct.offsetWidth/2 +'px',
+            width: ct.offsetWidth/2 +'px',
+            height: ct.offsetHeight +'px'
+          })
+        }else if(top<0){
+          top = 0
           this.setStyle({
             top: 0
           })
-        }else if(this.top>this.container.offsetHeight-10){
-          this.top = this.container.offsetHeight-25
+        }else if(top>this.container.offsetHeight-10){
+          top = this.container.offsetHeight-25
           this.setStyle({
-            top: this.top +'px'
+            top: top +'px'
           })
         }
-        if(this.left>this.container.offsetWidth-40){
-          this.left = this.container.offsetWidth-40
+        if(left>this.container.offsetWidth-40 && cn.indexOf(css.right)==-1){
+          left = this.container.offsetWidth-40
           this.setStyle({
-            left: this.left +'px'
+            left: left +'px'
           })
         }
+        if(!this.maximised&&!this.clinging){
+          this.top = top
+          this.left = left
+        }
+        shadow.removeAttribute('style')
+        shadow.className = css.shadow
       }
     }
     document.addEventListener('touchmove', tm, {passive: false})
@@ -301,6 +429,124 @@ class Win extends Component{
     document.addEventListener("touchmove", move, false)
     document.addEventListener("touchend", up, false)
     document.addEventListener("touchcancel", up, false)
+  }
+  resize(e){
+    const x = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
+    const y = e.pageY || (e.changedTouches?e.changedTouches[0].pageY:0)
+    const cls = e.target.className
+    let top = this.refs.element.offsetTop
+    let left = this.refs.element.offsetLeft
+    let width = this.refs.element.offsetWidth
+    let height = this.refs.element.offsetHeight
+    let minHeight
+    let minWidth
+    let maxHeight
+    let maxWidth
+    const shadow = this.props.parent.refs.shadow
+    let shadowShowing
+    let moved = false
+    const move = (e)=>{
+      let mx = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
+      let my = e.pageY || (e.changedTouches?e.changedTouches[0].pageY:0)
+      if(!moved&&Math.abs(my-y)<4&&Math.abs(mx-x)<4) return
+      if(!moved){
+        moved = true
+        let style = getComputedStyle(this.refs.element)
+        minWidth = style.minWidth.replace('px','') *1
+        minHeight = style.minHeight.replace('px','') *1
+      }
+      let vx = mx - x
+      let vy = my - y
+      if(this.clinging){
+        this.clinging = 0
+        this.setStyle({
+          width: width + "px",
+          height: height +'px',
+          left: left + "px",
+          top: top +'px'
+        })
+      }
+      if (cls.indexOf("left") != -1) {
+        if(vx> width -minWidth) vx = width - minWidth
+        this.setStyle({
+          width: (width - vx) + "px",
+          left: (left + vx) + "px"
+        })
+      } else if (cls.indexOf("right") != -1) {
+        this.setStyle({
+          width: (width + vx) + "px",
+        })
+      }
+      if (cls.indexOf("top") != -1) {
+        if(vy> height -minHeight) vy = height -minHeight
+        if(top+vy<-10){
+          if(cls.indexOf('dot')==-1){
+            if(!shadowShowing){
+              shadowShowing = 1
+              shadow.style.display = 'block'
+              shadow.style.opacity = 1
+              shadow.style.top = Math.max(my,0) +'px'
+              shadow.style.left = Math.min(Math.max(mx,0),this.container.offsetWidth) +'px'
+              shadow.style.width = 0
+              shadow.style.height = 0
+              shadow.style.transition = 'none'
+              setTimeout(()=>{
+                shadow.style.top = 0
+                shadow.style.left = left-14 +'px'
+                shadow.style.width = this.width+28 +'px'
+                shadow.style.height = this.container.offsetHeight +'px'
+                shadow.style.transition = ''
+              },50)
+            }
+          }
+        }else if(shadowShowing){
+          shadow.style.opacity = 0
+          shadowShowing = 0
+        }
+        this.setStyle({
+          height: (height - vy) + "px",
+          top: (top + vy) + "px"
+        })
+      } else if (cls.indexOf("bottom") != -1) {
+        this.setStyle({
+          height: (height + vy) + "px",
+        })
+      }
+    }
+    const tm = function(e){e.preventDefault()}
+    const up = (e)=>{
+      document.removeEventListener('touchmove', tm, {passive: false})
+      document.removeEventListener('mousemove', move, false)
+      document.removeEventListener('mouseup', up, false)
+      document.removeEventListener("touchmove", move, false)
+      document.removeEventListener("touchend", up, false)
+      document.removeEventListener("touchcancel", up, false)
+      if(moved){
+        if(this.refs.element.offsetTop<-10){
+          this.setStyle({
+            top: 0,
+            height: this.container.offsetHeight +'px'
+          })
+          this.clinging = 1
+        }else {
+          this.width = this.refs.element.offsetWidth
+          this.height = this.refs.element.offsetHeight
+          this.left = this.refs.element.offsetLeft
+          this.top = this.refs.element.offsetTop
+        }
+        shadow.style.opacity = 0
+        setTimeout(()=>{
+          shadow.removeAttribute('style')
+        },200)
+      }
+    }
+    document.addEventListener('touchmove', tm, {passive: false})
+    document.addEventListener('mousemove', move, false)
+    document.addEventListener('mouseup', up, false)
+    document.addEventListener("touchmove", move, false)
+    document.addEventListener("touchend", up, false)
+    document.addEventListener("touchcancel", up, false)
+
   }
   setStyle(style){
     for(var key in style){

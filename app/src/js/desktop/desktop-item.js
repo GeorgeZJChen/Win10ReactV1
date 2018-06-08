@@ -196,10 +196,8 @@ class Items extends Component {
     })
     p.selectedColumns[0] = -1
     p.selectedColumns[1] = -1
-    if(p.checked) p.checked.uncheck()
   }
   select(x, y, sx, sy){
-    this.__click_on_dragged_item_or_select_moved__ = 1
     if(!this.state.initiated) return
 
     const p = this.groupInfo
@@ -555,6 +553,7 @@ class Item extends Component {
     let lastChecked = this.props.groupInfo.checked
     if(lastChecked!=this) return
     this.props.groupInfo.checked = null
+    this.deselect()
   }
   focus(){
     let lastFocused = this.props.groupInfo.focused

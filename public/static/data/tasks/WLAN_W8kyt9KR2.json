@@ -2,7 +2,8 @@
   "id": "WLAN_W8kyt9KR2",
   "name": "WLAN",
   "isBackgroundTask": 1,
-  "backgroundIcon": {"className":"WLAN-signal", "display": 1},
+  "display": 1,
+  "backgroundIcon": {"className":"WLAN-signal"},
   "isTaskbarTask": 0,
   "taskbarIcon": {"className":""}
 }
