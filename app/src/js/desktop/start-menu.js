@@ -5,8 +5,6 @@ import {ItemsColumnOne, ItemsColumnTwo, ItemsColumnThree} from './start-menu-com
 
 import css from '../../css/desktop/start-menu.css'
 
-import '../../css/system.css'
-
 class StartMenu extends Component{
   constructor(props){
     super(props)

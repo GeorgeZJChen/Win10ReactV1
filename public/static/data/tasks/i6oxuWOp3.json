@@ -2,8 +2,7 @@
   "id": "i6oxuWOp3",
   "name": "File F",
   "isBackgroundTask": 1,
-  "display": 0,
-  "backgroundIcon": {"className":"unknown bg"},
+  "backgroundIcon": {"hidden": 1,"className":"unknown bg"},
   "isTaskbarTask": 0,
   "taskbarIcon": {"className":""}
 }

@@ -10,9 +10,7 @@
 .items-ct{
   z-index: 103;
 }
-.windows-ct{
-  z-index: 106;
-}
+.window z-index >= 1000
 */
 .items-ct{
   position: absolute;

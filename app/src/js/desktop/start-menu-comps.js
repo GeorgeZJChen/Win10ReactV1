@@ -77,16 +77,16 @@ class ItemsColumnTwo extends Component{
     this.alphabeticItems = alphabeticItems
   }
   onScroll(){
-    this.scrollbar.onScroll()
+    this.refs.scrollbar.onScroll()
   }
   onMouseEnter(){
-    this.scrollbar.setUpScroll(this.refs.toScroll)
+    this.refs.scrollbar.setUpScroll(this.refs.toScroll)
 
   }
   render(){
     return (
       <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseEnter={this.onMouseEnter.bind(this)} onTouchStart={(e)=>this.onMouseEnter()}>
-        <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this}/>
+        <Scrollbar ref='scrollbar' parent={this}/>
         <div className={css.contentC2} ref='toScroll'>
           {
             this.latestItems.length>0 ?
@@ -143,10 +143,10 @@ class ItemsColumnThree extends Component{
     this.columns()
   }
   onScroll(){
-    this.scrollbar.onScroll()
+    this.refs.scrollbar.onScroll()
   }
   onMouseEnter(ms){
-    this.scrollbar.setUpScroll(this.refs.toScroll)
+    this.refs.scrollbar.setUpScroll(this.refs.toScroll)
   }
   columns(){
     const groups = this.props.boxGroups
@@ -232,7 +232,7 @@ class ItemsColumnThree extends Component{
   render(){
     return (
       <div className={css.column3} onScroll={(e)=>this.onScroll()} onMouseEnter={(e)=>this.onMouseEnter()} onTouchStart={(e)=>this.onMouseEnter()}>
-        <Scrollbar returnSelf={(self)=>this.scrollbar=self} parent={this}/>
+        <Scrollbar ref='scrollbar' parent={this}/>
         <div className={css.contentC3} ref={'toScroll'}>
           {this.columns}
         </div>
@@ -350,8 +350,15 @@ class Box extends Component{
     }
     if(this.props.data.icon&&this.props.data.icon.text)
       setTimeout(()=>{
-        this.refs.self.parentNode.style.color = this.props.data.icon.text
+        this.refs.element.parentNode.style.color = this.props.data.icon.text
       }, 10)
+    this.onClick = this.onClick.bind(this)
+  }
+  onClick(){
+    if(this.props.data.id){
+      window.desktop.addTask(this.props.data.id, this.props.data.name)
+      window.desktop.closeStartMenu()
+    }
   }
   createAnimation(){
     let faces = this.props.data.faces
@@ -363,7 +370,7 @@ class Box extends Component{
     let display_time = this.props.data.display?this.props.data.display:default_display
     let animation_name = this.props.data.id + '_box_animation_roll'
     transition_time += transition_time*(Math.random()-0.5)/5
-    let stoch_delay = Math.random()*Math.min(display_time, 5) - transition_time
+    let stoch_delay = Math.random()*Math.min(display_time, 5) - transition_time -display_time*0.3
     let whole_time = (display_time+transition_time)*length
     for (let i = 0; i < faces.length; i++) {
       faces[i].animation = {}
@@ -411,8 +418,9 @@ class Box extends Component{
     }
     return (
       <div className={css.boxContent+' '+(this.props.data.faces?css.boxAnimation:' ')
-            +' '+(this.props.data.roll?css.box3D:'')} ref='self'
-            style={style}>
+            +' '+(this.props.data.roll?css.box3D:'')} ref='element' style={style}
+            onClick={this.onClick}
+            >
         {
           this.props.data.faces?this.props.data.faces.map((face, index)=>{
             if(index==0){
@@ -608,9 +616,6 @@ class Scrollbar extends Component {
   constructor(props){
     super(props)
     this.btnClass = 'scroll_HX2MMYZN'
-  }
-  componentDidMount(){
-    if(this.props.returnSelf)this.props.returnSelf(this)
   }
   setUpScroll(toScroll){
     this.toScroll = toScroll

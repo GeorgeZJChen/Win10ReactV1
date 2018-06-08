@@ -1,0 +1,20 @@
+{
+  "id": "NQ3NR3XKV3FV",
+  "name": "University",
+  "isTaskbarTask": 1,
+  "taskbarIcon": {
+    "URL":"https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"
+  },
+  "isBackgroundTask": 1,
+  "backgroundIcon":{
+    "URL":"https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"
+  },
+  "window": {
+    "windowIcon": {
+      "URL": "https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"
+    },
+    "backgroundColor": "rgb(67,101,226)",
+    "backgroundColor2": "rgba(67,101,226,0.6)",
+    "color2": "#fff"
+  }
+}

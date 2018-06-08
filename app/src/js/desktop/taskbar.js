@@ -2,18 +2,15 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
 import css from '../../css/desktop/taskbar.css'
-import Task from './task.js'
-import Tasks from './tasks.js'
+
+import TaskItems from './task-items.js'
 import Events from '../components/event.js'
 import Icon from '../components/icon.js'
 import DateSpan from '../components/date.js'
-import '../../css/system.css'
 
 class Taskbar extends Component{
   constructor(props){
     super(props)
-    this.state = {
-    }
     this.onMouseEnter = this.onMouseEnter.bind(this)
     this.onMouseUp = this.onMouseUp.bind(this)
     this.onMouseLeave = this.onMouseLeave.bind(this)
@@ -22,16 +19,16 @@ class Taskbar extends Component{
       action: "Attach to"
     }
   }
-  updateTask(task){
-    if(task.isTaskbarTask){
+  update(task){
+    if(task.taskbarIcon){
       this.refs.taskbarTasks.update()
     }
-    if(task.isBackgroundTask){
-      if(task.display){
+    if(task.backgroundIcon){
+      if(task.backgroundIcon.hidden){
+        this.refs.backgroundTasksHidden.update()
+      }else {
         this.refs.backgroundTasksDisplay.update()
         this.refs.backgroundTasksDisplayDup.update()
-      }else {
-        this.refs.backgroundTasksHidden.update()
       }
     }
   }
@@ -73,7 +70,7 @@ class Taskbar extends Component{
                 <Icon className={'angle up '+css.switchAU}/>
               </div>
               <div className={css.tbTasks}>
-                <Tasks tasks={this.props.tasks} type={0} ref='taskbarTasks'/>
+                <TaskItems type={0} ref='taskbarTasks'/>
               </div>
             </div>
           </div>
@@ -92,14 +89,14 @@ class Taskbar extends Component{
                 <div className={css.bgSwitchResponse} id='act-hover-more-bg-switch'></div>
                 <span className={css.iconCtBg} style={{position:'absolute'}}><Icon className='angle up'/></span>
                 <div className={css.itemsBgHidden}>
-                  <Tasks tasks={this.props.tasks} type={1} ref='backgroundTasksHidden'/>
+                  <TaskItems type={1} ref='backgroundTasksHidden'/>
                   {/*duplicates of displaying items*/}
-                  <Tasks tasks={this.props.tasks} type={2} ref='backgroundTasksDisplayDup'/>
+                  <TaskItems type={2} ref='backgroundTasksDisplayDup'/>
                 </div>
               </div>
               <div className={css.itemsBgCt} >
                 <div className={css.item+' '+css.itemBg} onClick={()=>{this.changeLanguage()}}><span className={css.iconCtBg}><span className={css.itemBgLang} ref='item_lang'>英</span></span></div>
-                <Tasks tasks={this.props.tasks} type={3} ref='backgroundTasksDisplay'/>
+                <TaskItems type={3} ref='backgroundTasksDisplay'/>
               </div>
             </div>
           </div>

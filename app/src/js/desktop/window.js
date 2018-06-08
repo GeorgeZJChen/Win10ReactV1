@@ -11,20 +11,14 @@ class Windows extends Component {
   constructor(props){
     super(props)
     this.state = {
-      wins: new Set(),
+      wins: new Map(),
       winsData: new Set(),
-      maxIndex: 0,
+      maxIndex: 1000,
       selected: null,
       renderFlag: 1,
     }
     this.deselectFront = this.deselectFront.bind(this)
-    setTimeout(()=>{
-      this.add({
-        name: 'New window 1',
-        id: 'id_1',
-        icon: {className: 'folder sm'}
-      })
-    },1000)
+
   }
   componentDidMount(){
     document.addEventListener('mousedown', this.deselectFront)
@@ -44,27 +38,47 @@ class Windows extends Component {
     if(!this.state.selected)
     {
       const fw = this.getFront()
-      if(fw) fw.select()
+      if(fw instanceof Win) fw.select()
     }
   }
-  add(data){
-    this.state.winsData.add(data)
-    this.setState((prevState)=>{
-      return { renderFlag: ~prevState.renderFlag }
-    })
+  evoke(id){
+    let win = this.state.wins.get(id)
+    if(win){
+      if(win.minimised)
+        win.minimise()
+      win.select()
+      return 1
+    }
+    return 0
+  }
+  add(task, cb){
+    if(!this.state.wins.get(task.id)){
+      this.state.winsData.add(task)
+
+      cb = cb?cb: (win)=>{win.load()}
+      if(cb) Events.once('_window_ready_'+task.id, cb)
+
+      this.setState((prevState)=>{
+        return { renderFlag: ~prevState.renderFlag }
+      })
+      return 1
+    }
+    return 0
   }
   remove(win){
-    this.state.wins.delete(win)
+    this.state.wins.delete(win.id)
     this.state.winsData.delete(win.props.data)
+    if(!win.donotend) window.desktop.shutDownTask(win.id)
     if(this.state.selected==win) this.state.selected = null
     this.setState((prevState)=>{
       return { renderFlag: ~prevState.renderFlag }
     })
+    this.selectFront()
   }
   getFront(){
-    let frontWin = {zIndex: 0}
+    let frontWin
     this.state.wins.forEach((win)=>{
-      if(win.zIndex > frontWin.zIndex){
+      if(win.zIndex > frontWin?frontWin.zIndex:1000){
         frontWin = win
       }
     })
@@ -73,11 +87,10 @@ class Windows extends Component {
 
   render(){
     return (
-      <React.Fragment>
-      <div className={css.shadow} ref='shadow'>
-        <div className={css.shadowInner}></div>
-      </div>
       <div className={css.windowCt} ref='element'>
+        <div className={css.shadow} ref='shadow'>
+          <div className={css.shadowInner}></div>
+        </div>
         {
           (()=>{
             const arr = []
@@ -88,7 +101,6 @@ class Windows extends Component {
           })()
         }
       </div>
-      </React.Fragment>
     )
   }
 }
@@ -97,60 +109,89 @@ class Win extends Component{
   constructor(props){
     super(props)
     this.state ={
-      color: props.data.color || ''
+      iconReady: 0
     }
     this.container = props.container.refs.element
-    this.parentState = props.parent.state
 
     this.id = props.data.id
-    this.btnGroup = props.data.btnGroup || [1, 1, 1]
-    this.width = props.data.width || 600
-    this.height = props.data.height || 400
-    this.getPosition(props.center)
+    this.name = props.data.name
+    this.color = props.data.win.color
+    this.color2 = props.data.win.color2
+    this.backgroundColor = props.data.win.backgroundColor
+    this.backgroundColor2 = props.data.win.backgroundColor2
+    this.btnGroup = props.data.win.btnGroup || [1, 1, 1]
+    this.resizable = props.data.win.resizable===0?0:1
+    this.width = props.data.win.width || 600
+    this.height = props.data.win.height || 400
+    this.getPosition(props.data.win.center)
 
-    this.close = this.close.bind(this)
-    this.minimise = this.minimise.bind(this)
-    this.maximise = this.maximise.bind(this)
+    this.donotend = props.data.win.donotend || 0
+
+    const f = ()=>{}
+    this.minimise = this.btnGroup[0]?this.minimise.bind(this):f
+    this.maximise = this.btnGroup[1]?this.maximise.bind(this):f
+    this.close = this.btnGroup[2]?this.close.bind(this):f
+    this.resize = this.resizable?this.resize.bind(this):f
+
     this.onMouseDown = this.onMouseDown.bind(this)
-    this.resize = this.resize.bind(this)
+    this.iconOnload = this.iconOnload.bind(this)
 
     this.maximised = 0
     this.minimised = 0
-
+    this.loaded = 0
     this.onMouseDownLabel = this.onMouseDownLabel.bind(this)
+
+    props.parent.state.wins.set(this.id, this)
   }
   componentDidMount() {
+    this.onLoad()
+  }
+  onLoad(){
+    Events.emit('_window_ready_'+this.id, this)
+  }
+  load(){
+    this.loaded = 1
     this.setStyle({
       top: this.top +'px',
       left: this.left +'px',
       width: this.width +'px',
       height: this.height +'px',
+    })
+    this.setStyle({
       visibility: "visible"
     })
     this.select()
   }
   render(){
+    const icon = this.props.data.win.windowIcon
     return(
       <div className={css.window} ref='element' onMouseDown={this.onMouseDown} onTouchStart={this.onMouseDown}>
-        <div className={css.label}>
-          <div className={css.labelIcon}>
-            {
-              this.props.data.icon.URL?
-              (
-                [<img src={this.props.data.icon.URL} className={css.iconImg} key={0} onLoad={this.imgOnLoad} style={{display:this.state.imgReady?'':'none'}}/>,
-                this.state.imgReady? '' : <Icon className={"unknown"} key={1}/>]
-              )
-              :
-              <Icon className={this.props.data.icon.className}/>
-            }
-          </div>
-          <div className={css.labelName} data-title={this.props.data.name}
+        <div className={css.label} ref='label'>
+          {
+            icon?
+              <div className={css.labelIcon}>
+              {
+                icon.URL?
+                (
+                  <React.Fragment>
+                  <img src={icon.URL} className={css.iconImg}
+                  onLoad={this.iconOnload} style={{display:this.state.iconReady?'':'none'}}/>
+                  this.state.iconReady? '' : <Icon className={"unknown bg"}/>
+                  </React.Fragment>
+                )
+                :
+                <Icon className={icon.className}/>
+              }
+              </div>
+              :''
+          }
+          <div className={css.labelName} data-title={this.name}
             style={{marginRight:(this.btnGroup[0]*46+this.btnGroup[1]*46+this.btnGroup[2]*46)}}
             onMouseDown={this.onMouseDownLabel} onTouchStart={this.onMouseDownLabel}
             onDoubleClick={this.maximise}
             ></div>
         </div>
-        <div className={css.btnGroup}>
+        <div className={css.btnGroup} ref='btns'>
         {
           [
             this.btnGroup[0]?<div className={css.btn+' '+css.btnMinimise} onClick={this.minimise} key={'btn_1'}></div>:'',
@@ -159,13 +200,23 @@ class Win extends Component{
           ]
         }
         </div>
-        <div className={css.content}></div>
-        <div className={css.resize} ref='resize' onMouseDown={this.resize} onTouchStart={this.resize}>
-          <div className={css.barLeft}></div><div className={css.barTop}></div><div className={css.barRight}></div><div className={css.barBottom}></div>
-          <div className={css.dotLeftTop}></div><div className={css.dotRightTop}></div><div className={css.dotRightBottom}></div><div className={css.dotLeftBottom}></div>
-        </div>
+        <div className={css.content} ref='content'></div>
+        {
+          this.resizable?
+            <div className={css.resize} ref='resize' onMouseDown={this.resize} onTouchStart={this.resize}>
+              <div className={css.barLeft}></div><div className={css.barTop}></div><div className={css.barRight}></div><div className={css.barBottom}></div>
+              <div className={css.dotLeftTop}></div><div className={css.dotRightTop}></div><div className={css.dotRightBottom}></div><div className={css.dotLeftBottom}></div>
+            </div>
+            :
+            ''
+        }
       </div>
     )
+  }
+  iconOnload(){
+    this.setState({
+      iconReady: 1
+    })
   }
   onMouseDown(e){
     this.props.parent.__mousedown_on_window__ = 1
@@ -189,7 +240,7 @@ class Win extends Component{
         height: ct.offsetHeight +'px'
       })
       maxBtn.className += ' '+css.restore
-      this.refs.resize.style.visibility = 'hidden'
+      if(this.resizable) this.refs.resize.style.visibility = 'hidden'
     }else {
       this.maximised = 0
       this.clinging = 0
@@ -200,28 +251,38 @@ class Win extends Component{
         height: this.height +'px'
       })
       maxBtn.className = maxBtn.className.replace(new RegExp(' '+css.restore, 'g'), '')
-      this.refs.resize.style.visibility = 'visible'
+      if(this.resizable)this.refs.resize.style.visibility = 'visible'
     }
   }
   select(){
-    if(this.parentState.selected == this) return
-    if(this.parentState.selected) this.parentState.selected.deselect()
-    this.parentState.selected = this
+    if(this.props.parent.state.selected == this) return
+    if(this.props.parent.state.selected) this.props.parent.state.selected.deselect()
+    this.props.parent.state.selected = this
+    this.selected = 1
     this.setStyle({
-      backgroundColor:  this.props.data.color,
-      color:  this.props.data.color,
-      zIndex: ++this.parentState.maxIndex
+      backgroundColor:  this.backgroundColor,
+      borderColor:  this.backgroundColor,
+      color:  this.color,
+      zIndex: ++this.props.parent.state.maxIndex
     })
-    this.zIndex = this.parentState.maxIndex
+    this.refs.btns.style.color = this.color
+    this.refs.label.style.color = this.color
+
+    this.zIndex = this.props.parent.state.maxIndex
     this.refs.element.className = this.refs.element.className.replace(new RegExp(' '+css.deselected,'g'),'')
+
   }
   deselect(){
-    if(this.parentState.selected != this) return
-    this.parentState.selected = null
+    if(this.props.parent.state.selected != this) return
+    this.props.parent.state.selected = null
+    this.selected = 0
     this.setStyle({
-      backgroundColor:  this.props.data.color2,
-      color:  this.props.data.color2
+      backgroundColor:  this.backgroundColor2,
+      borderColor:  this.backgroundColor2,
+      color:  this.color2
     })
+    this.refs.label.style.color = this.color2
+    this.refs.btns.style.color = this.color2
     this.refs.element.className += ' '+css.deselected
   }
   onMouseDownLabel(e){
@@ -245,27 +306,25 @@ class Win extends Component{
       if(!moved&&Math.abs(my-y)<4&&Math.abs(mx-x)<4) return
       if(!moved){
         moved = true
-        this.refs.resize.style.visibility = 'hidden'
+        if(this.resizable)this.refs.resize.style.visibility = 'hidden'
         shadow = this.props.parent.refs.shadow
         shadow.style.display = 'block'
+        shadow.style.zIndex = this.props.parent.state.maxIndex
       }
       if(this.maximised){
         this.maximise()
         let width = this.width
         let ctWidth = this.container.offsetWidth
-        let _left
         if (x < width / 2)
-        _left = 0
+        left = 0
         else if (x > ctWidth - width / 2)
-        _left = ctWidth - width
+        left = ctWidth - width
         else
-        _left = x - width / 2
-        beginLeft = _left
+        left = x - width / 2
+        beginLeft = left
         beginTop = 0
-        // this.top = 0
-        // this.left = _left
         this.setStyle({
-          left: _left +'px',
+          left: left +'px',
           top: 0,
           width: this.width+'px',
           height: this.height+'px'
@@ -273,20 +332,20 @@ class Win extends Component{
 
       }
       else if(this.clinging){
+        left = mx-x +beginLeft
         if(my > 40){
           this.clinging = 0
-          let _left = mx-x +beginLeft
-          if(_left+this.width<mx-10)
-            _left = mx - this.width / 2
+          if(left+this.width<mx-10)
+            left = mx - this.width / 2
           this.setStyle({
-            left: _left +'px',
+            left: left +'px',
             top: 0,
             width: this.width +'px',
             height: this.height +'px'
           })
         } else {
           this.setStyle({
-            left: mx-x +beginLeft +'px',
+            left: left +'px',
             top: 0
           })
         }
@@ -298,7 +357,8 @@ class Win extends Component{
           left: left +'px',
           top: top+'px'
         })
-
+        if(!this.resizable) return
+        //shadow
         let showShadow = 0
         if(top<-10){
           if(shadow.className.indexOf(css.top)==-1)
@@ -357,7 +417,7 @@ class Win extends Component{
       document.removeEventListener("touchend", up, false)
       document.removeEventListener("touchcancel", up, false)
       if(moved){
-        this.refs.resize.style.visibility = ''
+        if(this.resizable)this.refs.resize.style.visibility = ''
         shadow.style.display = ''
 
         let cn = shadow.className
@@ -414,6 +474,10 @@ class Win extends Component{
           this.setStyle({
             left: left +'px'
           })
+        }else if (left<40-this.width && cn.indexOf(css.left)==-1) {
+          this.setStyle({
+            left: 40-this.width +'px'
+          })
         }
         if(!this.maximised&&!this.clinging){
           this.top = top
@@ -458,13 +522,9 @@ class Win extends Component{
       let vx = mx - x
       let vy = my - y
       if(this.clinging){
-        this.clinging = 0
-        this.setStyle({
-          width: width + "px",
-          height: height +'px',
-          left: left + "px",
-          top: top +'px'
-        })
+        if(cls.indexOf("top") != -1){
+          this.clinging = 0
+        }
       }
       if (cls.indexOf("left") != -1) {
         if(vx> width -minWidth) vx = width - minWidth
@@ -490,6 +550,7 @@ class Win extends Component{
               shadow.style.width = 0
               shadow.style.height = 0
               shadow.style.transition = 'none'
+              shadow.style.zIndex = this.props.parent.state.maxIndex
               setTimeout(()=>{
                 shadow.style.top = 0
                 shadow.style.left = left-14 +'px'
@@ -528,7 +589,7 @@ class Win extends Component{
             height: this.container.offsetHeight +'px'
           })
           this.clinging = 1
-        }else {
+        }else if(!this.clinging){
           this.width = this.refs.element.offsetWidth
           this.height = this.refs.element.offsetHeight
           this.left = this.refs.element.offsetLeft

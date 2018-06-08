@@ -260,8 +260,9 @@
       "boxes": [
         {
           "name": "UoD",
+          "id": "NQ3NR3XKV3FV",
           "size": 4,
-          "icon": {"background": "", "className": "unknown", "URL": "https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"}
+          "icon": {"URL": "https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"}
         },
         {
           "name": "Mail",
@@ -444,6 +445,7 @@
         },
         {
           "name": "Tesla (ad)",
+          "id": "JH4WWJ02OZZ6",
           "size": 8,
           "icon": {"background": "#fff", "URL": "http://cdn.onlinewebfonts.com/svg/img_219916.png"},
           "slide": 1,

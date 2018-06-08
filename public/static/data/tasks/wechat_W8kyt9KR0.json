@@ -2,8 +2,5 @@
   "id": "wechat_W8kyt9KR0",
   "name": "wechat",
   "isBackgroundTask": 1,
-  "display": 0,
-  "backgroundIcon": {"className":"wechat bg coloured"},
-  "isTaskbarTask": 0,
-  "taskbarIcon": {"className":""}
+  "backgroundIcon": {"hidden": 1,"className":"wechat bg coloured"}
 }

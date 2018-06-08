@@ -528,7 +528,7 @@ class Item extends Component {
       this.props.groupInfo.parent.deselect()
     }
     this.focus()
-    this.check()  //order is important
+    this.select()
     this.props.groupInfo.parent.onDrag(e, this)
   }
   onClick(e){

@@ -1,3 +1,4 @@
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const config = {
   mode: 'development',
   devtool: 'source-map',
@@ -45,7 +46,10 @@ const config = {
                 ]
             }
         ]
-    }
+    },
+    // plugins: [
+    //   new UglifyJsPlugin()
+    // ]
 };
 
 module.exports = config;
