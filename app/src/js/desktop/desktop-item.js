@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
+import System from '../system/system.js'
 
 import Icon from '../components/icon.js'
 import ut from '../components/Utils.js'
@@ -196,6 +197,11 @@ class Items extends Component {
     })
     p.selectedColumns[0] = -1
     p.selectedColumns[1] = -1
+    if(p.checked) p.checked.uncheck()
+  }
+  blur(){
+    let p = this.groupInfo
+    if(p.focused) p.focused.blur()
   }
   select(x, y, sx, sy){
     if(!this.state.initiated) return
@@ -460,6 +466,7 @@ class Item extends Component {
     this.state = {
       imgReady: 0
     }
+    this.id = props.data.id
     this.hidden = 1
     this.selected = 0
     this.isOutcast = 0
@@ -468,6 +475,7 @@ class Item extends Component {
     this.onMouseUp = this.onMouseUp.bind(this)
     this.onMouseLeave = this.onMouseLeave.bind(this)
     this.onClick = this.onClick.bind(this)
+    this.onDoubleClick = this.onDoubleClick.bind(this)
     this.imgOnLoad = this.imgOnLoad.bind(this)
     this.hoverTag = {
       name: this.props.data.name,
@@ -486,7 +494,7 @@ class Item extends Component {
       <div className={css[this.props.data.className]} ref='element' style={{display:this.hidden?'none':''}}
         onMouseDown = {this.onMouseDown} onTouchStart = {this.onMouseDown}
         onMouseEnter = {this.onMouseEnter} onMouseUp = {this.onMouseUp} onMouseLeave = {this.onMouseLeave}
-        onClick = {this.onClick}
+        onClick = {this.onClick} onDoubleClick = {this.onDoubleClick}
       >
         <div className={css.itemIcon}>
           {
@@ -513,6 +521,10 @@ class Item extends Component {
     this.setState({
       imgReady: 1
     })
+  }
+  onDoubleClick(){
+    System.addTask(this.id)
+    System.desktop.deselectItems()
   }
   onMouseEnter(e){
     Events.emit(Events.names.being_dragged_items_onenter, this)

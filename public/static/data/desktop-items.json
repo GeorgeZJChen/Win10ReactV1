@@ -24,6 +24,7 @@
     },
     {
       "name": "Folder 4: A folder with a not very long name.",
+      "id": "LJ6OVRV8MJ2Z",
       "className": "item-desktop",
       "icon": { "className": "folder" },
       "column": 1,
@@ -50,8 +51,9 @@
     },
     {
       "name": "Google Chrome",
+      "id": "chromeQPPY2SEKS479",
       "className": "item-desktop",
-      "icon": { "URL": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/200px-Google_Chrome_icon_%28September_2014%29.svg.png" },
+      "icon": { "URL": "static/img/icon/chrome.svg.png" },
       "link": 1
     }
   ]

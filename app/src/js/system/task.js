@@ -1,25 +1,26 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
+import System from '../system/system.js'
 
 const registeredTasks= new Set([
-  "i6oxuWOp", "i6oxuWOp0", "i6oxuWOp1", "i6oxuWOp2", "i6oxuWOp3", "i6oxuWOp4",
+  "i6oxuWOp0", "i6oxuWOp1", "i6oxuWOp2", "i6oxuWOp3", "i6oxuWOp4",
   "WLAN_W8kyt9KR2", "kugou_W8kyt9KR", "teamviewer_i6oxuWOp4", "wechat_W8kyt9KR", "wechat_W8kyt9KR0",
-  "dundee_pEsnAYaw", "NQ3NR3XKV3FV"
+  "dundee_pEsnAYaw", "NQ3NR3XKV3FV", "chromeQPPY2SEKS479", "LJ6OVRV8MJ2Z"
 ])
 const systemTasks = {
-  "resource_manager": {
-    id: "resource_manager",
-    name: "Resource Manager",
-    isBackgroundTask: 0,
-    isTaskbarTask: 1,
-    taskbarIcon: {className:"resource-manager"}
-  }
+  // "resource_manager": {
+  //   id: "resource_manager",
+  //   name: "Resource Manager",
+  //   isTaskbarTask: 1,
+  //   taskbarIcon: {className:"resource-manager"}
+  // }
 }
 class Task {
   constructor(data){
     if(!data.id || !data.name) throw new Error()
     this.id = data.id
     this.name = data.name
+    this.callback = data.callback
     if(data.isBackgroundTask){
       this.backgroundIcon = {}
       let b = this.backgroundIcon
@@ -28,14 +29,19 @@ class Task {
       b.URL = d.URL || null
       b.hidden = d.hidden || 0
     }
-    if(data.isTaskbarTask){
+    if(data.window){
+
       this.taskbarIcon = {}
       let t = this.taskbarIcon
       let d = data.taskbarIcon
-      t.className = d.className || 'unknown'
-      t.URL = d.URL || null
-    }
-    if(data.window){
+      if(d){
+        t.className = d.className || 'unknown'
+        t.URL = d.URL || null
+      }else{
+        t.className = 'unknown'
+        t.URL = null
+      }
+
       this.win = {}
       let w = this.win
       let dw = data.window
@@ -43,7 +49,8 @@ class Task {
       w.backgroundColor2 = dw.backgroundColor2 || ''
       w.color = dw.color || ''
       w.color2 = dw.color2 || ''
-      w.btnGroup = dw.btnGroup || [1,1,1]
+      w.maximisable = dw.maximisable===0?0:1
+      w.minimisable = dw.minimisable===0?0:1
       w.resizable = dw.resizable===0?0:1
       w.width = dw.width || 600
       w.height = dw.height || 400
@@ -57,8 +64,13 @@ class Task {
       }
     }
   }
+  evoke(){
+    if(this.win){
+      System.desktop.refs.taskbar.state.windowTasks.get(this.id).select()
+    }
+  }
   end(){
-    // TODO: 
+    // TODO:
   }
 }
 

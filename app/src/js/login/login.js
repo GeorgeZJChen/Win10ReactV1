@@ -2,11 +2,11 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 import Loader from '../components/loader.js'
-import Events from '../components/event.js'
-import Desktop from '../desktop/desktop.js'
 import DateSpan from '../components/date.js'
 import css from '../../css/login/login.css'
 import icon from '../../css/components/icon.css'
+
+import System from '../system/system.js'
 
 class Login extends Component{
   constructor(props){
@@ -69,7 +69,7 @@ class Login extends Component{
     this.refs.btnLogin.style.cursor = 'default'
     ReactDOM.render(<Loader size='medium'/>, this.refs.btnLogin)
 
-    ReactDOM.render(<Desktop login={this}/>, document.getElementById('win10_main'))
+    System.start(this.unmount.bind(this))
   }
   unmount(){
     setTimeout(()=>{

@@ -2,7 +2,5 @@
   "id": "i6oxuWOp2",
   "name": "File E",
   "isBackgroundTask": 1,
-  "backgroundIcon": {"hidden": 1,"className":"unknown bg"},
-  "isTaskbarTask": 0,
-  "taskbarIcon": {"className":""}
+  "backgroundIcon": {"hidden": 1,"className":"unknown bg"}
 }

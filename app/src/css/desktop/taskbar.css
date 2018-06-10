@@ -41,6 +41,16 @@
   margin-right: 0;
   width: 48px;
 }
+.item-task.selected{
+
+}
+.item-task.selected:before{
+  height: 100%;
+  width: 100%;
+}
+.item-task.selected:after{
+  width: 100%;
+}
 .item-task{
   max-width: 48px;
   min-width: 35px;
@@ -49,6 +59,15 @@
   position: relative;
 }
 .item-task:before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  height: 0;
+  width: 80%;
+  background-color: rgba(140, 164, 190, 0.2);
+  transition: height,width 0.2s,0.2s;
+}
+.item-task:after {
   content: '';
   position: absolute;
   bottom: 0px;
@@ -60,7 +79,7 @@
   background-color: #8a9db6;
   transition: width 0.2s;
 }
-.item-task:hover:before {
+.item-task:hover:after {
   content: '';
   width: 100%;
 }

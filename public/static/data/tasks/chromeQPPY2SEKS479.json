@@ -1,0 +1,12 @@
+{
+  "id": "chromeQPPY2SEKS479",
+  "name": "Google Chrome",
+  "taskbarIcon": {
+    "URL":"static/img/icon/chrome.svg.png"
+  },
+  "window": {
+    "windowIcon": {
+      "URL": "static/img/icon/chrome.svg.png"
+    }
+  }
+}

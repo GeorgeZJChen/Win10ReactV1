@@ -171,6 +171,7 @@
 .atom-oval-2{transform: rotate(-120deg);}
 .atom-oval-2:before{border-bottom-color: #fff;}
 
+.folder.tb{top: 50%;left: 48%;transform: translate(-50%,-50%) scale(0.7);}
 .folder.sm{top: 50%;left: 50%;transform: translate(-50%,-50%) scale(0.35);}
 .folder{display: block;position: absolute;width: 46px;height: 46px;overflow: hidden;}
 .folder:before{content: "";width: 26px;height: 35px;left: 10px;top: 4px;position: absolute;background: rgba(239,205,105,1);background: -moz-linear-gradient(45deg, rgba(239,205,105,1) 0%, rgba(232,199,109,1) 52%, rgba(254,231,160,1) 100%);background: -webkit-gradient(left bottom, right top, color-stop(0%, rgba(239,205,105,1)), color-stop(52%, rgba(232,199,109,1)), color-stop(100%, rgba(254,231,160,1)));background: -webkit-linear-gradient(45deg, rgba(239,205,105,1) 0%, rgba(232,199,109,1) 52%, rgba(254,231,160,1) 100%);background: -o-linear-gradient(45deg, rgba(239,205,105,1) 0%, rgba(232,199,109,1) 52%, rgba(254,231,160,1) 100%);background: -ms-linear-gradient(45deg, rgba(239,205,105,1) 0%, rgba(232,199,109,1) 52%, rgba(254,231,160,1) 100%);background: linear-gradient(45deg, rgba(239,205,105,1) 0%, rgba(232,199,109,1) 52%, rgba(254,231,160,1) 100%);filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#efcd69', endColorstr='#fee7a0', GradientType=1 );}

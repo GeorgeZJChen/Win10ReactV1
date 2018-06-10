@@ -1,0 +1,12 @@
+{
+  "id": "LJ6OVRV8MJ2Z",
+  "name": "Folder 4",
+  "taskbarIcon": {
+    "className":"folder tb"
+  },
+  "window": {
+    "windowIcon": {
+      "className": "folder sm"
+    }
+  }
+}

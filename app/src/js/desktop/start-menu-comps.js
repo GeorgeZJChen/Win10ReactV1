@@ -2,8 +2,9 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
 import Utils from '../components/Utils.js'
-
 import Icon from '../components/icon.js'
+
+import System from '../system/system.js'
 
 import css from '../../css/desktop/start-menu.css'
 
@@ -356,8 +357,8 @@ class Box extends Component{
   }
   onClick(){
     if(this.props.data.id){
-      window.desktop.addTask(this.props.data.id, this.props.data.name)
-      window.desktop.closeStartMenu()
+      System.addTask(this.props.data.id, this.props.data.name)
+      System.desktop.closeStartMenu()
     }
   }
   createAnimation(){

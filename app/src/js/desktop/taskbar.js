@@ -18,6 +18,17 @@ class Taskbar extends Component{
       name: "taskbar",
       action: "Attach to"
     }
+    this.state = {
+      windowTasks: new Map()
+    }
+  }
+  selectTask(id){
+    let task = this.state.windowTasks.get(id)
+    if(task) task.select()
+  }
+  deselectTask(id){
+    let task = this.state.windowTasks.get(id)
+    if(task) task.deselect()
   }
   update(task){
     if(task.taskbarIcon){

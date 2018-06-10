@@ -85,7 +85,7 @@
   outline: 1px dotted #fff;
 }
 .item-desktop>.item-check:checked:hover~.item-background{
-  background-color: rgba(138, 191, 244, 0.25);
+  background-color: rgba(103, 158, 212, 0.3);
   outline: 1px solid rgba(217, 236, 255, 0.36);
 }
 .item-desktop.selected>.item-background{
@@ -93,7 +93,7 @@
   outline: 1px solid rgba(217, 236, 255, 0.51);
 }
 .item-desktop.selected:hover>.item-background{
-  background-color: rgba(138, 191, 244, 0.25);
+  background-color: rgba(103, 158, 212, 0.3);
   outline: 1px solid rgba(217, 236, 255, 0.36);
 }
 .item-desktop.dragged>.item-check:checked~.item-background{

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
+import System from '../system/system.js'
 
 import Icon from '../components/icon.js'
 import Task from './task.js'
@@ -8,26 +9,28 @@ import css from '../../css/system/notification.css'
 
 class Notification {
   constructor(){
-    this.prefixId = 'NI37RYT8KYJY'
+    this.id = 'NI37RYT8KYJY'
     this.alertCount = 0
   }
-  alert(message){
-    window.desktop.addSystemTask(new Task({
-      name: 'Alert',
-      id: 'sys_alert_'+(++this.alertCount)+'_YSZ6ZO0R',
+  alert(message, title){
+    System.addSystemTask(new Task({
+      name: title?title:'Alert',
+      id: this.id,
       window: {
         width: 300,
         height: 120,
         resizable: 0,
-        btnGroup: [0,0,1],
+        maximisable: 0,
+        minimisable: 0,
         center: 1,
         color: '#333',
         backgroundColor: '#fff',
         backgroundColor2: '#fff',
+      },
+      callback: (win)=>{
+        ReactDOM.render(<Alert win={win} message={message}/>, win.refs.content)
       }
-    }), (win)=>{
-      ReactDOM.render(<Alert win={win} message={message}/>, win.refs.content)
-    })
+    }))
   }
 }
 
@@ -37,6 +40,9 @@ class Alert extends Component{
     super(props)
   }
   componentDidMount(){
+    setTimeout(()=>{
+      this.focus()
+    }, 200)
     let messageHeight = this.refs.message.offsetHeight
     if(messageHeight<66) this.refs.message.style.height = 66+'px'
     this.props.win.height = Math.max(messageHeight,66)+35+29
@@ -45,14 +51,19 @@ class Alert extends Component{
   ok(){
     this.props.win.close()
   }
+  focus(e){
+    this.refs.ok.style.outline=''
+    this.refs.ok.focus()
 
+  }
   render(){
     return(
       <div className={css.alertCt}>
         <div className={css.alertIcon}></div>
         <p className={css.alertMessage} ref='message'>{this.props.message}</p>
         <div className={css.alertFooter}>
-          <div className={css.button} onClick={()=>this.ok()}>OK</div>
+          <button className={css.button} ref='ok' style={{outline:'2px solid rgb(0,120,215)'}}
+            onClick={()=>this.ok()}>OK</button>
         </div>
       </div>
     )

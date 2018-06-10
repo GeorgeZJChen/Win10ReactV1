@@ -1,7 +1,9 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
+import System from '../system/system.js'
 import Icon from '../components/icon.js'
 import css from '../../css/desktop/taskbar.css'
+
 
 class TaskItems extends Component{
   constructor(props){
@@ -22,10 +24,10 @@ class TaskItems extends Component{
         {
           (()=>{
             const arr = []
-            window.desktop.state.tasks.forEach((task)=>{
+            System.desktop.state.tasks.forEach((task)=>{
               if(this.props.type == 0){ //render on taskbar
                 if(task.taskbarIcon){
-                  arr.push(<WindowItem key={task.id} data={task}/>)
+                  arr.push(<WindowItem key={task.id} task={task}/>)
                 }
               } else {  //render background task
                 if (task.backgroundIcon) {
@@ -52,7 +54,6 @@ class WindowItem extends Component{
     this.imgStyle ={
       width: 'auto',
       height: '70%',
-      maxWidth: '85%',
       position: 'relative',
       left: '50%',
       top: '50%',
@@ -63,7 +64,49 @@ class WindowItem extends Component{
     this.imgStyleNotReady = {
       display: 'none'
     }
-    this.index = props.index
+    this.id = props.task.id
+    this.selected = 0
+  }
+  componentDidMount(){
+    System.desktop.refs.taskbar.state.windowTasks.set(this.id, this)
+    System.desktop.windows.add(this.props.task)
+  }
+  componentWillUnmount(){
+    System.desktop.refs.taskbar.state.windowTasks.delete(this.id)
+  }
+  select(){
+    if(this.selected){
+      if(this.__mousedown_while_window_minimised__) {
+        delete this.__mousedown_while_window_minimised__
+        return
+      }
+      let win = System.desktop.windows.get(this.id)
+      if(win.minimisable&&!win.minimised){
+        win.minimise()
+        this.deselect()
+      }else{
+        win.select()
+      }
+    }else{
+      System.desktop.refs.taskbar.state.windowTasks.forEach((item)=>{
+        if(item!=this) item.deselect()
+      })
+      this.refs.element.className += ' '+css.selected
+      this.selected = 1
+      System.desktop.windows.get(this.id).select()
+    }
+  }
+  deselect(){
+    if(this.__mousedown_while_window_selected__) {
+      delete this.__mousedown_while_window_selected__
+      return
+    }
+    if(this.selected){
+      this.refs.element.className = this.refs.element.className.replace(new RegExp(' '+css.selected,'g'),'')
+      this.selected = 0
+      let win = System.desktop.windows.get(this.id)
+      if(win) win.deselect()
+    }
   }
   imgOnload(){
     this.setState({
@@ -71,12 +114,21 @@ class WindowItem extends Component{
     })
   }
   onclick(e){
-
+    this.select()
+  }
+  onMouseDown(){
+    if(System.desktop.windows.get(this.id).selected)
+      this.__mousedown_while_window_selected__ = 1
+    if(System.desktop.windows.get(this.id).minimised)
+      this.__mousedown_while_window_minimised__ = 1
   }
   render(){
-    const icon = this.props.data.taskbarIcon
+    const icon = this.props.task.taskbarIcon
     return (
-      <div className={css.item+' '+css.itemTask} onClick={(e)=>this.onclick(e)}><span className={css.iconCt}>
+      <div className={css.item+' '+css.itemTask} ref='element'
+        onClick={(e)=>this.onclick(e)}><span className={css.iconCt}
+        onMouseDown={(e)=>this.onMouseDown(e)} onTouchStart={(e)=>this.onMouseDown(e)}
+        >
           {
             icon.URL?
               <React.Fragment>
