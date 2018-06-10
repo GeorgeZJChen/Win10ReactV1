@@ -5,7 +5,7 @@ import System from '../system/system.js'
 const registeredTasks= new Set([
   "i6oxuWOp0", "i6oxuWOp1", "i6oxuWOp2", "i6oxuWOp3", "i6oxuWOp4",
   "WLAN_W8kyt9KR2", "kugou_W8kyt9KR", "teamviewer_i6oxuWOp4", "wechat_W8kyt9KR", "wechat_W8kyt9KR0",
-  "dundee_pEsnAYaw", "NQ3NR3XKV3FV", "chromeQPPY2SEKS479", "LJ6OVRV8MJ2Z"
+  "dundee_pEsnAYaw", "NQ3NR3XKV3FV", "chromeQPPY2SEKS479", "LJ6OVRV8MJ2Z", "atom_OIOWFV4XMLYB"
 ])
 const systemTasks = {
   // "resource_manager": {
@@ -66,11 +66,17 @@ class Task {
   }
   evoke(){
     if(this.win){
-      System.desktop.refs.taskbar.state.windowTasks.get(this.id).select()
+      System.desktop.windows.get(this.id).select()
     }
   }
   end(){
-    // TODO:
+    System.desktop.state.tasks.delete(this.id)
+    System.desktop.refs.taskbar.update(this)
+    if(this.win){
+      let win = System.desktop.windows.get(this.id)
+      if(win) win.close()
+    }
+
   }
 }
 

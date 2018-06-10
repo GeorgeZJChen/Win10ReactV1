@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import System from '../system/system.js'
 import Events from '../components/event.js'
 import Icon from '../components/icon.js'
+import Utils from '../components/Utils.js'
 
 import css from '../../css/desktop/window.css'
 
@@ -135,6 +136,9 @@ class Win extends Component{
 
 
     this.onMouseDown = this.onMouseDown.bind(this)
+    this.onMouseEnter = this.onMouseEnter.bind(this)
+    this.onMouseUp = this.onMouseUp.bind(this)
+    this.onMouseLeave = this.onMouseLeave.bind(this)
     this.iconOnload = this.iconOnload.bind(this)
 
     this.maximised = 0
@@ -144,6 +148,10 @@ class Win extends Component{
 
     this.animated = win.animated || 1
 
+    this.hoverTag = {
+      name: this.name,
+      action: "Move to"
+    }
     props.parent.state.wins.set(this.id, this)
   }
   componentDidMount() {
@@ -160,15 +168,15 @@ class Win extends Component{
       width: this.width +'px',
       height: this.height +'px',
     })
-    this.setStyle({
-      visibility: "visible"
-    })
     this.select()
+    this.open()
   }
   render(){
     const icon = this.props.data.win.windowIcon
     return(
-      <div className={css.window} ref='element' onMouseDown={this.onMouseDown} onTouchStart={this.onMouseDown}>
+      <div className={css.window} ref='element' onMouseDown={this.onMouseDown} onTouchStart={this.onMouseDown}
+        onMouseEnter = {this.onMouseEnter}
+        onMouseUp = {this.onMouseUp} onMouseLeave = {this.onMouseLeave}>
         <div className={css.label} ref='label'>
           {
             icon?
@@ -216,51 +224,37 @@ class Win extends Component{
       </div>
     )
   }
+  open(){
+    if(this.animated){
+      this._aniopen()
+    }
+    else {
+      this._open()
+    }
+  }
   minimise(){
-    if(!this.minimised){
-      this.minimised = 1
-      this.setStyle({
-        visibility: 'hidden',
-        opacity: 0,
-      })
-      this.deselect()
-    }else{
-      this.minimised = 0
-      this.setStyle({
-        visibility: 'visible',
-        opacity: 1,
-      })
-      this.select()
+    if(this.animated){
+      this._animin()
+    }
+    else {
+      this._minimise()
     }
   }
   maximise(){
-    const ct = this.container
-    const maxBtn = this.refs.maximise
-    if(!this.maximised){
-      this.maximised = 1
-      this.setStyle({
-        left: 0,
-        top: 0,
-        width: ct.offsetWidth +'px',
-        height: ct.offsetHeight +'px'
-      })
-      maxBtn.className += ' '+css.restore
-      if(this.resizable) this.refs.resize.style.visibility = 'hidden'
-    }else {
-      this.maximised = 0
-      this.clinging = 0
-      this.setStyle({
-        left: this.left+'px',
-        top: this.top+'px',
-        width: this.width +'px',
-        height: this.height +'px'
-      })
-      maxBtn.className = maxBtn.className.replace(new RegExp(' '+css.restore, 'g'), '')
-      if(this.resizable)this.refs.resize.style.visibility = 'visible'
+    if(this.animated){
+      this._animax()
+    }
+    else {
+      this._maximise()
     }
   }
   close(){
-    this.props.parent.remove(this)
+    if(this.animated){
+      this._aniclose()
+    }
+    else {
+      this._close()
+    }
   }
   select(){
     if(this.selected) return
@@ -310,6 +304,15 @@ class Win extends Component{
   onMouseDownLabel(e){
     this.onDrag(e)
   }
+  onMouseEnter(e){
+    Events.emit(Events.names.being_dragged_items_onenter, this)
+  }
+  onMouseLeave(e){
+    Events.emit(Events.names.being_dragged_items_onleave, this)
+  }
+  onMouseUp(e){
+    Events.emit(Events.names.being_dragged_items_ondrop, this)
+  }
   onDrag(e){
     const x = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
     const y = e.pageY || (e.changedTouches?e.changedTouches[0].pageY:0)
@@ -334,7 +337,7 @@ class Win extends Component{
         shadow.style.zIndex = this.props.parent.state.maxIndex
       }
       if(this.maximised){
-        this.maximise()
+        this._maximise()
         let width = this.width
         let ctWidth = this.container.offsetWidth
         if (x < width / 2)
@@ -651,7 +654,183 @@ class Win extends Component{
       this.top = Math.floor((container.offsetHeight - this.height)*(Math.random()*0.5+0.25))
     }
   }
+  _aniopen(){
+    this.setStyle({
+      visibility: "visible"
+    })
+    const ele = this.refs.element
+    ele.className += ' '+css.openP
+    setTimeout(()=>{
+      ele.className += ' '+css.openF
+      setTimeout(()=>{
+        this._open()
+        ele.className = ele.className.replace(new RegExp(' '+css.openP,'g'),'')
+        ele.className = ele.className.replace(new RegExp(' '+css.openF,'g'),'')
+      },250)
+    },20)
+  }
+  _open(){
+    this.setStyle({
+      visibility: "visible",
+      opacity: 1
+    })
+  }
+  _animax(){
+    const ele = this.refs.element
+    if(!this.maximised){
+      ele.className += ' '+css.maxP
+      setTimeout(()=>{
+        ele.className += ' '+css.maxF
+        setTimeout(()=>{
+          this._maximise()
+          ele.className = ele.className.replace(new RegExp(' '+css.maxP,'g'),'')
+          ele.className = ele.className.replace(new RegExp(' '+css.maxF,'g'),'')
+        },250)
+      },20)
+    }else{
+      ele.className += ' '+css.maxRestoreP
+      setTimeout(()=>{
+        this._maximise()
+        ele.className += ' '+css.maxRestoreF
+        setTimeout(()=>{
+          ele.className = ele.className.replace(new RegExp(' '+css.maxRestoreP,'g'),'')
+          ele.className = ele.className.replace(new RegExp(' '+css.maxRestoreF,'g'),'')
+        },250)
+      },20)
+    }
+  }
+  _maximise(){
+    const ct = this.container
+    const maxBtn = this.refs.maximise
+    if(!this.maximised){
+      this.maximised = 1
+      this.setStyle({
+        left: 0,
+        top: 0,
+        width: ct.offsetWidth +'px',
+        height: ct.offsetHeight +'px'
+      })
+      maxBtn.className += ' '+css.restore
+      if(this.resizable) this.refs.resize.style.visibility = 'hidden'
+    }else {
+      this.maximised = 0
+      this.clinging = 0
+      this.setStyle({
+        left: this.left+'px',
+        top: this.top+'px',
+        width: this.width +'px',
+        height: this.height +'px'
+      })
+      maxBtn.className = maxBtn.className.replace(new RegExp(' '+css.restore, 'g'), '')
+      if(this.resizable)this.refs.resize.style.visibility = 'visible'
+    }
+  }
+  _animin(){
+    const ct = this.container
+    const ele = this.refs.element
+    if(!this.minimised){
 
+      let save_top = ele.offsetTop
+      let save_left = ele.offsetLeft
+
+      ele.className += ' '+css.minP
+      let task_item = System.desktop.refs.taskbar.getWindowTask(this.id)
+      let item_left = Utils.computePosition(task_item.refs.element)[0]
+      let aim_top = ct.offsetHeight-ele.offsetHeight*0.7-40
+      let aim_left = this.maximised?0 : (item_left-ele.offsetWidth/1.5)
+      if(Math.abs((aim_left-ele.offsetLeft)/(aim_top-ele.offsetTop))>1.5){
+        if(aim_left>ele.offsetLeft)
+          aim_left = 1.5*Math.abs(aim_top-ele.offsetTop) + ele.offsetLeft
+        else
+          aim_left = ele.offsetLeft - 1.5*Math.abs(aim_top-ele.offsetTop)
+      }
+      setTimeout(()=>{
+        ele.className += ' '+css.minF
+        setTimeout(()=>{
+          this.setStyle({
+            top: aim_top +'px',
+            left: aim_left +'px'
+          })
+          setTimeout(()=>{
+            this._minimise()
+            ele.className = ele.className.replace(new RegExp(' '+css.minP,'g'),'')
+            ele.className = ele.className.replace(new RegExp(' '+css.minF,'g'),'')
+            this.setStyle({
+              top: save_top +'px',
+              left: save_left +'px'
+            })
+          },300)
+        },20)
+      },20)
+    }else{
+      let save_top = ele.offsetTop
+      let save_left = ele.offsetLeft
+      let aim_top = ct.offsetHeight-ele.offsetHeight*0.7-40
+      let aim_left = this.maximised?0 : -50
+      if(Math.abs((aim_left-ele.offsetLeft)/(aim_top-ele.offsetTop))>1.5){
+        if(aim_left>ele.offsetLeft)
+          aim_left = 1.5*Math.abs(aim_top-ele.offsetTop) + ele.offsetLeft
+        else
+          aim_left = ele.offsetLeft - 1.5*Math.abs(aim_top-ele.offsetTop)
+      }
+      ele.className += ' '+css.minRestoreP
+      this.setStyle({
+        transform: 'scale(0.8)',
+        top: aim_top +'px',
+        left: aim_left +'px'
+      })
+      setTimeout(()=>{
+        this.setStyle({
+          top: save_top +'px',
+          left: save_left +'px'
+        })
+        ele.className += ' '+css.minRestoreF
+        setTimeout(()=>{
+          this.setStyle({
+            visibility: 'visible',
+            transform: ''
+          })
+          setTimeout(()=>{
+            this._minimise()
+            ele.className = ele.className.replace(new RegExp(' '+css.minRestoreP,'g'),'')
+            ele.className = ele.className.replace(new RegExp(' '+css.minRestoreF,'g'),'')
+          },300)
+        },100)
+      },20)
+    }
+  }
+  _minimise(){
+    if(!this.minimised){
+      this.minimised = 1
+      this.setStyle({
+        visibility: 'hidden',
+        opacity: 0,
+      })
+      this.deselect()
+    }else{
+      this.minimised = 0
+      this.setStyle({
+        visibility: 'visible',
+        opacity: 1,
+      })
+      this.select()
+    }
+  }
+  _aniclose(){
+    const ele = this.refs.element
+    ele.className += ' '+css.closeP
+    setTimeout(()=>{
+      ele.className += ' '+css.closeF
+      setTimeout(()=>{
+        this._close()
+        ele.className = ele.className.replace(new RegExp(' '+css.closeP,'g'),'')
+        ele.className = ele.className.replace(new RegExp(' '+css.closeF,'g'),'')
+      },250)
+    },20)
+  }
+  _close(){
+    this.props.parent.remove(this)
+  }
 }
 
 export default Windows

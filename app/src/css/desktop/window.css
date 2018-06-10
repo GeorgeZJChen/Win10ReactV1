@@ -154,7 +154,7 @@
 .btn-maximise:before{
   content: '';
   position: absolute;
-  border: 3px solid;
+  border: 4px solid;
   width: 30px;
   height: 30px;
   top: 50%;
@@ -164,7 +164,7 @@
 .btn-maximise.restore:before{
   content: '';
   position: absolute;
-  border: 3px solid;
+  border: 4px solid;
   width: 30px;
   height: 30px;
   top: 53%;
@@ -291,4 +291,67 @@
   cursor: nw-resize;
   right: -5px;
   bottom: -5px;
+}
+
+.max-p{
+  top: 50%!important;
+  left: 50%!important;
+  transform: translate(-50%,-50%)!important;
+  width: 95%!important;
+  height: 95%!important;
+  pointer-events: none;
+}
+.max-f{
+  top: 50%!important;
+  left: 50%!important;
+  transform: translate(-50%,-50%)!important;
+  width: 100%!important;
+  height: 100%!important;
+  transition: width,height ease-out 0.2s,0.2s;
+}
+.max-restore-p{
+  transform: translate(-8%,-8%) scale(1.08)!important;
+  pointer-events: none;
+}
+.max-restore-f{
+  transform: translate(0,0) scale(1)!important;
+  transition: transform ease-out 0.2s;
+}
+.min-p{
+  transition: all cubic-bezier(0.18, 1, 0.41, 1) 0.3s;
+  opacity: 0.8!important;
+  pointer-events: none;
+}
+.min-f{
+  transform: scale(0.65)!important;
+  opacity: 0!important;
+}
+.min-restore-p{
+  opacity: 0!important;
+  pointer-events: none;
+}
+.min-restore-f{
+  transition: opacity,top,left,transform ease-out 0.3s,0.3s,0.3s,0.3s;
+  transform: scale(1);
+  opacity: 1!important;
+}
+.close-p{
+  transform: scale(1)!important;
+  opacity: 1!important;
+  pointer-events: none;
+}
+.close-f{
+  transition: transform,opacity ease-out 0.2s,0.2s;
+  transform: scale(0.95)!important;
+  opacity: 0!important;
+}
+.open-p{
+  transform: scale(0.95)!important;
+  opacity: 0!important;
+  pointer-events: none;
+}
+.open-f{
+  transition: transform,opacity ease-out 0.2s,0.2s;
+  transform: scale(1)!important;
+  opacity: 1!important;
 }

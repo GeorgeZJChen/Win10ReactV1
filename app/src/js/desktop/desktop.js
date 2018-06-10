@@ -70,19 +70,11 @@ class Desktop extends Component{
   }
   shutDownTask(id){
     let task = this.state.tasks.get(id)
-    if(task){
-      this.state.tasks.delete(id)
-      task.end()
-      this.refs.taskbar.update(task)
-    }
+    if(task) task.end()
   }
   evokeTask(id){
     let task = this.state.tasks.get(id)
     if(task) task.evoke()
-  }
-  suspendTask(id){
-    let task = this.state.tasks.get(id)
-    if(task) task.suspend()
   }
 
   initiateStartmenu(data){

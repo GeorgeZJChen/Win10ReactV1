@@ -160,6 +160,8 @@
 .skype:before{content: "S";font-family: "Arial";font-size: 30px;color: #0078d7;text-shadow: 2px 0 #0078d7;text-indent: 7px;line-height: 39px;background: #fff;width: 36px;height: 36px;border-radius: 50%;position: absolute;left: 2px;top: 2px;}
 .skype:after{content: "";position: absolute;width: 23px;height: 23px;background: #fff;border-radius: 50%;left: 17px;top: 17px;z-index: -1;}
 
+.atom.task{transform: translate(-50%,-50%) scale(0.4);}
+.atom.sm{transform: translate(-50%,-50%) scale(0.3);}
 .atom-outline.atom{border: 3px solid #ddd;}
 .atom{top: 50%;left: 50%;transform: translate(-50%,-50%) scale(0.65);display: block;position: absolute;width: 60px;height: 60px;border-radius: 50%;background: rgba(176,224,152,1);background: -moz-linear-gradient(top, rgba(176,224,152,1) 0%, rgba(5,162,113,1) 100%);background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(176,224,152,1)), color-stop(100%, rgba(5,162,113,1)));background: -webkit-linear-gradient(top, rgba(176,224,152,1) 0%, rgba(5,162,113,1) 100%);background: -o-linear-gradient(top, rgba(176,224,152,1) 0%, rgba(5,162,113,1) 100%);background: -ms-linear-gradient(top, rgba(176,224,152,1) 0%, rgba(5,162,113,1) 100%);background: linear-gradient(to bottom, rgba(176,224,152,1) 0%, rgba(5,162,113,1) 100%);filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b0e098', endColorstr='#05a271', GradientType=0 );}
 .atom:before{content: "";width: 10px;height: 3px;border-radius: 30%;border: 2px solid transparent;border-top-color: #fff;position: absolute;top: 7px;left: 15px;top: 30px;left: 29px;transform: rotate(66deg);}

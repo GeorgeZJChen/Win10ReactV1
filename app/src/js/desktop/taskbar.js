@@ -14,13 +14,16 @@ class Taskbar extends Component{
     this.onMouseEnter = this.onMouseEnter.bind(this)
     this.onMouseUp = this.onMouseUp.bind(this)
     this.onMouseLeave = this.onMouseLeave.bind(this)
+    this.state = {
+      windowTasks: new Map()
+    }
     this.hoverTag = {
       name: "taskbar",
       action: "Attach to"
     }
-    this.state = {
-      windowTasks: new Map()
-    }
+  }
+  getWindowTask(id){
+    return this.state.windowTasks.get(id)
   }
   selectTask(id){
     let task = this.state.windowTasks.get(id)

@@ -29,7 +29,6 @@ class Items extends Component {
       interval: [0, 0],
       column: -1,
       row: -1,
-      selectedColumns: [-1, -1], //[left column number, right column number].
       itemWidth: 0,
       lattice: [], //lattice[column][row] = item
       outcasts: [],
@@ -195,8 +194,6 @@ class Items extends Component {
     p.selected.forEach((item)=>{
       item.deselect()
     })
-    p.selectedColumns[0] = -1
-    p.selectedColumns[1] = -1
     if(p.checked) p.checked.uncheck()
   }
   blur(){
@@ -207,59 +204,14 @@ class Items extends Component {
     if(!this.state.initiated) return
 
     const p = this.groupInfo
-    if(p.checked) p.checked.uncheck()
+    this.deselect()
 
     let left_n = Math.floor(Math.max(Math.min(x, sx)-0.75*p.itemWidth, -1)/p.interval[0]) +1
     let right_n = Math.floor((Math.max(x, sx) +0.75*p.itemWidth)/p.interval[0])-1
-    if(!(p.selectedColumns[0] == left_n && p.selectedColumns[1] == right_n)){
-      let deselected =-1
 
-      let old_selected = []
-      for (let j=0, i = p.selectedColumns[0]; i <= p.selectedColumns[1]; i++, j++) {
-        old_selected[j] = i
-      }
-      let new_selected = []
-      for (let j=0, i = left_n; i <= right_n; i++, j++) {
-        new_selected[j] = i
-      }
-      if(!Array.prototype.minus)
-        Array.prototype.minus = function (arr) {
-          let result = []
-          let obj = {}
-          for (let i = 0; i < arr.length; i++) {
-              obj[arr[i]] = 1
-          }
-          for (let j = 0; j < this.length; j++) {
-              if (!obj[this[j]])
-              {
-                  obj[this[j]] = 1
-                  result.push(this[j])
-              }
-          }
-          return result
-        }
-      deselected = old_selected.minus(new_selected)
-      let columns_deselected = []
-
-      for (let i = 0; i < deselected.length; i++) {
-        columns_deselected.push(p.lattice[deselected[i]])
-      }
-
-      for (let i = 0; i < columns_deselected.length; i++) {
-        let column = columns_deselected[i]
-        if(!column) continue
-        for (let j = 0; j < column.length; j++) {
-          let item = column[j]
-          if(!item) continue
-          item.deselect()
-        }
-      }
-      p.selectedColumns[0] = left_n
-      p.selectedColumns[1] = right_n
-    }
 
     let column = []
-    for (let k = p.selectedColumns[0]; k <= p.selectedColumns[1]; k++) {
+    for (let k = left_n; k <= right_n; k++) {
       //since height of an item is unfixed, all items above bottom edge of the area within the column need to be computed
       column = p.lattice[k]
       if(!column) continue
@@ -391,7 +343,7 @@ class Items extends Component {
             document.getElementById(tagid+'_name').innerHTML = Tag.name
             let tagNode = document.getElementById(tagid)
             tagNode.style.visibility = 'visible'
-            if(tagNode.offsetLeft+ct.offsetLeft>document.body.clientWidth-2*tagNode.offsetWidth){
+            if(mx>document.body.clientWidth-tagNode.offsetWidth){
               tagNode.style.left = document.body.clientWidth -tagNode.offsetWidth -ct.offsetLeft + 'px'
             }else {
               tagNode.style.left = x+12 +'px'

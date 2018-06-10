@@ -31,6 +31,16 @@ let getBrowser = function(){
     }
 ut.browser = getBrowser()
 
+ut.computePosition = function(ele){
+  const pos = [0,0]
+  do{
+    pos[0] += ele.offsetLeft
+    pos[1] += ele.offsetTop
+    ele = ele.parentNode
+  }while(ele!=document.body)
+  return pos
+}
+
 ut.global = {}
 
 export default ut

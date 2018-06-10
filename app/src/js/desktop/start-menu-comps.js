@@ -356,10 +356,8 @@ class Box extends Component{
     this.onClick = this.onClick.bind(this)
   }
   onClick(){
-    if(this.props.data.id){
-      System.addTask(this.props.data.id, this.props.data.name)
-      System.desktop.closeStartMenu()
-    }
+    System.addTask(this.props.data.id, this.props.data.name)
+    System.desktop.closeStartMenu()
   }
   createAnimation(){
     let faces = this.props.data.faces

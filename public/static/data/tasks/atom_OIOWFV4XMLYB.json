@@ -1,0 +1,14 @@
+{
+  "id": "atom_OIOWFV4XMLYB",
+  "name": "C:\\Users\\chenzhuojun\\Desktop -- Atom",
+  "taskbarIcon": {
+    "className": "atom task"
+  },
+  "window": {
+    "windowIcon": {
+      "className": "atom sm"
+    },
+    "width": 650,
+    "height": 550
+  }
+}

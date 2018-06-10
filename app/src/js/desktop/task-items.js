@@ -75,37 +75,21 @@ class WindowItem extends Component{
     System.desktop.refs.taskbar.state.windowTasks.delete(this.id)
   }
   select(){
-    if(this.selected){
-      if(this.__mousedown_while_window_minimised__) {
-        delete this.__mousedown_while_window_minimised__
-        return
-      }
-      let win = System.desktop.windows.get(this.id)
-      if(win.minimisable&&!win.minimised){
-        win.minimise()
-        this.deselect()
-      }else{
-        win.select()
-      }
-    }else{
+    if(!this.selected){
       System.desktop.refs.taskbar.state.windowTasks.forEach((item)=>{
         if(item!=this) item.deselect()
       })
       this.refs.element.className += ' '+css.selected
       this.selected = 1
-      System.desktop.windows.get(this.id).select()
     }
   }
   deselect(){
-    if(this.__mousedown_while_window_selected__) {
-      delete this.__mousedown_while_window_selected__
+    if(this.__mousedown__){
       return
     }
     if(this.selected){
       this.refs.element.className = this.refs.element.className.replace(new RegExp(' '+css.selected,'g'),'')
       this.selected = 0
-      let win = System.desktop.windows.get(this.id)
-      if(win) win.deselect()
     }
   }
   imgOnload(){
@@ -114,21 +98,30 @@ class WindowItem extends Component{
     })
   }
   onclick(e){
-    this.select()
+    delete this.__mousedown__
+    if(this.selected){
+      let win = System.desktop.windows.get(this.id)
+      if(win.minimisable&&!win.minimised){
+        win.minimise()
+      }else{
+        win.deselect()
+      }
+      this.deselect()
+    }else{
+      this.select()
+      System.desktop.windows.get(this.id).select()
+    }
   }
   onMouseDown(){
-    if(System.desktop.windows.get(this.id).selected)
-      this.__mousedown_while_window_selected__ = 1
-    if(System.desktop.windows.get(this.id).minimised)
-      this.__mousedown_while_window_minimised__ = 1
+      this.__mousedown__ = 1
   }
   render(){
     const icon = this.props.task.taskbarIcon
     return (
       <div className={css.item+' '+css.itemTask} ref='element'
-        onClick={(e)=>this.onclick(e)}><span className={css.iconCt}
-        onMouseDown={(e)=>this.onMouseDown(e)} onTouchStart={(e)=>this.onMouseDown(e)}
+        onClick={(e)=>this.onclick(e)} onMouseDown={(e)=>this.onMouseDown(e)} onTouchStart={(e)=>this.onMouseDown(e)}
         >
+        <span className={css.iconCt}>
           {
             icon.URL?
               <React.Fragment>
@@ -172,7 +165,7 @@ class BackgroundItem extends Component{
     })
   }
   onDoubleClick(e){
-
+    System.desktop.evokeTask(this.props.data.id)
   }
   render(){
     let t = css.item +' '+css.itemBg+' '

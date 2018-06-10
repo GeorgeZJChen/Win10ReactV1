@@ -359,6 +359,7 @@
         },
         {
           "name": "WeChat",
+          "id": "wechat_W8kyt9KR0",
           "size": 4,
           "icon": {"background": "", "className": "wechat"}
         },
