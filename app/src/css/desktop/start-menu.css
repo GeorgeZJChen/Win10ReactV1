@@ -1,10 +1,10 @@
 :global(#start_menu_switch_X7VIV):checked+.start-menu{
-  height: 85%;
+  /* height: 85%;
   visibility: visible;
   min-height: 400px;
   opacity: 1;
   transition: height,opacity,visibility 0.5s,0.5s,0.5s;
-  transition-timing-function: cubic-bezier(0, 1, 0, 1);
+  transition-timing-function: cubic-bezier(0, 1, 0, 1); */
 }
 .start-menu{
   position: absolute;
@@ -19,7 +19,8 @@
   visibility: hidden;
   overflow: hidden;
   opacity: 0;
-  display: flex;
+  display: none;
+  /* display: flex; */
   flex-wrap: wrap;
   flex-direction: row;
 }

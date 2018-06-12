@@ -3,14 +3,14 @@ import {render} from 'react-dom';
 import Login from './js/login/login.js';
 
 setTimeout(function functionName() {
-  render(<Login parentId='win10_login'/>, document.getElementById('win10_login'));
+  render(<Login parentId='XLSEFG7DE7ON'/>, document.getElementById('XLSEFG7DE7ON'));
 }, 500)
 
 
 // import Desktop from './js/desktop/desktop.js'
 // setTimeout(function functionName() {
-//   render(<div></div>, document.getElementById('win10_login'))
-//   render(<Desktop/>, document.getElementById('win10_main'))
+//   render(<div></div>, document.getElementById('XLSEFG7DE7ON'))
+//   render(<Desktop/>, document.getElementById('Z5E0SZIPPCO9'))
 // }, 500)
 
 

@@ -2,46 +2,145 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import System from '../system/system.js'
 import Icon from '../components/icon.js'
+import Utils from '../components/Utils.js'
 import css from '../../css/desktop/taskbar.css'
 
-
-class TaskItems extends Component{
+class WindowItems extends Component{
   constructor(props){
     super(props)
     this.state = {
       renderFlag: 1
     }
-
   }
   update(){
+    this.initiated = 1
+    this.setState((prevState)=>{
+      return {renderFlag: ~prevState.renderFlag}
+    })
+  }
+  render(){
+    if(this.initiated){
+      return (
+        <React.Fragment>
+          <WindowPreview ref='preview'/>
+          {
+            (()=>{
+              const arr = []
+              System.desktop.refs.taskbar.windowTaskMaps.forEach((taskMap, key)=>{
+                arr.push(<WindowItem key={key} taskMap={taskMap} parent={this}/>)
+              })
+              return arr
+            })()
+          }
+        </React.Fragment>
+      )
+    }else{
+      return null
+    }
+  }
+}
+
+class BackgroundItems extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      renderFlag: 1
+    }
+  }
+  update(){
+    this.initiated = 1
     this.setState((prevState)=>{
       return {renderFlag: ~prevState.renderFlag}
     })
   }
   render(){
     return(
-      <React.Fragment>
-        {
-          (()=>{
-            const arr = []
-            System.desktop.state.tasks.forEach((task)=>{
-              if(this.props.type == 0){ //render on taskbar
-                if(task.taskbarIcon){
-                  arr.push(<WindowItem key={task.id} task={task}/>)
-                }
-              } else {  //render background task
-                if (task.backgroundIcon) {
-                  let t = this.props.type
-                  let d = task.backgroundIcon.hidden
-                  if((t==1&&d==0)||(d==1&&t!=1)) return
-                  arr.push( <BackgroundItem key={task.id} data={task} type={this.props.type}/>)
-                }
-              }
-            })
-            return arr
-          })()
-        }
-      </React.Fragment>
+      this.initiated?
+      (
+        <React.Fragment>
+          {
+            (()=>{
+              const arr = []
+              System.desktop.refs.taskbar.backgroundTaskMaps.forEach((taskMap)=>{
+                let task
+                taskMap.forEach((_task)=>{
+                  task = _task
+                })
+
+                let t = this.props.type
+                let d = task.backgroundIcon.hidden
+                if((t==1&&d==0)||(d==1&&t!=1)) return
+                arr.push( <BackgroundItem key={task.id} data={task} type={this.props.type}/>)
+              })
+              return arr
+            })()
+          }
+        </React.Fragment>
+      )
+      :
+      null
+      )
+  }
+}
+class WindowPreview extends Component{
+  constructor(props){
+    super(props)
+    this.display = 0
+    this.reference = null
+  }
+  setWindows(){
+
+  }
+  toggle(){
+    if(this.display)
+      this.hide()
+    else
+      this.show()
+  }
+  show(item){
+    const ele = this.refs.element
+    if(!this.display)
+      ele.style.transition = 'none'
+    ele.style.display = 'block'
+    ele.style.left = Utils.computePosition(this.reference.refs.element)[0]-(ele.offsetWidth-this.reference.refs.element.offsetWidth)/2 +'px'
+    setTimeout(()=>{
+      ele.style.transition = ''
+      setTimeout(()=>{
+        ele.className += ' '+css.display
+      },10)
+    },10)
+    this.display = 1
+  }
+  hide(item){
+    if(this.__hovering__) return
+    this.reference = item
+    if(this.display == 1){
+      const ele = this.refs.element
+      ele.className = ele.className.replace(new RegExp(' '+css.display, 'g'),'')
+      this.display = 0
+      setTimeout(()=>{
+        ele.style.display = ''
+      },350)
+    }
+  }
+  onMouseEnter(){
+    this.__hovering__ = 1
+  }
+  onMouseLeave(){
+    delete this.__hovering__
+    setTimeout(()=>{
+      if(!this.__hovering__&&!this.reference){
+        this.hide()
+      }
+    },500)
+  }
+  render(){
+    return (
+      <div className={css.preview} ref='element'
+        onMouseEnter={()=>this.onMouseEnter()} onMouseLeave={()=>this.onMouseLeave()}
+      >
+        <div></div>
+      </div>
     )
   }
 }
@@ -64,21 +163,20 @@ class WindowItem extends Component{
     this.imgStyleNotReady = {
       display: 'none'
     }
-    this.id = props.task.id
     this.selected = 0
+    this.onMouseDown = this.onMouseDown.bind(this)
+    this.onMouseEnter = this.onMouseEnter.bind(this)
+    this.onMouseLeave = this.onMouseLeave.bind(this)
+    this.onClick = this.onClick.bind(this)
   }
   componentDidMount(){
-    System.desktop.refs.taskbar.state.windowTasks.set(this.id, this)
-    System.desktop.windows.add(this.props.task)
-  }
-  componentWillUnmount(){
-    System.desktop.refs.taskbar.state.windowTasks.delete(this.id)
+    this.props.taskMap.taskbarItem = this
   }
   select(){
     if(!this.selected){
-      System.desktop.refs.taskbar.state.windowTasks.forEach((item)=>{
-        if(item!=this) item.deselect()
-      })
+      let selected = System.desktop.refs.taskbar.selected
+      if(selected) selected.deselect()
+      System.desktop.refs.taskbar.selected = this
       this.refs.element.className += ' '+css.selected
       this.selected = 1
     }
@@ -88,51 +186,111 @@ class WindowItem extends Component{
       return
     }
     if(this.selected){
+      System.desktop.refs.taskbar.selected = null
       this.refs.element.className = this.refs.element.className.replace(new RegExp(' '+css.selected,'g'),'')
       this.selected = 0
+
+      const preview = this.props.parent.refs.preview
+      if(preview.reference==this)
+        preview.hide(this)
+
     }
+  }
+  componentWillUnmount(){
+    if(System.desktop.refs.taskbar.selected == this)
+    System.desktop.refs.taskbar.selected = null
   }
   imgOnload(){
     this.setState({
       imgReady: 1
     })
   }
-  onclick(e){
+  onClick(e){
+
     delete this.__mousedown__
-    if(this.selected){
-      let win = System.desktop.windows.get(this.id)
-      if(win.minimisable&&!win.minimised){
-        win.minimise()
+
+    if(this.tasks.length==1){
+
+      if(this.selected){
+        let win = System.desktop.windows.get(this.tasks[0].window.wid)
+        if(win.minimisable&&!win.minimised){
+          win.minimise()
+        }else{
+          win.deselect()
+        }
+        this.deselect()
       }else{
-        win.deselect()
+        this.select()
+        const win = System.desktop.windows.get(this.tasks[0].window.wid)
+        if(win) win.select()
       }
-      this.deselect()
     }else{
-      this.select()
-      System.desktop.windows.get(this.id).select()
+      if(this.selected){
+        this.deselect()
+        this.props.parent.refs.preview.hide(this)
+      }else {
+        this.select()
+        this.props.parent.refs.preview.show(this)
+        const tf = ()=>{
+          if(!this.__mousedown__) this.deselect()
+          document.removeEventListener('mousedown', tf)
+        }
+        document.addEventListener('mousedown', tf)
+      }
     }
+
   }
   onMouseDown(){
-      this.__mousedown__ = 1
+    this.__mousedown__ = 1
+  }
+  onMouseEnter(){
+    this.__hovering__ = 1
+    const preview = this.props.parent.refs.preview
+    setTimeout(()=>{
+      if(this.__hovering__)
+        preview.show(this)
+    },(preview.display?150:500))
+    preview.reference = this
+  }
+  onMouseLeave(){
+    delete this.__hovering__
+    const preview = this.props.parent.refs.preview
+    setTimeout(()=>{
+      if(!this.__hovering__){
+        if(preview.reference==this){
+          preview.hide()
+          preview.reference = null
+        }
+      }
+    },500)
   }
   render(){
-    const icon = this.props.task.taskbarIcon
-    return (
-      <div className={css.item+' '+css.itemTask} ref='element'
-        onClick={(e)=>this.onclick(e)} onMouseDown={(e)=>this.onMouseDown(e)} onTouchStart={(e)=>this.onMouseDown(e)}
+    this.tasks = []
+    this.props.taskMap.forEach((_task)=>{
+      this.tasks.push(_task)
+    })
+    if(this.tasks.length>0){
+      const icon = this.tasks[0].taskbarIcon
+      return (
+        <div className={css.item+' '+css.itemTask+(this.tasks.length>1?(' '+css.x):'')+(this.selected?(' '+css.selected):'')} ref='element'
+        onClick={this.onClick} onMouseDown={this.onMouseDown} onTouchStart={this.onMouseDown}
+        onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}
         >
         <span className={css.iconCt}>
-          {
-            icon.URL?
-              <React.Fragment>
-                <img style={this.state.imgReady?this.imgStyle:this.imgStyleNotReady} src={icon.URL} onLoad={()=>{this.imgOnload()}}/>
-                {this.state.imgReady? '':<Icon className={'unknown'}/>}
-              </React.Fragment>
-              :
-              <Icon className={icon.className}/>
-          }
-      </span></div>
-    )
+        {
+          icon.URL?
+          <React.Fragment>
+          <img style={this.state.imgReady?this.imgStyle:this.imgStyleNotReady} src={icon.URL} onLoad={()=>{this.imgOnload()}}/>
+          {this.state.imgReady? '':<Icon className={'unknown'}/>}
+          </React.Fragment>
+          :
+          <Icon className={icon.className}/>
+        }
+        </span></div>
+      )
+    }else{
+      return null
+    }
   }
 }
 class BackgroundItem extends Component{
@@ -158,14 +316,18 @@ class BackgroundItem extends Component{
     }
     this.imgOnload = this.imgOnload.bind(this)
     this.onDoubleClick = this.onDoubleClick.bind(this)
+    this.onClick = this.onClick.bind(this)
   }
   imgOnload(){
     this.setState({
       imgReady: 1
     })
   }
+  onClick(e){
+    System.desktop.closeStartMenu()
+  }
   onDoubleClick(e){
-    System.desktop.evokeTask(this.props.data.id)
+    System.evokeTask(this.props.data.id)
   }
   render(){
     let t = css.item +' '+css.itemBg+' '
@@ -177,7 +339,8 @@ class BackgroundItem extends Component{
       t += css.shrink
     const icon = this.props.data.backgroundIcon
     return (
-      <div className={t} onDoubleClick={this.onDoubleClick}><span className={css.iconCtBg}>
+      <div className={t} onDoubleClick={this.onDoubleClick} onClick={this.onClick}
+      ><span className={css.iconCtBg}>
         {
           icon.URL?
             <React.Fragment>
@@ -192,4 +355,4 @@ class BackgroundItem extends Component{
   }
 }
 
-export default TaskItems
+export {WindowItems, BackgroundItems}

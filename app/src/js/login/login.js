@@ -20,10 +20,6 @@ class Login extends Component{
       usernameWidth: 0,
       renderFlag: true
     }
-    this.userInfo = {
-      username: '',
-      portraitURL: null
-    }
   }
   componentDidMount() {
 
@@ -32,28 +28,38 @@ class Login extends Component{
         this.setState({
           pageReady : 1,
         })
-      }, 2000)
+      }, this.props.lock?0:2000)
     })
   }
   loadUserInformation(cb){
-    //shall get data from cookies or back end server
-    axios({
-      method: 'get',
-      url: 'static/data/user.json',
-      responseType: 'json'
-    }).then((res)=>{
-      try {
-        this.userInfo = res.data
-        this.refs.username.innerHTML = res.data.username
-        this.refs.greetings.style.maxWidth = this.refs.username.offsetWidth +'px'
 
-        cb()
-      } catch (e) {
-        console.error('Data format error');
-      }
-    }).catch((err)=>{
-      console.warn(err);
-    })
+    if(System.userInfo){
+      this.refs.username.innerHTML = System.userInfo.username
+      setTimeout(()=>{
+        this.refs.greetings.style.maxWidth = this.refs.username.offsetWidth +'px'
+      },10)
+      cb()
+    }else{
+      axios({
+        method: 'get',
+        url: 'static/data/user.json',
+        responseType: 'json'
+      }).then((res)=>{
+        try {
+          System.userInfo = res.data
+          this.refs.username.innerHTML = System.userInfo.username
+          setTimeout(()=>{
+            this.refs.greetings.style.maxWidth = this.refs.username.offsetWidth +'px'
+          },10)
+
+          cb()
+        } catch (e) {
+          console.error('Data format error');
+        }
+      }).catch((err)=>{
+        console.warn(err);
+      })
+    }
   }
   toLogin() {
     if(!(this.state.imgReady&&this.state.pageReady)) return
@@ -69,7 +75,10 @@ class Login extends Component{
     this.refs.btnLogin.style.cursor = 'default'
     ReactDOM.render(<Loader size='medium'/>, this.refs.btnLogin)
 
-    System.start(this.unmount.bind(this))
+    if(!this.props.lock)
+      System.start(this.unmount.bind(this))
+    else
+      this.unmount()
   }
   unmount(){
     setTimeout(()=>{
@@ -79,7 +88,7 @@ class Login extends Component{
       smsw.click()
       setTimeout(()=>{
         smsw.click()
-      },100)
+      },300)
     },500)
 
     setTimeout(()=>{
@@ -98,20 +107,24 @@ class Login extends Component{
   }
   getPortrait(){
     /// TODO:
-    if(this.userInfo.portraitURL){
-      return (<img style={{width:'100%', height:'100%'}} src={this.userInfo.portraitURL}/>)
-    }
-    return (
-      <div className={css.portraitDefault}>
-       <div className={css.portraitDefaultB}></div>
-      </div>
-    )
+    if(System.userInfo&&System.userInfo.portraitURL){
+      return (<img style={{width:'100%', height:'100%'}} src={System.userInfo.portraitURL}/>)
+    }else
+      return (
+        <div className={css.portraitDefault}>
+         <div className={css.portraitDefaultB}></div>
+        </div>
+      )
   }
   render() {
     return (
       <div className={css.container+' '+css.fullScreen+' '+ (this.state.pageReady?css.transition:'')} style={{opacity: this.state.opacity}}>
         <img className={css.backgroundImg+' '+css.fullScreen} src={this.state.imgURL} onLoad={()=>this.imgReady()}/>
-        <div className={css.blocker+' '+css.fullScreen} style={{opacity:(this.state.imgReady&&this.state.pageReady?0:1)}}></div>
+        <div className={css.blocker+' '+css.fullScreen}
+          style={{
+            opacity:this.state.imgReady&&this.state.pageReady?0:1,
+            backgroundColor: this.props.lock?'#000':''
+          }}></div>
         <div className={css.loginCover+' '+css.fullScreen} onDoubleClick={()=>this.setState({removeDateCover:0})}
               style={{opacity:this.state.removeDateCover?1:0}}>
           <div className={css.loginCoverContainer}>
@@ -136,11 +149,12 @@ class Login extends Component{
             <div className={css.dateDate}><DateSpan format='W, ~, d'/></div>
           </div>
         </div>
-        <div className={css.fullScreen} style={{visibility:(this.state.imgReady&&this.state.pageReady?'hidden':'visible')}}>
+        <div className={css.fullScreen}
+          style={{visibility:(this.state.imgReady&&this.state.pageReady?'hidden':'visible')}}>
           <Loader/>
         </div>
       </div>
-    );
+    )
   }
 }
 

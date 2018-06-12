@@ -20,15 +20,11 @@ class Task {
     if(!data.id || !data.name) throw new Error()
     this.id = data.id
     this.name = data.name
+    this.query = data.query || ''
+
     this.callback = data.callback
-    if(data.isBackgroundTask){
-      this.backgroundIcon = {}
-      let b = this.backgroundIcon
-      let d = data.backgroundIcon || {}
-      b.className = d.className || 'unknown bg'
-      b.URL = d.URL || null
-      b.hidden = d.hidden || 0
-    }
+    this.stayBackground = data.stayBackground || 0
+
     if(data.window){
 
       this.taskbarIcon = {}
@@ -41,10 +37,11 @@ class Task {
         t.className = 'unknown'
         t.URL = null
       }
-
-      this.win = {}
-      let w = this.win
+      let w = {}
       let dw = data.window
+      w.wid = this.id + (data.query?('/'+data.query):'')
+      w.query = this.query
+      w.name = dw.name || this.name
       w.backgroundColor = dw.backgroundColor || ''
       w.backgroundColor2 = dw.backgroundColor2 || ''
       w.color = dw.color || ''
@@ -58,25 +55,57 @@ class Task {
 
       if(dw.windowIcon){
         w.windowIcon = {}
-        let d = dw.windowIcon || {}
-        w.windowIcon.className = d.className || 'unknown bg'
-        w.windowIcon.URL = d.URL || null
+        let di = dw.windowIcon || {}
+        w.windowIcon.className = di.className || 'unknown bg'
+        w.windowIcon.URL = di.URL || null
       }
+
+      this.window = w
     }
+    if(data.isBackgroundTask){
+      this.backgroundIcon = {}
+      let b = this.backgroundIcon
+      let d = data.backgroundIcon || {}
+      b.className = d.className || 'unknown bg'
+      b.URL = d.URL || null
+      b.hidden = d.hidden || 0
+    }
+
+    let taskMap = System.tasks.get(this.id)
+    if(!taskMap)
+      taskMap = new Map()
+    taskMap.set(this.query, this)
+    System.tasks.set(this.id, taskMap)
+
+  }
+  launch(){
+    System.desktop.refs.taskbar.add(this)
+    if(this.window) System.desktop.windows.add(this.window, this.callback)
   }
   evoke(){
-    if(this.win){
-      System.desktop.windows.get(this.id).select()
+    const win = System.desktop.windows.get(this.window.wid)
+    if(win){
+      win.select()
+    } else {
+      this.hidden = 0
+      System.desktop.windows.add(this.window, this.callback)
+      System.desktop.refs.taskbar.add(this)
     }
   }
   end(){
-    System.desktop.state.tasks.delete(this.id)
-    System.desktop.refs.taskbar.update(this)
-    if(this.win){
-      let win = System.desktop.windows.get(this.id)
+    System.deleteTask(this.id, this.query)
+    if(this.window){
+      let win = System.desktop.windows.get(this.window.wid)
       if(win) win.close()
     }
-
+  }
+  windowClosed(){
+    if(!this.stayBackground)
+      this.end()
+    else{
+      this.hidden = 1
+      System.desktop.refs.taskbar.update(this)
+    }
   }
 }
 

@@ -19,7 +19,7 @@ class StartMenu extends Component{
   }
   render(){
     return(
-      <div className={css.startMenu}>
+      <div className={css.startMenu} ref='element'>
         <input className={css.columnSwitch+' '+css.switch1} type='radio' name={'HydAxYn8'} defaultChecked/>
         <div className={css.switchResponser}></div>
         <input className={css.columnSwitch+' '+css.switch2} type='radio' name={'HydAxYn8'}/>

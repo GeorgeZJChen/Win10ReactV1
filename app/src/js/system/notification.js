@@ -7,7 +7,7 @@ import Task from './task.js'
 
 import css from '../../css/system/notification.css'
 
-let countId = 3000
+let count = 3000
 
 class Notification {
   constructor(){
@@ -16,7 +16,8 @@ class Notification {
   alert(message, title){
     System.addSystemTask(new Task({
       name: title?title:'Alert',
-      id: this.id+(countId++),
+      id: this.id,
+      query: "alert" +count++,
       window: {
         width: 300,
         height: 120,

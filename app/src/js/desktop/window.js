@@ -46,12 +46,12 @@ class Windows extends Component {
   get(id){
     return this.state.wins.get(id)
   }
-  add(task){
-    if(!this.state.wins.get(task.id)){
-      this.state.winsData.add(task)
+  add(win, cb){
+    if(!this.state.wins.get(win.wid)){
+      this.state.winsData.add(win)
 
-      let cb = task.callback?task.callback: (win)=>{win.load()}
-      if(cb) Events.once('_window_ready_'+task.id, cb)
+      cb = cb?cb : (_win)=>{_win.load()}
+      Events.once('_window_ready_'+win.wid, cb)
 
       this.setState((prevState)=>{
         return { renderFlag: ~prevState.renderFlag }
@@ -61,9 +61,8 @@ class Windows extends Component {
     return 0
   }
   remove(win){
-    this.state.wins.delete(win.id)
+    this.state.wins.delete(win.wid)
     this.state.winsData.delete(win.props.data)
-    if(!win.donotend) System.desktop.shutDownTask(win.id)
     if(this.state.selected==win) this.state.selected = null
     this.setState((prevState)=>{
       return { renderFlag: ~prevState.renderFlag }
@@ -73,8 +72,8 @@ class Windows extends Component {
   getFront(){
     let frontWin
     this.state.wins.forEach((win)=>{
-      if(win.zIndex > frontWin?frontWin.zIndex:1000){
-        if(win.minimisable&&!win.minimised)
+      if(win.zIndex > (frontWin?frontWin.zIndex:1000)){
+        if((win.minimisable&&!win.minimised)||!win.minimisable)
           frontWin = win
       }
     })
@@ -91,7 +90,7 @@ class Windows extends Component {
           (()=>{
             const arr = []
             this.state.winsData.forEach((data)=>{
-              arr.push(<Win data={data} key={data.id} parent={this} container={this.props.container}/>)
+              arr.push(<Win data={data} key={data.wid} parent={this} container={this.props.container}/>)
             })
             return arr
           })()
@@ -109,23 +108,22 @@ class Win extends Component{
     }
     this.container = props.container.refs.element
 
-    this.id = props.data.id
-    this.name = props.data.name
+    const d = props.data
 
-    const win = props.data.win
-
-    this.color = win.color
-    this.color2 = win.color2
-    this.backgroundColor = win.backgroundColor
-    this.backgroundColor2 = win.backgroundColor2
-    this.resizable = win.resizable===0?0:1
-    this.minimisable = win.minimisable===0?0:1
-    this.maximisable = win.maximisable===0?0:1
-    this.width = win.width || 600
-    this.height = win.height || 400
-    this.getPosition(win.center)
-
-    this.donotend = win.donotend || 0
+    this.wid = d.wid
+    this.query = d.query
+    this.name = d.name
+    this.color = d.color
+    this.color2 = d.color2
+    this.backgroundColor = d.backgroundColor
+    this.backgroundColor2 = d.backgroundColor2
+    this.resizable = d.resizable===0?0:1
+    this.minimisable = d.minimisable===0?0:1
+    this.maximisable = d.maximisable===0?0:1
+    this.width = d.width || 600
+    this.height = d.height || 400
+    this.animated = d.animated || 1
+    this.getPosition(d.center)
 
     this.close = this.close.bind(this)
 
@@ -146,19 +144,20 @@ class Win extends Component{
     this.loaded = 0
     this.onMouseDownLabel = this.onMouseDownLabel.bind(this)
 
-    this.animated = win.animated || 1
-
     this.hoverTag = {
       name: this.name,
       action: "Move to"
     }
-    props.parent.state.wins.set(this.id, this)
+    props.parent.state.wins.set(this.wid, this)
   }
   componentDidMount() {
     this.onLoad()
   }
+  componentWillUnmount(){
+    System.getTask(this.wid.split('/')[0], this.query).windowClosed()
+  }
   onLoad(){
-    Events.emit('_window_ready_'+this.id, this)
+    Events.emit('_window_ready_'+this.wid, this)
   }
   load(){
     this.loaded = 1
@@ -172,7 +171,7 @@ class Win extends Component{
     this.open()
   }
   render(){
-    const icon = this.props.data.win.windowIcon
+    const icon = this.props.data.windowIcon
     return(
       <div className={css.window} ref='element' onMouseDown={this.onMouseDown} onTouchStart={this.onMouseDown}
         onMouseEnter = {this.onMouseEnter}
@@ -275,7 +274,8 @@ class Win extends Component{
 
     if(this.minimisable&&this.minimised) this.minimise()
 
-    System.desktop.refs.taskbar.selectTask(this.id)
+    System.desktop.refs.taskbar.selectTask(this.wid.split('/')[0])
+    System.desktop.closeStartMenu()
   }
   deselect(){
     if(!this.selected) return
@@ -290,7 +290,7 @@ class Win extends Component{
     this.refs.btns.style.color = this.color2
     this.refs.element.className += ' '+css.deselected
 
-    System.desktop.refs.taskbar.deselectTask(this.id)
+    System.desktop.refs.taskbar.deselectTask(this.wid.split('/')[0])
   }
   iconOnload(){
     this.setState({
@@ -734,10 +734,10 @@ class Win extends Component{
       let save_left = ele.offsetLeft
 
       ele.className += ' '+css.minP
-      let task_item = System.desktop.refs.taskbar.getWindowTask(this.id)
+      let task_item = System.desktop.refs.taskbar.getTaskbarItem(this.wid.split('/')[0])
       let item_left = Utils.computePosition(task_item.refs.element)[0]
       let aim_top = ct.offsetHeight-ele.offsetHeight*0.7-40
-      let aim_left = this.maximised?0 : (item_left-ele.offsetWidth/1.5)
+      let aim_left = this.maximised?0 : (item_left-ele.offsetWidth/2+(ct.offsetWidth/2-item_left)/ct.offsetWidth*2*ele.offsetWidth/2.5)
       if(Math.abs((aim_left-ele.offsetLeft)/(aim_top-ele.offsetTop))>1.5){
         if(aim_left>ele.offsetLeft)
           aim_left = 1.5*Math.abs(aim_top-ele.offsetTop) + ele.offsetLeft
@@ -777,7 +777,8 @@ class Win extends Component{
       this.setStyle({
         transform: 'scale(0.8)',
         top: aim_top +'px',
-        left: aim_left +'px'
+        left: aim_left +'px',
+        display: ''
       })
       setTimeout(()=>{
         this.setStyle({
@@ -805,6 +806,7 @@ class Win extends Component{
       this.setStyle({
         visibility: 'hidden',
         opacity: 0,
+        display: 'none'
       })
       this.deselect()
     }else{
@@ -812,6 +814,7 @@ class Win extends Component{
       this.setStyle({
         visibility: 'visible',
         opacity: 1,
+        display: ''
       })
       this.select()
     }

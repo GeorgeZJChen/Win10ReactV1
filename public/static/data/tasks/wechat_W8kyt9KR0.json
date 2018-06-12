@@ -6,6 +6,7 @@
   "taskbarIcon": {
     "className": "wechat coloured task"
   },
+  "stayBackground": 1,
   "window": {
     "windowIcon": {
       "className": "wechat bg coloured"

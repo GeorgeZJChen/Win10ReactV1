@@ -6,7 +6,13 @@ import Desktop from '../desktop/desktop.js'
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
+import Login from '../login/login.js'
+
 class System {
+  constructor(){
+    this.tasks = new Map()
+    window.System = this
+  }
   start(ready){
     ReactDOM.render(<Desktop id='aaaaa' onConstruct={(desktop)=>{
 
@@ -26,21 +32,39 @@ class System {
         new Notification().alert('Error occured when loading desktop items.\n'+err, 'System Errors')
         ready()
       })
-
-      this.addSystemTasks()
+      // this.addSystemTasks()
       this.addInitialTasks()
+      this.desktop.initiateTaskbar()
 
-    }} onReady={()=>{ready()}}/>, document.getElementById('win10_main'))
-
+    }} onReady={()=>{ready()}}/>, document.getElementById('Z5E0SZIPPCO9'))
 
   }
-  addTask(id, name){
-    let _task = this.desktop.getTask(id)
-    if(_task){
-      this.desktop.evokeTask(id)
-      return
+  lock(){
+    ReactDOM.render(<Login lock={1} parentId='XLSEFG7DE7ON'/>, document.getElementById('XLSEFG7DE7ON'))
+  }
+  getTask(id, query){
+    query = query || ''
+    let taskMap =  this.tasks.get(id)
+    if(taskMap) return taskMap.get(query)
+  }
+  deleteTask(id, query){
+    let taskMap =  this.tasks.get(id)
+    if(taskMap) this.desktop.refs.taskbar.delete(taskMap.get(query))
+    if(taskMap&&taskMap.size == 1){
+      this.desktop.refs.taskbar.delete(taskMap.get(query))
+      this.tasks.delete(id)
     }
-    if(Task.registeredTasks.has(id)){
+
+  }
+  shutDownTask(id, query){
+    let task = this.getTask(id, query)
+    if(task) task.end()
+  }
+  addTask(id, query ,name){
+    let _task = this.getTask(id, query)
+    if(_task){
+      _task.evoke()
+    }else if(Task.registeredTasks.has(id)){
       const url = 'static/data/tasks/'+id+'.json'
       axios({
         method: 'get',
@@ -50,8 +74,9 @@ class System {
         try {
           if(!res.data) throw new Error()
           const task = new Task(res.data)
-          this.desktop.addTask(task)
+          task.launch()
         } catch (e) {
+          console.warn(e);
           console.error('Data format error');
         }
       }).catch((err)=>{
@@ -65,23 +90,23 @@ class System {
     let init_tasks = ['i6oxuWOp0', 'i6oxuWOp1', 'i6oxuWOp2', 'i6oxuWOp3',
       'teamviewer_i6oxuWOp4', "WLAN_W8kyt9KR2", "kugou_W8kyt9KR"]
     for (var i = 0; i < init_tasks.length; i++) {
-      this.addTask(init_tasks[i])
+      this.addTask(init_tasks[i], "default")
     }
   }
   addSystemTask(task){
     if(!(task instanceof Task)) return
-    if(this.desktop.getTask(task.id)){
-      this.desktop.evokeTask(task.id)
+    if(this.getTask(task.id, task.query)){
+      task.evoke()
     }else {
-      this.desktop.addTask(task)
+      task.launch()
     }
   }
-  addSystemTasks(){
-    let system_tasks = Task.systemTasks
-    for (let key in system_tasks) {
-      this.desktop.addTask(new Task(system_tasks[key]))
-    }
-  }
+  // addSystemTasks(){
+  //   let system_tasks = Task.systemTasks
+  //   for (let key in system_tasks) {
+  //     this.addSystemTask(new Task(system_tasks[key]))
+  //   }
+  // }
   loadStartMenu(cb, err){
     const url = 'static/data/start-menu.json'
     axios({

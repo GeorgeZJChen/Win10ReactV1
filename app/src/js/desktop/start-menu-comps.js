@@ -15,6 +15,10 @@ class ItemsColumnOne extends Component{
 
     }
   }
+  shutdown(){
+    System.desktop.closeStartMenu()
+    System.lock()
+  }
   render(){
     return (
       <div className={css.column1}>
@@ -30,7 +34,9 @@ class ItemsColumnOne extends Component{
           <div className={css.item+' '+css.itemC1} label={'Setting'}><span className={css.iconCtC1}>
             <Icon className={'setting sm'}/>
           </span></div>
-          <div className={css.item+' '+css.itemC1} label={'Exit'}><span className={css.iconCtC1}>
+          <div className={css.item+' '+css.itemC1} label={'Exit'}
+            onClick={()=>this.shutdown()}
+          ><span className={css.iconCtC1}>
             <Icon className={'shutdown sm'}/>
           </span></div>
         </div>
@@ -369,7 +375,7 @@ class Box extends Component{
     let display_time = this.props.data.display?this.props.data.display:default_display
     let animation_name = this.props.data.id + '_box_animation_roll'
     transition_time += transition_time*(Math.random()-0.5)/5
-    let stoch_delay = Math.random()*Math.min(display_time, 5) - transition_time -display_time*0.3
+    let stoch_delay = Math.random()*Math.min(display_time, 5) - transition_time -display_time*0.8
     let whole_time = (display_time+transition_time)*length
     for (let i = 0; i < faces.length; i++) {
       faces[i].animation = {}

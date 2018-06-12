@@ -6,8 +6,8 @@ html, body{
   overflow: hidden;
   font-size: 0;
   color: #fff;
-  font-family: sans-serif;
   font-family:"Microsoft YaHei";
+  font-family: sans-serif;
   margin: 0 0;
   cursor: default;
   -webkit-user-select:none;

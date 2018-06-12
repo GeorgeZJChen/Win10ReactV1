@@ -1071,6 +1071,10 @@ var _window = __webpack_require__(/*! ./window.js */ "./app/src/js/desktop/windo
 
 var _window2 = _interopRequireDefault(_window);
 
+var _system = __webpack_require__(/*! ../system/system.js */ "./app/src/js/system/system.js");
+
+var _system2 = _interopRequireDefault(_system);
+
 var _desktopContainer = __webpack_require__(/*! ../../css/desktop/desktop-container.css */ "./app/src/css/desktop/desktop-container.css");
 
 var _desktopContainer2 = _interopRequireDefault(_desktopContainer);
@@ -1093,13 +1097,23 @@ var DesktopContainer = function (_Component) {
   }
 
   _createClass(DesktopContainer, [{
+    key: 'onMouseDown',
+    value: function onMouseDown() {
+      _system2.default.desktop.closeStartMenu();
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
 
       return _react2.default.createElement(
         'div',
-        { className: _desktopContainer2.default.desktopCt, ref: 'element' },
+        { className: _desktopContainer2.default.desktopCt, ref: 'element',
+          onMouseDown: function onMouseDown() {
+            return _this2.onMouseDown();
+          }, onTouchStart: function onTouchStart() {
+            return _this2.onMouseDown();
+          } },
         _react2.default.createElement(_select2.default, { select: function select(x, y, sx, sy) {
             return _this2.refs.items.select(x, y, sx, sy);
           }, container: this,
@@ -1655,7 +1669,8 @@ var Item = function (_Component2) {
     }
   }, {
     key: 'onDoubleClick',
-    value: function onDoubleClick() {
+    value: function onDoubleClick(e) {
+      e.preventDefault();
       _system2.default.addTask(this.id);
       _system2.default.desktop.deselectItems();
     }
@@ -2013,16 +2028,34 @@ var Desktop = function (_Component) {
         _react2.default.createElement('img', { className: _desktop2.default.wallpaper, src: this.state.imgURL, onLoad: function onLoad() {
             return _this2.wallpaperReady = 1;
           } }),
-        _react2.default.createElement('input', { id: 'start_menu_switch_X7VIV', type: 'checkbox', ref: 'start_menu_switch' }),
+        _react2.default.createElement('input', { id: 'start_menu_switch_X7VIV', type: 'checkbox', ref: 'start_menu_switch', onChange: function onChange() {
+            return _this2.onChangeSmSwitch();
+          } }),
         _react2.default.createElement(_startMenu2.default, { ref: 'startMenu' }),
         _react2.default.createElement(_taskbar2.default, { ref: 'taskbar' }),
         _react2.default.createElement(_desktopContainer2.default, { ref: 'desktopCt' })
       );
     }
   }, {
+    key: 'onChangeSmSwitch',
+    value: function onChangeSmSwitch() {
+      var startmenu = this.refs.startMenu.refs.element;
+      if (this.refs.start_menu_switch.checked) {
+        startmenu.style.display = 'flex';
+        setTimeout(function () {
+          startmenu.setAttribute('style', ' height: 85%;\n          visibility: visible;\n          min-height: 400px;\n          display: flex;\n          opacity: 1;\n          transition: height,opacity,visibility 0.5s,0.5s,0.5s;\n          transition-timing-function: cubic-bezier(0, 1, 0, 1);');
+        }, 50);
+      } else {
+        startmenu.setAttribute('style', 'display: flex;');
+        setTimeout(function () {
+          startmenu.removeAttribute('style');
+        }, 300);
+      }
+    }
+  }, {
     key: 'closeStartMenu',
     value: function closeStartMenu() {
-      this.refs.start_menu_switch.checked = false;
+      if (this.refs.start_menu_switch.checked == true) this.refs.start_menu_switch.click();
     }
   }, {
     key: 'deselectItems',
@@ -2039,40 +2072,18 @@ var Desktop = function (_Component) {
       this.props.onLoad();
 
       var checkDesktopReady = function checkDesktopReady() {
-        var ready = _this3.wallpaperReady * _this3.startmenuReady * _this3.itemsReady;
+        var ready = _this3.wallpaperReady * _this3.startmenuReady * _this3.itemsReady * _this3.taskbarReady;
         if (ready === 1) {
           _this3.props.onReady ? _this3.props.onReady() : 1;
           delete _this3.itemsReady;
           delete _this3.wallpaperReady;
           delete _this3.startmenuReady;
+          delete _this3.taskbarReady;
         } else {
           setTimeout(checkDesktopReady, 200);
         }
       };
       setTimeout(checkDesktopReady, 200);
-    }
-  }, {
-    key: 'getTask',
-    value: function getTask(id) {
-      return this.state.tasks.get(id);
-    }
-  }, {
-    key: 'addTask',
-    value: function addTask(task) {
-      this.state.tasks.set(task.id, task);
-      this.refs.taskbar.update(task);
-    }
-  }, {
-    key: 'shutDownTask',
-    value: function shutDownTask(id) {
-      var task = this.state.tasks.get(id);
-      if (task) task.end();
-    }
-  }, {
-    key: 'evokeTask',
-    value: function evokeTask(id) {
-      var task = this.state.tasks.get(id);
-      if (task) task.evoke();
     }
   }, {
     key: 'initiateStartmenu',
@@ -2085,6 +2096,12 @@ var Desktop = function (_Component) {
     value: function initiateItems(data) {
       this.refs.desktopCt.refs.items.init(data);
       this.itemsReady = 1;
+    }
+  }, {
+    key: 'initiateTaskbar',
+    value: function initiateTaskbar() {
+      this.refs.taskbar.init();
+      this.taskbarReady = 1;
     }
   }]);
 
@@ -2159,8 +2176,16 @@ var ItemsColumnOne = function (_Component) {
   }
 
   _createClass(ItemsColumnOne, [{
+    key: 'shutdown',
+    value: function shutdown() {
+      _system2.default.desktop.closeStartMenu();
+      _system2.default.lock();
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       return _react2.default.createElement(
         'div',
         { className: _startMenu2.default.column1 },
@@ -2200,7 +2225,11 @@ var ItemsColumnOne = function (_Component) {
           ),
           _react2.default.createElement(
             'div',
-            { className: _startMenu2.default.item + ' ' + _startMenu2.default.itemC1, label: 'Exit' },
+            { className: _startMenu2.default.item + ' ' + _startMenu2.default.itemC1, label: 'Exit',
+              onClick: function onClick() {
+                return _this2.shutdown();
+              }
+            },
             _react2.default.createElement(
               'span',
               { className: _startMenu2.default.iconCtC1 },
@@ -2221,10 +2250,10 @@ var ItemsColumnTwo = function (_Component2) {
   function ItemsColumnTwo(props) {
     _classCallCheck(this, ItemsColumnTwo);
 
-    var _this2 = _possibleConstructorReturn(this, (ItemsColumnTwo.__proto__ || Object.getPrototypeOf(ItemsColumnTwo)).call(this, props));
+    var _this3 = _possibleConstructorReturn(this, (ItemsColumnTwo.__proto__ || Object.getPrototypeOf(ItemsColumnTwo)).call(this, props));
 
-    _this2.state = {};
-    var list = _this2.props.appList;
+    _this3.state = {};
+    var list = _this3.props.appList;
     var latestItems = [];
     var oftenItems = [];
     var numericItems = [];
@@ -2236,19 +2265,19 @@ var ItemsColumnTwo = function (_Component2) {
 
       if (list[i].name[0].match(/[0-9]/)) numericItems.push(list[i]);else if (list[i].name[0].match(/[A-Za-z]/)) alphabeticItems.push(list[i]);else symbolicItems.push(list[i]);
     }
-    _this2.latestItems = latestItems;
-    _this2.oftenItems = oftenItems;
-    _this2.symbolicItems = symbolicItems;
+    _this3.latestItems = latestItems;
+    _this3.oftenItems = oftenItems;
+    _this3.symbolicItems = symbolicItems;
     numericItems.sort(function (a, b) {
       return a.name > b.name;
     });
-    _this2.numericItems = numericItems;
+    _this3.numericItems = numericItems;
     alphabeticItems.sort(function (a, b) {
       if (a.name == b.name) return 0;
       return a.name < b.name ? -1 : 1;
     });
-    _this2.alphabeticItems = alphabeticItems;
-    return _this2;
+    _this3.alphabeticItems = alphabeticItems;
+    return _this3;
   }
 
   _createClass(ItemsColumnTwo, [{
@@ -2264,14 +2293,14 @@ var ItemsColumnTwo = function (_Component2) {
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this4 = this;
 
       return _react2.default.createElement(
         'div',
         { className: _startMenu2.default.column2, onScroll: function onScroll(e) {
-            return _this3.onScroll();
+            return _this4.onScroll();
           }, onMouseEnter: this.onMouseEnter.bind(this), onTouchStart: function onTouchStart(e) {
-            return _this3.onMouseEnter();
+            return _this4.onMouseEnter();
           } },
         _react2.default.createElement(Scrollbar, { ref: 'scrollbar', parent: this }),
         _react2.default.createElement(
@@ -2294,7 +2323,7 @@ var ItemsColumnTwo = function (_Component2) {
             return _react2.default.createElement(Item, { key: index, app: app, index: index });
           }),
           this.alphabeticItems.map(function (app, index) {
-            return _react2.default.createElement(Item, { key: index, app: app, index: index, last: _this3.alphabeticItems[index - 1], alpha: 1 });
+            return _react2.default.createElement(Item, { key: index, app: app, index: index, last: _this4.alphabeticItems[index - 1], alpha: 1 });
           })
         )
       );
@@ -2310,11 +2339,11 @@ var ItemsColumnThree = function (_Component3) {
   function ItemsColumnThree(props) {
     _classCallCheck(this, ItemsColumnThree);
 
-    var _this4 = _possibleConstructorReturn(this, (ItemsColumnThree.__proto__ || Object.getPrototypeOf(ItemsColumnThree)).call(this, props));
+    var _this5 = _possibleConstructorReturn(this, (ItemsColumnThree.__proto__ || Object.getPrototypeOf(ItemsColumnThree)).call(this, props));
 
-    _this4.state = {};
-    _this4.columns();
-    return _this4;
+    _this5.state = {};
+    _this5.columns();
+    return _this5;
   }
 
   _createClass(ItemsColumnThree, [{
@@ -2417,16 +2446,16 @@ var ItemsColumnThree = function (_Component3) {
   }, {
     key: 'render',
     value: function render() {
-      var _this5 = this;
+      var _this6 = this;
 
       return _react2.default.createElement(
         'div',
         { className: _startMenu2.default.column3, onScroll: function onScroll(e) {
-            return _this5.onScroll();
+            return _this6.onScroll();
           }, onMouseEnter: function onMouseEnter(e) {
-            return _this5.onMouseEnter();
+            return _this6.onMouseEnter();
           }, onTouchStart: function onTouchStart(e) {
-            return _this5.onMouseEnter();
+            return _this6.onMouseEnter();
           } },
         _react2.default.createElement(Scrollbar, { ref: 'scrollbar', parent: this }),
         _react2.default.createElement(
@@ -2447,11 +2476,11 @@ var BoxGroup = function (_Component4) {
   function BoxGroup(props) {
     _classCallCheck(this, BoxGroup);
 
-    var _this6 = _possibleConstructorReturn(this, (BoxGroup.__proto__ || Object.getPrototypeOf(BoxGroup)).call(this, props));
+    var _this7 = _possibleConstructorReturn(this, (BoxGroup.__proto__ || Object.getPrototypeOf(BoxGroup)).call(this, props));
 
-    _this6.state = {};
-    _this6.boxes = _this6.parseLayers(_this6.props.data.layers);
-    return _this6;
+    _this7.state = {};
+    _this7.boxes = _this7.parseLayers(_this7.props.data.layers);
+    return _this7;
   }
 
   _createClass(BoxGroup, [{
@@ -2546,12 +2575,12 @@ var Box = function (_Component5) {
   function Box(props) {
     _classCallCheck(this, Box);
 
-    var _this7 = _possibleConstructorReturn(this, (Box.__proto__ || Object.getPrototypeOf(Box)).call(this, props));
+    var _this8 = _possibleConstructorReturn(this, (Box.__proto__ || Object.getPrototypeOf(Box)).call(this, props));
 
-    _this7.state = {
+    _this8.state = {
       imgReady: 0
     };
-    _this7.imgStyle = {
+    _this8.imgStyle = {
       width: 'auto',
       maxHeight: '65%',
       maxWidth: '80%',
@@ -2562,21 +2591,21 @@ var Box = function (_Component5) {
       display: 'block',
       pointerEvents: 'none'
     };
-    if (_this7.props.data.icon && _this7.props.data.icon.small) {
-      _this7.imgStyle.height = '35%';
-      _this7.imgStyle.height = '38%';
+    if (_this8.props.data.icon && _this8.props.data.icon.small) {
+      _this8.imgStyle.height = '35%';
+      _this8.imgStyle.height = '38%';
     }
-    _this7.imgStyleNotReady = {
+    _this8.imgStyleNotReady = {
       display: 'none'
     };
-    if (_this7.props.data.faces) {
-      _this7.createAnimation();
+    if (_this8.props.data.faces) {
+      _this8.createAnimation();
     }
-    if (_this7.props.data.icon && _this7.props.data.icon.text) setTimeout(function () {
-      _this7.refs.element.parentNode.style.color = _this7.props.data.icon.text;
+    if (_this8.props.data.icon && _this8.props.data.icon.text) setTimeout(function () {
+      _this8.refs.element.parentNode.style.color = _this8.props.data.icon.text;
     }, 10);
-    _this7.onClick = _this7.onClick.bind(_this7);
-    return _this7;
+    _this8.onClick = _this8.onClick.bind(_this8);
+    return _this8;
   }
 
   _createClass(Box, [{
@@ -2597,7 +2626,7 @@ var Box = function (_Component5) {
       var display_time = this.props.data.display ? this.props.data.display : default_display;
       var animation_name = this.props.data.id + '_box_animation_roll';
       transition_time += transition_time * (Math.random() - 0.5) / 5;
-      var stoch_delay = Math.random() * Math.min(display_time, 5) - transition_time - display_time * 0.3;
+      var stoch_delay = Math.random() * Math.min(display_time, 5) - transition_time - display_time * 0.8;
       var whole_time = (display_time + transition_time) * length;
       for (var i = 0; i < faces.length; i++) {
         faces[i].animation = {};
@@ -2620,7 +2649,7 @@ var Box = function (_Component5) {
   }, {
     key: 'render',
     value: function render() {
-      var _this8 = this;
+      var _this9 = this;
 
       var style = void 0;
       if (!this.props.data.faces) {
@@ -2635,12 +2664,12 @@ var Box = function (_Component5) {
         },
         this.props.data.faces ? this.props.data.faces.map(function (face, index) {
           if (index == 0) {
-            return _react2.default.createElement(BoxFace, { face: face, key: index, icon: _this8.props.data.icon, size: _this8.props.data.size });
+            return _react2.default.createElement(BoxFace, { face: face, key: index, icon: _this9.props.data.icon, size: _this9.props.data.size });
           }
-          return _react2.default.createElement(BoxFace, { face: face, key: index, size: _this8.props.data.size });
+          return _react2.default.createElement(BoxFace, { face: face, key: index, size: _this9.props.data.size });
         }) : this.props.data.icon.URL ? [_react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady,
           src: this.props.data.icon.URL, onLoad: function onLoad() {
-            return _this8.imgOnload();
+            return _this9.imgOnload();
           }, key: 'uWA13NQJIMG' }), this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: "unknown box" + this.props.data.size, key: 'NIWA13NQJ' })] : _react2.default.createElement(_icon2.default, { className: this.props.data.icon.className + ' box' + this.props.data.size })
       );
     }
@@ -2655,12 +2684,12 @@ var BoxFace = function (_Component6) {
   function BoxFace(props) {
     _classCallCheck(this, BoxFace);
 
-    var _this9 = _possibleConstructorReturn(this, (BoxFace.__proto__ || Object.getPrototypeOf(BoxFace)).call(this, props));
+    var _this10 = _possibleConstructorReturn(this, (BoxFace.__proto__ || Object.getPrototypeOf(BoxFace)).call(this, props));
 
-    _this9.state = {
+    _this10.state = {
       imgReady: 0
     };
-    _this9.imgStyle = {
+    _this10.imgStyle = {
       width: 'auto',
       maxHeight: '65%',
       maxWidth: '80%',
@@ -2671,10 +2700,10 @@ var BoxFace = function (_Component6) {
       display: 'block',
       pointerEvents: 'none'
     };
-    _this9.imgStyleNotReady = {
+    _this10.imgStyleNotReady = {
       display: 'none'
     };
-    _this9.imgStyleFace = {
+    _this10.imgStyleFace = {
       width: 'auto',
       height: '100.1%',
       position: 'relative',
@@ -2686,15 +2715,15 @@ var BoxFace = function (_Component6) {
       zIndex: -1,
       overflow: 'hidden'
     };
-    if (_this9.props.size == 8) {
-      _this9.imgStyleFace.width = '100.1%';
-      _this9.imgStyleFace.height = 'auto';
+    if (_this10.props.size == 8) {
+      _this10.imgStyleFace.width = '100.1%';
+      _this10.imgStyleFace.height = 'auto';
     }
-    if (_this9.props.face.fitHeight) {
-      _this9.imgStyleFace.width = 'auto';
-      _this9.imgStyleFace.height = '100.1%';
+    if (_this10.props.face.fitHeight) {
+      _this10.imgStyleFace.width = 'auto';
+      _this10.imgStyleFace.height = '100.1%';
     }
-    return _this9;
+    return _this10;
   }
 
   _createClass(BoxFace, [{
@@ -2707,7 +2736,7 @@ var BoxFace = function (_Component6) {
   }, {
     key: 'render',
     value: function render() {
-      var _this10 = this;
+      var _this11 = this;
 
       var animation = this.props.face.animation;
       var style = {};
@@ -2728,7 +2757,7 @@ var BoxFace = function (_Component6) {
             style: style },
           this.props.icon.URL ? [_react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady,
             src: this.props.icon.URL, onLoad: function onLoad() {
-              return _this10.imgOnload();
+              return _this11.imgOnload();
             }, key: '1DgALBRVIMG' }), this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: "unknown box" + this.props.size, key: '1DgALBRV' })] : _react2.default.createElement(_icon2.default, { className: this.props.icon.className + ' box' + this.props.size })
         );
       } else {
@@ -2739,7 +2768,7 @@ var BoxFace = function (_Component6) {
             style: style },
           [_react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyleFace : this.imgStyleNotReady,
             src: this.props.face.URL, onLoad: function onLoad() {
-              return _this10.imgOnload();
+              return _this11.imgOnload();
             }, key: '1DgALBRVIMG2' }), this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: "unknown box" + this.props.size, key: '1DgALBRV2' })]
         );
       }
@@ -2755,12 +2784,12 @@ var Item = function (_Component7) {
   function Item(props) {
     _classCallCheck(this, Item);
 
-    var _this11 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
+    var _this12 = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
 
-    _this11.state = {
+    _this12.state = {
       imgReady: 0
     };
-    _this11.imgStyle = {
+    _this12.imgStyle = {
       width: 'auto',
       maxHeight: '70%',
       maxWidth: '85%',
@@ -2771,10 +2800,10 @@ var Item = function (_Component7) {
       display: 'block',
       pointerEvents: 'none'
     };
-    _this11.imgStyleNotReady = {
+    _this12.imgStyleNotReady = {
       display: 'none'
     };
-    return _this11;
+    return _this12;
   }
 
   _createClass(Item, [{
@@ -2787,7 +2816,7 @@ var Item = function (_Component7) {
   }, {
     key: 'render',
     value: function render() {
-      var _this12 = this;
+      var _this13 = this;
 
       if (this.props.title) {
         return _react2.default.createElement('div', { className: _startMenu2.default.item + ' ' + _startMenu2.default.itemC2 + ' ' + _startMenu2.default.sectionTitle, 'data-title': this.props.title });
@@ -2797,8 +2826,8 @@ var Item = function (_Component7) {
           _react2.default.Fragment,
           null,
           function () {
-            if (!_this12.props.alpha) return;
-            var last_init_letter = _this12.props.last ? _this12.props.last.name[0] : '';
+            if (!_this13.props.alpha) return;
+            var last_init_letter = _this13.props.last ? _this13.props.last.name[0] : '';
             var letter = app.name[0].toUpperCase();
             if (letter.match(/[A-Z]/)) {
               if (letter != last_init_letter) {
@@ -2817,7 +2846,7 @@ var Item = function (_Component7) {
               app.icon.URL ? this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: "unknown stm" }) : _react2.default.createElement(_icon2.default, { className: app.icon.className }),
               app.icon.URL ? _react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady,
                 src: app.icon.URL, onLoad: function onLoad() {
-                  return _this12.imgOnload();
+                  return _this13.imgOnload();
                 } }) : ''
             )
           )
@@ -2835,10 +2864,10 @@ var Scrollbar = function (_Component8) {
   function Scrollbar(props) {
     _classCallCheck(this, Scrollbar);
 
-    var _this13 = _possibleConstructorReturn(this, (Scrollbar.__proto__ || Object.getPrototypeOf(Scrollbar)).call(this, props));
+    var _this14 = _possibleConstructorReturn(this, (Scrollbar.__proto__ || Object.getPrototypeOf(Scrollbar)).call(this, props));
 
-    _this13.btnClass = 'scroll_HX2MMYZN';
-    return _this13;
+    _this14.btnClass = 'scroll_HX2MMYZN';
+    return _this14;
   }
 
   _createClass(Scrollbar, [{
@@ -2927,7 +2956,7 @@ var Scrollbar = function (_Component8) {
   }, {
     key: 'onDrag',
     value: function onDrag(e) {
-      var _this14 = this;
+      var _this15 = this;
 
       if (e.button == 2) return;
       var y = e.clientY || e.changedTouches[0].clientY;
@@ -2938,8 +2967,8 @@ var Scrollbar = function (_Component8) {
       var move = function move(e) {
         var my = e.clientY || e.changedTouches[0].clientY;
         if (Math.abs(my - y) < 4) return;
-        toScroll.scrollTop = begin_top + (my - y) * toScroll.scrollHeight / _this14.refs.getHeight.offsetHeight;
-        _this14.onScroll(toScroll);
+        toScroll.scrollTop = begin_top + (my - y) * toScroll.scrollHeight / _this15.refs.getHeight.offsetHeight;
+        _this15.onScroll(toScroll);
       };
       var up = function up(e) {
         document.removeEventListener('mousemove', move, false);
@@ -2947,7 +2976,7 @@ var Scrollbar = function (_Component8) {
         document.removeEventListener("touchmove", move, false);
         document.removeEventListener("touchend", up, false);
         document.removeEventListener("touchcancel", up, false);
-        var ele = _this14.refs.element;
+        var ele = _this15.refs.element;
         ele.className = ele.className.replace(new RegExp(_startMenu2.default.dragging, 'g'), '');
       };
       document.addEventListener('mousemove', move, false);
@@ -2959,7 +2988,7 @@ var Scrollbar = function (_Component8) {
   }, {
     key: 'render',
     value: function render() {
-      var _this15 = this;
+      var _this16 = this;
 
       return _react2.default.createElement(
         'div',
@@ -2967,7 +2996,7 @@ var Scrollbar = function (_Component8) {
         _react2.default.createElement(
           'div',
           { className: _startMenu2.default.scrollBtn + ' ' + this.btnClass, onMouseDown: function onMouseDown(e) {
-              return _this15.btnScroll(e, -1, 20);
+              return _this16.btnScroll(e, -1, 20);
             } },
           _react2.default.createElement(_icon2.default, { className: 'angle up sm ' + _startMenu2.default.scrollAngle })
         ),
@@ -2975,21 +3004,21 @@ var Scrollbar = function (_Component8) {
           'div',
           { className: _startMenu2.default.scrollControl, ref: 'getHeight' },
           _react2.default.createElement('div', { className: _startMenu2.default.slotUp + ' ' + this.btnClass, ref: 'slotUp', onMouseDown: function onMouseDown(e) {
-              return _this15.btnScroll(e, -1);
+              return _this16.btnScroll(e, -1);
             } }),
           _react2.default.createElement('div', { className: _startMenu2.default.slotMiddle, ref: 'slotMiddle', onMouseDown: function onMouseDown(e) {
-              _this15.onDrag(e);
+              _this16.onDrag(e);
             }, onTouchStart: function onTouchStart(e) {
-              _this15.onDrag(e);
+              _this16.onDrag(e);
             } }),
           _react2.default.createElement('div', { className: _startMenu2.default.slotDown + ' ' + this.btnClass, onMouseDown: function onMouseDown(e) {
-              return _this15.btnScroll(e, 1);
+              return _this16.btnScroll(e, 1);
             } })
         ),
         _react2.default.createElement(
           'div',
           { className: _startMenu2.default.scrollBtn + ' ' + this.btnClass, onMouseDown: function onMouseDown(e) {
-              return _this15.btnScroll(e, 1, 20);
+              return _this16.btnScroll(e, 1, 20);
             } },
           _react2.default.createElement(_icon2.default, { className: 'angle down sm ' + _startMenu2.default.scrollAngle })
         )
@@ -3070,7 +3099,7 @@ var StartMenu = function (_Component) {
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: _startMenu2.default.startMenu },
+        { className: _startMenu2.default.startMenu, ref: 'element' },
         _react2.default.createElement('input', { className: _startMenu2.default.columnSwitch + ' ' + _startMenu2.default.switch1, type: 'radio', name: 'HydAxYn8', defaultChecked: true }),
         _react2.default.createElement('div', { className: _startMenu2.default.switchResponser }),
         _react2.default.createElement('input', { className: _startMenu2.default.columnSwitch + ' ' + _startMenu2.default.switch2, type: 'radio', name: 'HydAxYn8' }),
@@ -3106,6 +3135,7 @@ exports.default = StartMenu;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.BackgroundItems = exports.WindowItems = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -3125,6 +3155,10 @@ var _icon = __webpack_require__(/*! ../components/icon.js */ "./app/src/js/compo
 
 var _icon2 = _interopRequireDefault(_icon);
 
+var _Utils = __webpack_require__(/*! ../components/Utils.js */ "./app/src/js/components/Utils.js");
+
+var _Utils2 = _interopRequireDefault(_Utils);
+
 var _taskbar = __webpack_require__(/*! ../../css/desktop/taskbar.css */ "./app/src/css/desktop/taskbar.css");
 
 var _taskbar2 = _interopRequireDefault(_taskbar);
@@ -3137,24 +3171,24 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var TaskItems = function (_Component) {
-  _inherits(TaskItems, _Component);
+var WindowItems = function (_Component) {
+  _inherits(WindowItems, _Component);
 
-  function TaskItems(props) {
-    _classCallCheck(this, TaskItems);
+  function WindowItems(props) {
+    _classCallCheck(this, WindowItems);
 
-    var _this = _possibleConstructorReturn(this, (TaskItems.__proto__ || Object.getPrototypeOf(TaskItems)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (WindowItems.__proto__ || Object.getPrototypeOf(WindowItems)).call(this, props));
 
     _this.state = {
       renderFlag: 1
     };
-
     return _this;
   }
 
-  _createClass(TaskItems, [{
+  _createClass(WindowItems, [{
     key: 'update',
     value: function update() {
+      this.initiated = 1;
       this.setState(function (prevState) {
         return { renderFlag: ~prevState.renderFlag };
       });
@@ -3164,48 +3198,181 @@ var TaskItems = function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      return _react2.default.createElement(
+      if (this.initiated) {
+        return _react2.default.createElement(
+          _react2.default.Fragment,
+          null,
+          _react2.default.createElement(WindowPreview, { ref: 'preview' }),
+          function () {
+            var arr = [];
+            _system2.default.desktop.refs.taskbar.windowTaskMaps.forEach(function (taskMap, key) {
+              arr.push(_react2.default.createElement(WindowItem, { key: key, taskMap: taskMap, parent: _this2 }));
+            });
+            return arr;
+          }()
+        );
+      } else {
+        return null;
+      }
+    }
+  }]);
+
+  return WindowItems;
+}(_react.Component);
+
+var BackgroundItems = function (_Component2) {
+  _inherits(BackgroundItems, _Component2);
+
+  function BackgroundItems(props) {
+    _classCallCheck(this, BackgroundItems);
+
+    var _this3 = _possibleConstructorReturn(this, (BackgroundItems.__proto__ || Object.getPrototypeOf(BackgroundItems)).call(this, props));
+
+    _this3.state = {
+      renderFlag: 1
+    };
+    return _this3;
+  }
+
+  _createClass(BackgroundItems, [{
+    key: 'update',
+    value: function update() {
+      this.initiated = 1;
+      this.setState(function (prevState) {
+        return { renderFlag: ~prevState.renderFlag };
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this4 = this;
+
+      return this.initiated ? _react2.default.createElement(
         _react2.default.Fragment,
         null,
         function () {
           var arr = [];
-          _system2.default.desktop.state.tasks.forEach(function (task) {
-            if (_this2.props.type == 0) {
-              //render on taskbar
-              if (task.taskbarIcon) {
-                arr.push(_react2.default.createElement(WindowItem, { key: task.id, task: task }));
-              }
-            } else {
-              //render background task
-              if (task.backgroundIcon) {
-                var t = _this2.props.type;
-                var d = task.backgroundIcon.hidden;
-                if (t == 1 && d == 0 || d == 1 && t != 1) return;
-                arr.push(_react2.default.createElement(BackgroundItem, { key: task.id, data: task, type: _this2.props.type }));
-              }
-            }
+          _system2.default.desktop.refs.taskbar.backgroundTaskMaps.forEach(function (taskMap) {
+            var task = void 0;
+            taskMap.forEach(function (_task) {
+              task = _task;
+            });
+
+            var t = _this4.props.type;
+            var d = task.backgroundIcon.hidden;
+            if (t == 1 && d == 0 || d == 1 && t != 1) return;
+            arr.push(_react2.default.createElement(BackgroundItem, { key: task.id, data: task, type: _this4.props.type }));
           });
           return arr;
         }()
+      ) : null;
+    }
+  }]);
+
+  return BackgroundItems;
+}(_react.Component);
+
+var WindowPreview = function (_Component3) {
+  _inherits(WindowPreview, _Component3);
+
+  function WindowPreview(props) {
+    _classCallCheck(this, WindowPreview);
+
+    var _this5 = _possibleConstructorReturn(this, (WindowPreview.__proto__ || Object.getPrototypeOf(WindowPreview)).call(this, props));
+
+    _this5.display = 0;
+    _this5.reference = null;
+    return _this5;
+  }
+
+  _createClass(WindowPreview, [{
+    key: 'setWindows',
+    value: function setWindows() {}
+  }, {
+    key: 'toggle',
+    value: function toggle() {
+      if (this.display) this.hide();else this.show();
+    }
+  }, {
+    key: 'show',
+    value: function show(item) {
+      var ele = this.refs.element;
+      if (!this.display) ele.style.transition = 'none';
+      ele.style.display = 'block';
+      ele.style.left = _Utils2.default.computePosition(this.reference.refs.element)[0] - (ele.offsetWidth - this.reference.refs.element.offsetWidth) / 2 + 'px';
+      setTimeout(function () {
+        ele.style.transition = '';
+        setTimeout(function () {
+          ele.className += ' ' + _taskbar2.default.display;
+        }, 10);
+      }, 10);
+      this.display = 1;
+    }
+  }, {
+    key: 'hide',
+    value: function hide(item) {
+      if (this.__hovering__) return;
+      this.reference = item;
+      if (this.display == 1) {
+        var ele = this.refs.element;
+        ele.className = ele.className.replace(new RegExp(' ' + _taskbar2.default.display, 'g'), '');
+        this.display = 0;
+        setTimeout(function () {
+          ele.style.display = '';
+        }, 350);
+      }
+    }
+  }, {
+    key: 'onMouseEnter',
+    value: function onMouseEnter() {
+      this.__hovering__ = 1;
+    }
+  }, {
+    key: 'onMouseLeave',
+    value: function onMouseLeave() {
+      var _this6 = this;
+
+      delete this.__hovering__;
+      setTimeout(function () {
+        if (!_this6.__hovering__ && !_this6.reference) {
+          _this6.hide();
+        }
+      }, 500);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this7 = this;
+
+      return _react2.default.createElement(
+        'div',
+        { className: _taskbar2.default.preview, ref: 'element',
+          onMouseEnter: function onMouseEnter() {
+            return _this7.onMouseEnter();
+          }, onMouseLeave: function onMouseLeave() {
+            return _this7.onMouseLeave();
+          }
+        },
+        _react2.default.createElement('div', null)
       );
     }
   }]);
 
-  return TaskItems;
+  return WindowPreview;
 }(_react.Component);
 
-var WindowItem = function (_Component2) {
-  _inherits(WindowItem, _Component2);
+var WindowItem = function (_Component4) {
+  _inherits(WindowItem, _Component4);
 
   function WindowItem(props) {
     _classCallCheck(this, WindowItem);
 
-    var _this3 = _possibleConstructorReturn(this, (WindowItem.__proto__ || Object.getPrototypeOf(WindowItem)).call(this, props));
+    var _this8 = _possibleConstructorReturn(this, (WindowItem.__proto__ || Object.getPrototypeOf(WindowItem)).call(this, props));
 
-    _this3.state = {
+    _this8.state = {
       imgReady: 0
     };
-    _this3.imgStyle = {
+    _this8.imgStyle = {
       width: 'auto',
       height: '70%',
       position: 'relative',
@@ -3215,34 +3382,29 @@ var WindowItem = function (_Component2) {
       display: 'block',
       pointerEvents: 'none'
     };
-    _this3.imgStyleNotReady = {
+    _this8.imgStyleNotReady = {
       display: 'none'
     };
-    _this3.id = props.task.id;
-    _this3.selected = 0;
-    return _this3;
+    _this8.selected = 0;
+    _this8.onMouseDown = _this8.onMouseDown.bind(_this8);
+    _this8.onMouseEnter = _this8.onMouseEnter.bind(_this8);
+    _this8.onMouseLeave = _this8.onMouseLeave.bind(_this8);
+    _this8.onClick = _this8.onClick.bind(_this8);
+    return _this8;
   }
 
   _createClass(WindowItem, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      _system2.default.desktop.refs.taskbar.state.windowTasks.set(this.id, this);
-      _system2.default.desktop.windows.add(this.props.task);
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      _system2.default.desktop.refs.taskbar.state.windowTasks.delete(this.id);
+      this.props.taskMap.taskbarItem = this;
     }
   }, {
     key: 'select',
     value: function select() {
-      var _this4 = this;
-
       if (!this.selected) {
-        _system2.default.desktop.refs.taskbar.state.windowTasks.forEach(function (item) {
-          if (item != _this4) item.deselect();
-        });
+        var selected = _system2.default.desktop.refs.taskbar.selected;
+        if (selected) selected.deselect();
+        _system2.default.desktop.refs.taskbar.selected = this;
         this.refs.element.className += ' ' + _taskbar2.default.selected;
         this.selected = 1;
       }
@@ -3254,9 +3416,18 @@ var WindowItem = function (_Component2) {
         return;
       }
       if (this.selected) {
+        _system2.default.desktop.refs.taskbar.selected = null;
         this.refs.element.className = this.refs.element.className.replace(new RegExp(' ' + _taskbar2.default.selected, 'g'), '');
         this.selected = 0;
+
+        var preview = this.props.parent.refs.preview;
+        if (preview.reference == this) preview.hide(this);
       }
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      if (_system2.default.desktop.refs.taskbar.selected == this) _system2.default.desktop.refs.taskbar.selected = null;
     }
   }, {
     key: 'imgOnload',
@@ -3266,20 +3437,40 @@ var WindowItem = function (_Component2) {
       });
     }
   }, {
-    key: 'onclick',
-    value: function onclick(e) {
+    key: 'onClick',
+    value: function onClick(e) {
+      var _this9 = this;
+
       delete this.__mousedown__;
-      if (this.selected) {
-        var win = _system2.default.desktop.windows.get(this.id);
-        if (win.minimisable && !win.minimised) {
-          win.minimise();
+
+      if (this.tasks.length == 1) {
+
+        if (this.selected) {
+          var win = _system2.default.desktop.windows.get(this.tasks[0].window.wid);
+          if (win.minimisable && !win.minimised) {
+            win.minimise();
+          } else {
+            win.deselect();
+          }
+          this.deselect();
         } else {
-          win.deselect();
+          this.select();
+          var _win = _system2.default.desktop.windows.get(this.tasks[0].window.wid);
+          if (_win) _win.select();
         }
-        this.deselect();
       } else {
-        this.select();
-        _system2.default.desktop.windows.get(this.id).select();
+        if (this.selected) {
+          this.deselect();
+          this.props.parent.refs.preview.hide(this);
+        } else {
+          this.select();
+          this.props.parent.refs.preview.show(this);
+          var tf = function tf() {
+            if (!_this9.__mousedown__) _this9.deselect();
+            document.removeEventListener('mousedown', tf);
+          };
+          document.addEventListener('mousedown', tf);
+        }
       }
     }
   }, {
@@ -3288,54 +3479,85 @@ var WindowItem = function (_Component2) {
       this.__mousedown__ = 1;
     }
   }, {
+    key: 'onMouseEnter',
+    value: function onMouseEnter() {
+      var _this10 = this;
+
+      this.__hovering__ = 1;
+      var preview = this.props.parent.refs.preview;
+      setTimeout(function () {
+        if (_this10.__hovering__) preview.show(_this10);
+      }, preview.display ? 150 : 500);
+      preview.reference = this;
+    }
+  }, {
+    key: 'onMouseLeave',
+    value: function onMouseLeave() {
+      var _this11 = this;
+
+      delete this.__hovering__;
+      var preview = this.props.parent.refs.preview;
+      setTimeout(function () {
+        if (!_this11.__hovering__) {
+          if (preview.reference == _this11) {
+            preview.hide();
+            preview.reference = null;
+          }
+        }
+      }, 500);
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _this5 = this;
+      var _this12 = this;
 
-      var icon = this.props.task.taskbarIcon;
-      return _react2.default.createElement(
-        'div',
-        { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask, ref: 'element',
-          onClick: function onClick(e) {
-            return _this5.onclick(e);
-          }, onMouseDown: function onMouseDown(e) {
-            return _this5.onMouseDown(e);
-          }, onTouchStart: function onTouchStart(e) {
-            return _this5.onMouseDown(e);
-          }
-        },
-        _react2.default.createElement(
-          'span',
-          { className: _taskbar2.default.iconCt },
-          icon.URL ? _react2.default.createElement(
-            _react2.default.Fragment,
-            null,
-            _react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady, src: icon.URL, onLoad: function onLoad() {
-                _this5.imgOnload();
-              } }),
-            this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: 'unknown' })
-          ) : _react2.default.createElement(_icon2.default, { className: icon.className })
-        )
-      );
+      this.tasks = [];
+      this.props.taskMap.forEach(function (_task) {
+        _this12.tasks.push(_task);
+      });
+      if (this.tasks.length > 0) {
+        var icon = this.tasks[0].taskbarIcon;
+        return _react2.default.createElement(
+          'div',
+          { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemTask + (this.tasks.length > 1 ? ' ' + _taskbar2.default.x : '') + (this.selected ? ' ' + _taskbar2.default.selected : ''), ref: 'element',
+            onClick: this.onClick, onMouseDown: this.onMouseDown, onTouchStart: this.onMouseDown,
+            onMouseEnter: this.onMouseEnter, onMouseLeave: this.onMouseLeave
+          },
+          _react2.default.createElement(
+            'span',
+            { className: _taskbar2.default.iconCt },
+            icon.URL ? _react2.default.createElement(
+              _react2.default.Fragment,
+              null,
+              _react2.default.createElement('img', { style: this.state.imgReady ? this.imgStyle : this.imgStyleNotReady, src: icon.URL, onLoad: function onLoad() {
+                  _this12.imgOnload();
+                } }),
+              this.state.imgReady ? '' : _react2.default.createElement(_icon2.default, { className: 'unknown' })
+            ) : _react2.default.createElement(_icon2.default, { className: icon.className })
+          )
+        );
+      } else {
+        return null;
+      }
     }
   }]);
 
   return WindowItem;
 }(_react.Component);
 
-var BackgroundItem = function (_Component3) {
-  _inherits(BackgroundItem, _Component3);
+var BackgroundItem = function (_Component5) {
+  _inherits(BackgroundItem, _Component5);
 
   function BackgroundItem(props) {
     _classCallCheck(this, BackgroundItem);
 
-    var _this6 = _possibleConstructorReturn(this, (BackgroundItem.__proto__ || Object.getPrototypeOf(BackgroundItem)).call(this, props));
+    var _this13 = _possibleConstructorReturn(this, (BackgroundItem.__proto__ || Object.getPrototypeOf(BackgroundItem)).call(this, props));
 
-    _this6.index = props.index;
-    _this6.state = {
+    _this13.index = props.index;
+    _this13.state = {
       imgReady: 0
     };
-    _this6.imgStyle = {
+    _this13.imgStyle = {
       width: 'auto',
       height: '85%',
       maxWidth: '90%',
@@ -3346,12 +3568,13 @@ var BackgroundItem = function (_Component3) {
       display: 'block',
       pointerEvents: 'none'
     };
-    _this6.imgStyleNotReady = {
+    _this13.imgStyleNotReady = {
       display: 'none'
     };
-    _this6.imgOnload = _this6.imgOnload.bind(_this6);
-    _this6.onDoubleClick = _this6.onDoubleClick.bind(_this6);
-    return _this6;
+    _this13.imgOnload = _this13.imgOnload.bind(_this13);
+    _this13.onDoubleClick = _this13.onDoubleClick.bind(_this13);
+    _this13.onClick = _this13.onClick.bind(_this13);
+    return _this13;
   }
 
   _createClass(BackgroundItem, [{
@@ -3362,9 +3585,14 @@ var BackgroundItem = function (_Component3) {
       });
     }
   }, {
+    key: 'onClick',
+    value: function onClick(e) {
+      _system2.default.desktop.closeStartMenu();
+    }
+  }, {
     key: 'onDoubleClick',
     value: function onDoubleClick(e) {
-      _system2.default.desktop.evokeTask(this.props.data.id);
+      _system2.default.evokeTask(this.props.data.id);
     }
   }, {
     key: 'render',
@@ -3374,7 +3602,8 @@ var BackgroundItem = function (_Component3) {
       var icon = this.props.data.backgroundIcon;
       return _react2.default.createElement(
         'div',
-        { className: t, onDoubleClick: this.onDoubleClick },
+        { className: t, onDoubleClick: this.onDoubleClick, onClick: this.onClick
+        },
         _react2.default.createElement(
           'span',
           { className: _taskbar2.default.iconCtBg },
@@ -3392,7 +3621,8 @@ var BackgroundItem = function (_Component3) {
   return BackgroundItem;
 }(_react.Component);
 
-exports.default = TaskItems;
+exports.WindowItems = WindowItems;
+exports.BackgroundItems = BackgroundItems;
 
 /***/ }),
 
@@ -3420,13 +3650,11 @@ var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/i
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _taskbar = __webpack_require__(/*! ../../css/desktop/taskbar.css */ "./app/src/css/desktop/taskbar.css");
+var _system = __webpack_require__(/*! ../system/system.js */ "./app/src/js/system/system.js");
 
-var _taskbar2 = _interopRequireDefault(_taskbar);
+var _system2 = _interopRequireDefault(_system);
 
 var _taskItems = __webpack_require__(/*! ./task-items.js */ "./app/src/js/desktop/task-items.js");
-
-var _taskItems2 = _interopRequireDefault(_taskItems);
 
 var _event = __webpack_require__(/*! ../components/event.js */ "./app/src/js/components/event.js");
 
@@ -3439,6 +3667,10 @@ var _icon2 = _interopRequireDefault(_icon);
 var _date = __webpack_require__(/*! ../components/date.js */ "./app/src/js/components/date.js");
 
 var _date2 = _interopRequireDefault(_date);
+
+var _taskbar = __webpack_require__(/*! ../../css/desktop/taskbar.css */ "./app/src/css/desktop/taskbar.css");
+
+var _taskbar2 = _interopRequireDefault(_taskbar);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3459,40 +3691,112 @@ var Taskbar = function (_Component) {
     _this.onMouseEnter = _this.onMouseEnter.bind(_this);
     _this.onMouseUp = _this.onMouseUp.bind(_this);
     _this.onMouseLeave = _this.onMouseLeave.bind(_this);
-    _this.state = {
-      windowTasks: new Map()
-    };
+    _this.onMouseDown = _this.onMouseDown.bind(_this);
+
+    _this.windowTaskMaps = new Map();
+    _this.backgroundTaskMaps = new Map();
+
     _this.hoverTag = {
       name: "taskbar",
       action: "Attach to"
     };
+    _this.selected = null;
     return _this;
   }
 
   _createClass(Taskbar, [{
-    key: 'getWindowTask',
-    value: function getWindowTask(id) {
-      return this.state.windowTasks.get(id);
+    key: 'init',
+    value: function init() {
+      var _this2 = this;
+
+      _system2.default.tasks.forEach(function (taskMap) {
+        taskMap.forEach(function (task) {
+          if (task.taskbarIcon) {
+            if (!_this2.windowTaskMaps.get(task.id)) {
+              _this2.windowTaskMaps.set(task.id, new Map());
+            }
+            _this2.windowTaskMaps.get(task.id).set(task.query, task);
+          }
+          if (task.backgroundIcon) {
+            if (!_this2.backgroundTaskMaps.get(task.id)) {
+              _this2.backgroundTaskMaps.set(task.id, new Map());
+            }
+            _this2.backgroundTaskMaps.get(task.id).set(task.query, task);
+          }
+        });
+      });
+      this.refs.windowItems.update();
+      this.refs.backgroundTasksHidden.update();
+      this.refs.backgroundTasksDisplay.update();
+      this.refs.backgroundTasksDisplayDup.update();
+    }
+  }, {
+    key: 'getTaskbarItem',
+    value: function getTaskbarItem(id) {
+      return this.windowTaskMaps.get(id).taskbarItem;
+    }
+  }, {
+    key: 'deselect',
+    value: function deselect() {
+      if (this.selected) {
+        this.selected.deselect();
+      }
     }
   }, {
     key: 'selectTask',
     value: function selectTask(id) {
-      var task = this.state.windowTasks.get(id);
-      if (task) task.select();
+      var item = this.getTaskbarItem(id);
+      if (item) item.select();
     }
   }, {
     key: 'deselectTask',
     value: function deselectTask(id) {
-      var task = this.state.windowTasks.get(id);
-      if (task) task.deselect();
+      var item = this.getTaskbarItem(id);
+      if (item) item.deselect();
     }
   }, {
-    key: 'update',
-    value: function update(task) {
+    key: 'add',
+    value: function add(task) {
       if (task.taskbarIcon) {
-        this.refs.taskbarTasks.update();
+        if (!this.windowTaskMaps.get(task.id)) {
+          this.windowTaskMaps.set(task.id, new Map());
+        }
+        this.windowTaskMaps.get(task.id).set(task.query, task);
+        this.refs.windowItems.update();
       }
       if (task.backgroundIcon) {
+        if (!this.backgroundTaskMaps.get(task.id)) {
+          this.backgroundTaskMaps.set(task.id, new Map());
+        }
+        this.backgroundTaskMaps.get(task.id).set(task.query, task);
+        if (task.backgroundIcon.hidden) {
+          this.refs.backgroundTasksHidden.update();
+        } else {
+          this.refs.backgroundTasksDisplay.update();
+          this.refs.backgroundTasksDisplayDup.update();
+        }
+      }
+    }
+  }, {
+    key: 'delete',
+    value: function _delete(task) {
+      // console.warn(task);
+      if (task.taskbarIcon) {
+        var taskMap = this.windowTaskMaps.get(task.id);
+        if (taskMap && taskMap.size == 1) {
+          this.windowTaskMaps.delete(task.id);
+        } else if (taskMap) {
+          taskMap.delete(task.query);
+        }
+        this.refs.windowItems.update();
+      }
+      if (task.backgroundIcon) {
+        var taskMap2 = this.backgroundTaskMaps.get(task.id);
+        if (taskMap2 && taskMap2.size == 1) {
+          this.windowTaskMaps.delete(task.id);
+        } else if (taskMap2) {
+          taskMap2.delete(task.query);
+        }
         if (task.backgroundIcon.hidden) {
           this.refs.backgroundTasksHidden.update();
         } else {
@@ -3517,6 +3821,9 @@ var Taskbar = function (_Component) {
       _event2.default.emit(_event2.default.names.being_dragged_items_ondrop, this);
     }
   }, {
+    key: 'onMouseDown',
+    value: function onMouseDown(e) {}
+  }, {
     key: 'changeLanguage',
     value: function changeLanguage() {
       var item = this.refs['item_lang'];
@@ -3525,11 +3832,11 @@ var Taskbar = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       return _react2.default.createElement(
         'div',
-        { className: _taskbar2.default.taskbar,
+        { className: _taskbar2.default.taskbar, onMouseDown: this.onMouseDown,
           onTouchStart: this.onMouseDown, onMouseEnter: this.onMouseEnter,
           onMouseUp: this.onMouseUp, onMouseLeave: this.onMouseLeave
         },
@@ -3562,7 +3869,7 @@ var Taskbar = function (_Component) {
             _react2.default.createElement(
               'div',
               { className: _taskbar2.default.tbTasks },
-              _react2.default.createElement(_taskItems2.default, { type: 0, ref: 'taskbarTasks' })
+              _react2.default.createElement(_taskItems.WindowItems, { ref: 'windowItems' })
             )
           )
         ),
@@ -3605,8 +3912,8 @@ var Taskbar = function (_Component) {
               _react2.default.createElement(
                 'div',
                 { className: _taskbar2.default.itemsBgHidden },
-                _react2.default.createElement(_taskItems2.default, { type: 1, ref: 'backgroundTasksHidden' }),
-                _react2.default.createElement(_taskItems2.default, { type: 2, ref: 'backgroundTasksDisplayDup' })
+                _react2.default.createElement(_taskItems.BackgroundItems, { type: 1, ref: 'backgroundTasksHidden' }),
+                _react2.default.createElement(_taskItems.BackgroundItems, { type: 2, ref: 'backgroundTasksDisplayDup' })
               )
             ),
             _react2.default.createElement(
@@ -3615,7 +3922,7 @@ var Taskbar = function (_Component) {
               _react2.default.createElement(
                 'div',
                 { className: _taskbar2.default.item + ' ' + _taskbar2.default.itemBg, onClick: function onClick() {
-                    _this2.changeLanguage();
+                    _this3.changeLanguage();
                   } },
                 _react2.default.createElement(
                   'span',
@@ -3627,7 +3934,7 @@ var Taskbar = function (_Component) {
                   )
                 )
               ),
-              _react2.default.createElement(_taskItems2.default, { type: 3, ref: 'backgroundTasksDisplay' })
+              _react2.default.createElement(_taskItems.BackgroundItems, { type: 3, ref: 'backgroundTasksDisplay' })
             )
           )
         )
@@ -3749,14 +4056,14 @@ var Windows = function (_Component) {
     }
   }, {
     key: 'add',
-    value: function add(task) {
-      if (!this.state.wins.get(task.id)) {
-        this.state.winsData.add(task);
+    value: function add(win, cb) {
+      if (!this.state.wins.get(win.wid)) {
+        this.state.winsData.add(win);
 
-        var cb = task.callback ? task.callback : function (win) {
-          win.load();
+        cb = cb ? cb : function (_win) {
+          _win.load();
         };
-        if (cb) _event2.default.once('_window_ready_' + task.id, cb);
+        _event2.default.once('_window_ready_' + win.wid, cb);
 
         this.setState(function (prevState) {
           return { renderFlag: ~prevState.renderFlag };
@@ -3768,9 +4075,8 @@ var Windows = function (_Component) {
   }, {
     key: 'remove',
     value: function remove(win) {
-      this.state.wins.delete(win.id);
+      this.state.wins.delete(win.wid);
       this.state.winsData.delete(win.props.data);
-      if (!win.donotend) _system2.default.desktop.shutDownTask(win.id);
       if (this.state.selected == win) this.state.selected = null;
       this.setState(function (prevState) {
         return { renderFlag: ~prevState.renderFlag };
@@ -3782,8 +4088,8 @@ var Windows = function (_Component) {
     value: function getFront() {
       var frontWin = void 0;
       this.state.wins.forEach(function (win) {
-        if (win.zIndex > frontWin ? frontWin.zIndex : 1000) {
-          if (win.minimisable && !win.minimised) frontWin = win;
+        if (win.zIndex > (frontWin ? frontWin.zIndex : 1000)) {
+          if (win.minimisable && !win.minimised || !win.minimisable) frontWin = win;
         }
       });
       return frontWin;
@@ -3804,7 +4110,7 @@ var Windows = function (_Component) {
         function () {
           var arr = [];
           _this2.state.winsData.forEach(function (data) {
-            arr.push(_react2.default.createElement(Win, { data: data, key: data.id, parent: _this2, container: _this2.props.container }));
+            arr.push(_react2.default.createElement(Win, { data: data, key: data.wid, parent: _this2, container: _this2.props.container }));
           });
           return arr;
         }()
@@ -3828,23 +4134,22 @@ var Win = function (_Component2) {
     };
     _this3.container = props.container.refs.element;
 
-    _this3.id = props.data.id;
-    _this3.name = props.data.name;
+    var d = props.data;
 
-    var win = props.data.win;
-
-    _this3.color = win.color;
-    _this3.color2 = win.color2;
-    _this3.backgroundColor = win.backgroundColor;
-    _this3.backgroundColor2 = win.backgroundColor2;
-    _this3.resizable = win.resizable === 0 ? 0 : 1;
-    _this3.minimisable = win.minimisable === 0 ? 0 : 1;
-    _this3.maximisable = win.maximisable === 0 ? 0 : 1;
-    _this3.width = win.width || 600;
-    _this3.height = win.height || 400;
-    _this3.getPosition(win.center);
-
-    _this3.donotend = win.donotend || 0;
+    _this3.wid = d.wid;
+    _this3.query = d.query;
+    _this3.name = d.name;
+    _this3.color = d.color;
+    _this3.color2 = d.color2;
+    _this3.backgroundColor = d.backgroundColor;
+    _this3.backgroundColor2 = d.backgroundColor2;
+    _this3.resizable = d.resizable === 0 ? 0 : 1;
+    _this3.minimisable = d.minimisable === 0 ? 0 : 1;
+    _this3.maximisable = d.maximisable === 0 ? 0 : 1;
+    _this3.width = d.width || 600;
+    _this3.height = d.height || 400;
+    _this3.animated = d.animated || 1;
+    _this3.getPosition(d.center);
 
     _this3.close = _this3.close.bind(_this3);
 
@@ -3864,13 +4169,11 @@ var Win = function (_Component2) {
     _this3.loaded = 0;
     _this3.onMouseDownLabel = _this3.onMouseDownLabel.bind(_this3);
 
-    _this3.animated = win.animated || 1;
-
     _this3.hoverTag = {
       name: _this3.name,
       action: "Move to"
     };
-    props.parent.state.wins.set(_this3.id, _this3);
+    props.parent.state.wins.set(_this3.wid, _this3);
     return _this3;
   }
 
@@ -3880,9 +4183,14 @@ var Win = function (_Component2) {
       this.onLoad();
     }
   }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      _system2.default.getTask(this.wid.split('/')[0], this.query).windowClosed();
+    }
+  }, {
     key: 'onLoad',
     value: function onLoad() {
-      _event2.default.emit('_window_ready_' + this.id, this);
+      _event2.default.emit('_window_ready_' + this.wid, this);
     }
   }, {
     key: 'load',
@@ -3900,7 +4208,7 @@ var Win = function (_Component2) {
   }, {
     key: 'render',
     value: function render() {
-      var icon = this.props.data.win.windowIcon;
+      var icon = this.props.data.windowIcon;
       return _react2.default.createElement(
         'div',
         { className: _window2.default.window, ref: 'element', onMouseDown: this.onMouseDown, onTouchStart: this.onMouseDown,
@@ -4004,7 +4312,8 @@ var Win = function (_Component2) {
 
       if (this.minimisable && this.minimised) this.minimise();
 
-      _system2.default.desktop.refs.taskbar.selectTask(this.id);
+      _system2.default.desktop.refs.taskbar.selectTask(this.wid.split('/')[0]);
+      _system2.default.desktop.closeStartMenu();
     }
   }, {
     key: 'deselect',
@@ -4021,7 +4330,7 @@ var Win = function (_Component2) {
       this.refs.btns.style.color = this.color2;
       this.refs.element.className += ' ' + _window2.default.deselected;
 
-      _system2.default.desktop.refs.taskbar.deselectTask(this.id);
+      _system2.default.desktop.refs.taskbar.deselectTask(this.wid.split('/')[0]);
     }
   }, {
     key: 'iconOnload',
@@ -4491,10 +4800,10 @@ var Win = function (_Component2) {
         var save_left = ele.offsetLeft;
 
         ele.className += ' ' + _window2.default.minP;
-        var task_item = _system2.default.desktop.refs.taskbar.getWindowTask(this.id);
+        var task_item = _system2.default.desktop.refs.taskbar.getTaskbarItem(this.wid.split('/')[0]);
         var item_left = _Utils2.default.computePosition(task_item.refs.element)[0];
         var aim_top = ct.offsetHeight - ele.offsetHeight * 0.7 - 40;
-        var aim_left = this.maximised ? 0 : item_left - ele.offsetWidth / 1.5;
+        var aim_left = this.maximised ? 0 : item_left - ele.offsetWidth / 2 + (ct.offsetWidth / 2 - item_left) / ct.offsetWidth * 2 * ele.offsetWidth / 2.5;
         if (Math.abs((aim_left - ele.offsetLeft) / (aim_top - ele.offsetTop)) > 1.5) {
           if (aim_left > ele.offsetLeft) aim_left = 1.5 * Math.abs(aim_top - ele.offsetTop) + ele.offsetLeft;else aim_left = ele.offsetLeft - 1.5 * Math.abs(aim_top - ele.offsetTop);
         }
@@ -4528,7 +4837,8 @@ var Win = function (_Component2) {
         this.setStyle({
           transform: 'scale(0.8)',
           top: _aim_top + 'px',
-          left: _aim_left + 'px'
+          left: _aim_left + 'px',
+          display: ''
         });
         setTimeout(function () {
           _this8.setStyle({
@@ -4557,14 +4867,16 @@ var Win = function (_Component2) {
         this.minimised = 1;
         this.setStyle({
           visibility: 'hidden',
-          opacity: 0
+          opacity: 0,
+          display: 'none'
         });
         this.deselect();
       } else {
         this.minimised = 0;
         this.setStyle({
           visibility: 'visible',
-          opacity: 1
+          opacity: 1,
+          display: ''
         });
         this.select();
       }
@@ -4672,10 +4984,6 @@ var Login = function (_Component) {
       usernameWidth: 0,
       renderFlag: true
     };
-    _this.userInfo = {
-      username: '',
-      portraitURL: null
-    };
     return _this;
   }
 
@@ -4689,7 +4997,7 @@ var Login = function (_Component) {
           _this2.setState({
             pageReady: 1
           });
-        }, 2000);
+        }, _this2.props.lock ? 0 : 2000);
       });
     }
   }, {
@@ -4697,24 +5005,33 @@ var Login = function (_Component) {
     value: function loadUserInformation(cb) {
       var _this3 = this;
 
-      //shall get data from cookies or back end server
-      (0, _axios2.default)({
-        method: 'get',
-        url: 'static/data/user.json',
-        responseType: 'json'
-      }).then(function (res) {
-        try {
-          _this3.userInfo = res.data;
-          _this3.refs.username.innerHTML = res.data.username;
+      if (_system2.default.userInfo) {
+        this.refs.username.innerHTML = _system2.default.userInfo.username;
+        setTimeout(function () {
           _this3.refs.greetings.style.maxWidth = _this3.refs.username.offsetWidth + 'px';
+        }, 10);
+        cb();
+      } else {
+        (0, _axios2.default)({
+          method: 'get',
+          url: 'static/data/user.json',
+          responseType: 'json'
+        }).then(function (res) {
+          try {
+            _system2.default.userInfo = res.data;
+            _this3.refs.username.innerHTML = _system2.default.userInfo.username;
+            setTimeout(function () {
+              _this3.refs.greetings.style.maxWidth = _this3.refs.username.offsetWidth + 'px';
+            }, 10);
 
-          cb();
-        } catch (e) {
-          console.error('Data format error');
-        }
-      }).catch(function (err) {
-        console.warn(err);
-      });
+            cb();
+          } catch (e) {
+            console.error('Data format error');
+          }
+        }).catch(function (err) {
+          console.warn(err);
+        });
+      }
     }
   }, {
     key: 'toLogin',
@@ -4734,7 +5051,7 @@ var Login = function (_Component) {
       this.refs.btnLogin.style.cursor = 'default';
       _reactDom2.default.render(_react2.default.createElement(_loader2.default, { size: 'medium' }), this.refs.btnLogin);
 
-      _system2.default.start(this.unmount.bind(this));
+      if (!this.props.lock) _system2.default.start(this.unmount.bind(this));else this.unmount();
     }
   }, {
     key: 'unmount',
@@ -4748,7 +5065,7 @@ var Login = function (_Component) {
         smsw.click();
         setTimeout(function () {
           smsw.click();
-        }, 100);
+        }, 300);
       }, 500);
 
       setTimeout(function () {
@@ -4771,10 +5088,9 @@ var Login = function (_Component) {
     key: 'getPortrait',
     value: function getPortrait() {
       /// TODO:
-      if (this.userInfo.portraitURL) {
-        return _react2.default.createElement('img', { style: { width: '100%', height: '100%' }, src: this.userInfo.portraitURL });
-      }
-      return _react2.default.createElement(
+      if (_system2.default.userInfo && _system2.default.userInfo.portraitURL) {
+        return _react2.default.createElement('img', { style: { width: '100%', height: '100%' }, src: _system2.default.userInfo.portraitURL });
+      } else return _react2.default.createElement(
         'div',
         { className: _login2.default.portraitDefault },
         _react2.default.createElement('div', { className: _login2.default.portraitDefaultB })
@@ -4791,7 +5107,11 @@ var Login = function (_Component) {
         _react2.default.createElement('img', { className: _login2.default.backgroundImg + ' ' + _login2.default.fullScreen, src: this.state.imgURL, onLoad: function onLoad() {
             return _this5.imgReady();
           } }),
-        _react2.default.createElement('div', { className: _login2.default.blocker + ' ' + _login2.default.fullScreen, style: { opacity: this.state.imgReady && this.state.pageReady ? 0 : 1 } }),
+        _react2.default.createElement('div', { className: _login2.default.blocker + ' ' + _login2.default.fullScreen,
+          style: {
+            opacity: this.state.imgReady && this.state.pageReady ? 0 : 1,
+            backgroundColor: this.props.lock ? '#000' : ''
+          } }),
         _react2.default.createElement(
           'div',
           { className: _login2.default.loginCover + ' ' + _login2.default.fullScreen, onDoubleClick: function onDoubleClick() {
@@ -4860,7 +5180,8 @@ var Login = function (_Component) {
         ),
         _react2.default.createElement(
           'div',
-          { className: _login2.default.fullScreen, style: { visibility: this.state.imgReady && this.state.pageReady ? 'hidden' : 'visible' } },
+          { className: _login2.default.fullScreen,
+            style: { visibility: this.state.imgReady && this.state.pageReady ? 'hidden' : 'visible' } },
           _react2.default.createElement(_loader2.default, null)
         )
       );
@@ -4922,7 +5243,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var countId = 3000;
+var count = 3000;
 
 var Notification = function () {
   function Notification() {
@@ -4936,7 +5257,8 @@ var Notification = function () {
     value: function alert(message, title) {
       _system2.default.addSystemTask(new _task2.default({
         name: title ? title : 'Alert',
-        id: this.id + countId++,
+        id: this.id,
+        query: "alert" + count++,
         window: {
           width: 300,
           height: 120,
@@ -5068,6 +5390,10 @@ var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/i
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
+var _login = __webpack_require__(/*! ../login/login.js */ "./app/src/js/login/login.js");
+
+var _login2 = _interopRequireDefault(_login);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -5075,6 +5401,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var System = function () {
   function System() {
     _classCallCheck(this, System);
+
+    this.tasks = new Map();
+    window.System = this;
   }
 
   _createClass(System, [{
@@ -5099,24 +5428,48 @@ var System = function () {
             new _notification2.default().alert('Error occured when loading desktop items.\n' + err, 'System Errors');
             ready();
           });
-
-          _this.addSystemTasks();
+          // this.addSystemTasks()
           _this.addInitialTasks();
+          _this.desktop.initiateTaskbar();
         }, onReady: function onReady() {
           ready();
-        } }), document.getElementById('win10_main'));
+        } }), document.getElementById('Z5E0SZIPPCO9'));
+    }
+  }, {
+    key: 'lock',
+    value: function lock() {
+      _reactDom2.default.render(_react2.default.createElement(_login2.default, { lock: 1, parentId: 'XLSEFG7DE7ON' }), document.getElementById('XLSEFG7DE7ON'));
+    }
+  }, {
+    key: 'getTask',
+    value: function getTask(id, query) {
+      query = query || '';
+      var taskMap = this.tasks.get(id);
+      if (taskMap) return taskMap.get(query);
+    }
+  }, {
+    key: 'deleteTask',
+    value: function deleteTask(id, query) {
+      var taskMap = this.tasks.get(id);
+      if (taskMap) this.desktop.refs.taskbar.delete(taskMap.get(query));
+      if (taskMap && taskMap.size == 1) {
+        this.desktop.refs.taskbar.delete(taskMap.get(query));
+        this.tasks.delete(id);
+      }
+    }
+  }, {
+    key: 'shutDownTask',
+    value: function shutDownTask(id, query) {
+      var task = this.getTask(id, query);
+      if (task) task.end();
     }
   }, {
     key: 'addTask',
-    value: function addTask(id, name) {
-      var _this2 = this;
-
-      var _task = this.desktop.getTask(id);
+    value: function addTask(id, query, name) {
+      var _task = this.getTask(id, query);
       if (_task) {
-        this.desktop.evokeTask(id);
-        return;
-      }
-      if (_task3.default.registeredTasks.has(id)) {
+        _task.evoke();
+      } else if (_task3.default.registeredTasks.has(id)) {
         var url = 'static/data/tasks/' + id + '.json';
         (0, _axios2.default)({
           method: 'get',
@@ -5126,8 +5479,9 @@ var System = function () {
           try {
             if (!res.data) throw new Error();
             var task = new _task3.default(res.data);
-            _this2.desktop.addTask(task);
+            task.launch();
           } catch (e) {
+            console.warn(e);
             console.error('Data format error');
           }
         }).catch(function (err) {
@@ -5142,27 +5496,26 @@ var System = function () {
     value: function addInitialTasks() {
       var init_tasks = ['i6oxuWOp0', 'i6oxuWOp1', 'i6oxuWOp2', 'i6oxuWOp3', 'teamviewer_i6oxuWOp4', "WLAN_W8kyt9KR2", "kugou_W8kyt9KR"];
       for (var i = 0; i < init_tasks.length; i++) {
-        this.addTask(init_tasks[i]);
+        this.addTask(init_tasks[i], "default");
       }
     }
   }, {
     key: 'addSystemTask',
     value: function addSystemTask(task) {
       if (!(task instanceof _task3.default)) return;
-      if (this.desktop.getTask(task.id)) {
-        this.desktop.evokeTask(task.id);
+      if (this.getTask(task.id, task.query)) {
+        task.evoke();
       } else {
-        this.desktop.addTask(task);
+        task.launch();
       }
     }
-  }, {
-    key: 'addSystemTasks',
-    value: function addSystemTasks() {
-      var system_tasks = _task3.default.systemTasks;
-      for (var key in system_tasks) {
-        this.desktop.addTask(new _task3.default(system_tasks[key]));
-      }
-    }
+    // addSystemTasks(){
+    //   let system_tasks = Task.systemTasks
+    //   for (let key in system_tasks) {
+    //     this.addSystemTask(new Task(system_tasks[key]))
+    //   }
+    // }
+
   }, {
     key: 'loadStartMenu',
     value: function loadStartMenu(cb, err) {
@@ -5260,31 +5613,28 @@ var Task = function () {
     if (!data.id || !data.name) throw new Error();
     this.id = data.id;
     this.name = data.name;
+    this.query = data.query || '';
+
     this.callback = data.callback;
-    if (data.isBackgroundTask) {
-      this.backgroundIcon = {};
-      var b = this.backgroundIcon;
-      var d = data.backgroundIcon || {};
-      b.className = d.className || 'unknown bg';
-      b.URL = d.URL || null;
-      b.hidden = d.hidden || 0;
-    }
+    this.stayBackground = data.stayBackground || 0;
+
     if (data.window) {
 
       this.taskbarIcon = {};
       var t = this.taskbarIcon;
-      var _d = data.taskbarIcon;
-      if (_d) {
-        t.className = _d.className || 'unknown';
-        t.URL = _d.URL || null;
+      var d = data.taskbarIcon;
+      if (d) {
+        t.className = d.className || 'unknown';
+        t.URL = d.URL || null;
       } else {
         t.className = 'unknown';
         t.URL = null;
       }
-
-      this.win = {};
-      var w = this.win;
+      var w = {};
       var dw = data.window;
+      w.wid = this.id + (data.query ? '/' + data.query : '');
+      w.query = this.query;
+      w.name = dw.name || this.name;
       w.backgroundColor = dw.backgroundColor || '';
       w.backgroundColor2 = dw.backgroundColor2 || '';
       w.color = dw.color || '';
@@ -5298,28 +5648,61 @@ var Task = function () {
 
       if (dw.windowIcon) {
         w.windowIcon = {};
-        var _d2 = dw.windowIcon || {};
-        w.windowIcon.className = _d2.className || 'unknown bg';
-        w.windowIcon.URL = _d2.URL || null;
+        var di = dw.windowIcon || {};
+        w.windowIcon.className = di.className || 'unknown bg';
+        w.windowIcon.URL = di.URL || null;
       }
+
+      this.window = w;
     }
+    if (data.isBackgroundTask) {
+      this.backgroundIcon = {};
+      var b = this.backgroundIcon;
+      var _d = data.backgroundIcon || {};
+      b.className = _d.className || 'unknown bg';
+      b.URL = _d.URL || null;
+      b.hidden = _d.hidden || 0;
+    }
+
+    var taskMap = _system2.default.tasks.get(this.id);
+    if (!taskMap) taskMap = new Map();
+    taskMap.set(this.query, this);
+    _system2.default.tasks.set(this.id, taskMap);
   }
 
   _createClass(Task, [{
+    key: 'launch',
+    value: function launch() {
+      _system2.default.desktop.refs.taskbar.add(this);
+      if (this.window) _system2.default.desktop.windows.add(this.window, this.callback);
+    }
+  }, {
     key: 'evoke',
     value: function evoke() {
-      if (this.win) {
-        _system2.default.desktop.windows.get(this.id).select();
+      var win = _system2.default.desktop.windows.get(this.window.wid);
+      if (win) {
+        win.select();
+      } else {
+        this.hidden = 0;
+        _system2.default.desktop.windows.add(this.window, this.callback);
+        _system2.default.desktop.refs.taskbar.add(this);
       }
     }
   }, {
     key: 'end',
     value: function end() {
-      _system2.default.desktop.state.tasks.delete(this.id);
-      _system2.default.desktop.refs.taskbar.update(this);
-      if (this.win) {
-        var win = _system2.default.desktop.windows.get(this.id);
+      _system2.default.deleteTask(this.id, this.query);
+      if (this.window) {
+        var win = _system2.default.desktop.windows.get(this.window.wid);
         if (win) win.close();
+      }
+    }
+  }, {
+    key: 'windowClosed',
+    value: function windowClosed() {
+      if (!this.stayBackground) this.end();else {
+        this.hidden = 1;
+        _system2.default.desktop.refs.taskbar.update(this);
       }
     }
   }]);
@@ -5356,13 +5739,13 @@ var _login2 = _interopRequireDefault(_login);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 setTimeout(function functionName() {
-  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'win10_login' }), document.getElementById('win10_login'));
+  (0, _reactDom.render)(_react2.default.createElement(_login2.default, { parentId: 'XLSEFG7DE7ON' }), document.getElementById('XLSEFG7DE7ON'));
 }, 500);
 
 // import Desktop from './js/desktop/desktop.js'
 // setTimeout(function functionName() {
-//   render(<div></div>, document.getElementById('win10_login'))
-//   render(<Desktop/>, document.getElementById('win10_main'))
+//   render(<div></div>, document.getElementById('XLSEFG7DE7ON'))
+//   render(<Desktop/>, document.getElementById('Z5E0SZIPPCO9'))
 // }, 500)
 
 
@@ -7252,7 +7635,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "#start_menu_switch_X7VIV{position:fixed;z-index:999991;bottom:0;width:46px;height:40px;opacity:0;margin:0;padding:0}.desktop_wallpaper_1pJXB{position:fixed;height:100%;width:100%;min-width:850px;min-height:604px;opacity:1;z-index:-1000}.desktop_desktop_1flXl{height:100%;width:100%;font-size:0;color:#fff;font-family:sans-serif;font-family:Microsoft YaHei;position:absolute;padding-bottom:40px;box-sizing:border-box}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop.css"],"names":[],"mappings":"AAAA,yBACE,eAAgB,AAChB,eAAgB,AAChB,SAAU,AACV,WAAY,AACZ,YAAa,AACb,UAAW,AACX,SAAU,AACV,SAAW,CACZ,AACD,yBACE,eAAgB,AAChB,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,iBAAkB,AAClB,UAAW,AACX,aAAe,CAChB,AACD,uBACE,YAAa,AACb,WAAY,AACZ,YAAa,AACb,WAAY,AACZ,uBAAwB,AACxB,4BAA8B,AAC9B,kBAAmB,AACnB,oBAAqB,AACrB,qBAAuB,CACxB","file":"desktop.css","sourcesContent":[":global #start_menu_switch_X7VIV {\r\n  position: fixed;\r\n  z-index: 999991;\r\n  bottom: 0;\r\n  width: 46px;\r\n  height: 40px;\r\n  opacity: 0;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n.wallpaper{\r\n  position: fixed;\r\n  height: 100%;\r\n  width: 100%;\r\n  min-width: 850px;\r\n  min-height: 604px;\r\n  opacity: 1;\r\n  z-index: -1000;\r\n}\r\n.desktop{\r\n  height: 100%;\r\n  width: 100%;\r\n  font-size: 0;\r\n  color: #fff;\r\n  font-family: sans-serif;\r\n  font-family:\"Microsoft YaHei\";\r\n  position: absolute;\r\n  padding-bottom: 40px;\r\n  box-sizing: border-box;\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, "#start_menu_switch_X7VIV{position:fixed;z-index:999991;bottom:0;width:46px;height:40px;opacity:0;margin:0;padding:0}.desktop_wallpaper_1pJXB{position:fixed;height:100%;width:100%;min-width:850px;min-height:604px;opacity:1;z-index:-1000}.desktop_desktop_1flXl{height:100%;width:100%;font-size:0;color:#fff;position:absolute;padding-bottom:40px;box-sizing:border-box}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/desktop.css"],"names":[],"mappings":"AAAA,yBACE,eAAgB,AAChB,eAAgB,AAChB,SAAU,AACV,WAAY,AACZ,YAAa,AACb,UAAW,AACX,SAAU,AACV,SAAW,CACZ,AACD,yBACE,eAAgB,AAChB,YAAa,AACb,WAAY,AACZ,gBAAiB,AACjB,iBAAkB,AAClB,UAAW,AACX,aAAe,CAChB,AACD,uBACE,YAAa,AACb,WAAY,AACZ,YAAa,AACb,WAAY,AACZ,kBAAmB,AACnB,oBAAqB,AACrB,qBAAuB,CACxB","file":"desktop.css","sourcesContent":[":global #start_menu_switch_X7VIV {\r\n  position: fixed;\r\n  z-index: 999991;\r\n  bottom: 0;\r\n  width: 46px;\r\n  height: 40px;\r\n  opacity: 0;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n.wallpaper{\r\n  position: fixed;\r\n  height: 100%;\r\n  width: 100%;\r\n  min-width: 850px;\r\n  min-height: 604px;\r\n  opacity: 1;\r\n  z-index: -1000;\r\n}\r\n.desktop{\r\n  height: 100%;\r\n  width: 100%;\r\n  font-size: 0;\r\n  color: #fff;\r\n  position: absolute;\r\n  padding-bottom: 40px;\r\n  box-sizing: border-box;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -7274,7 +7657,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "#start_menu_switch_X7VIV:checked+.start-menu_start-menu_RLS6c{height:85%;visibility:visible;min-height:400px;opacity:1;transition:height,opacity,visibility .5s,.5s,.5s;transition-timing-function:cubic-bezier(0,1,0,1)}.start-menu_start-menu_RLS6c{position:absolute;z-index:999900;bottom:40px;height:0;max-height:900px;width:950px;background-color:rgba(38,47,59,.98);transition:height,opacity,visibility .1s,.1s,.1s;transition-timing-function:cubic-bezier(1,0,1,0);visibility:hidden;overflow:hidden;opacity:0;display:flex;flex-wrap:wrap;flex-direction:row}.start-menu_item_21AHz:hover{background-color:hsla(0,0%,100%,.1)}.start-menu_item_21AHz:active{background-color:hsla(0,0%,100%,.15)}.start-menu_column-1_1JSVm{height:100%;overflow:hidden;width:46px;display:flex;flex-direction:column;justify-content:space-between;padding-top:5px;box-sizing:border-box}.start-menu_column-2_1u85a{width:233px}.start-menu_column-2_1u85a,.start-menu_column-3_2AJes{height:100%;overflow:hidden;padding-right:15px;position:relative}.start-menu_column-3_2AJes{box-sizing:border-box;flex:1}.start-menu_item-c1_3OGCV{width:46px;height:46px}.start-menu_icon-ct-c1_1D5p4{width:25px;height:25px;display:block;position:relative;margin:auto;top:50%;transform:translateY(-50%);overflow:hidden}.start-menu_item-c2_1LmG4{height:34px;width:233px;box-sizing:border-box;padding:2px 5px 2px 16px;position:relative}.start-menu_item-c2_1LmG4:not(.start-menu_section-title_1lXOD):before{content:attr(data-title);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:30px;position:absolute;width:175px;height:30px;left:54px}.start-menu_item-c2_1LmG4.start-menu_section-title_1lXOD:before{content:attr(data-title);font-size:12px;line-height:35px}.start-menu_item-c2_1LmG4.start-menu_section-title_1lXOD:active{margin-left:2px;margin-right:2px}.start-menu_icon-ct-c2_3leM4{height:30px;width:30px;background-color:#515c6b;display:inline-block;overflow:hidden;position:relative}.start-menu_content-c2_1xhdq{height:100%;width:300px;overflow:hidden;overflow-y:scroll;padding:8px 20px 60px 0;box-sizing:border-box}.start-menu_content-c3_3-GiE{height:100%;width:110%;padding-right:50px;overflow:hidden;overflow-y:scroll}.start-menu_c3-column_2CxD_{width:322px;display:inline-block;box-sizing:border-box;padding:12px 5px 10px;vertical-align:top}.start-menu_box-group_LmzHl{display:inline-block;margin-bottom:20px}.start-menu_group-title_3kENJ{width:100%;height:30px;line-height:30px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box;padding-left:2px}.start-menu_group-content_14orD{display:flex;flex-wrap:wrap}.start-menu_box_I77kG{display:inline-block;margin:2px;box-sizing:border-box;position:relative;overflow:visible}.start-menu_box-content_1Y4em:hover,.start-menu_box-face_3LcQu:hover{outline:2px solid #bdbdbd;outline-offset:-2px}.start-menu_box-content_1Y4em:active,.start-menu_box-face_3LcQu:active{outline:unset}.start-menu_box_I77kG:not(.start-menu_box-ct_2zMKJ):active{transform:scale(.98)}.start-menu_box-ct_2zMKJ{background-color:transparent!important;position:relative}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02{position:absolute;display:flex;flex-wrap:wrap;width:100%;height:100%;z-index:1;top:0}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:first-child{margin:0 2px 2px 0}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:nth-child(2){margin:0 0 2px 2px}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:nth-child(3){margin:2px 2px 0 0}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:nth-child(4){margin:2px 0 0 2px}.start-menu_box-null_29fW6{background-color:transparent!important;pointer-events:none}.start-menu_box-1_3zHU2{width:48px}.start-menu_box-4_3zImJ{width:100px}.start-menu_box-8_Tigl8{width:204px}.start-menu_box-8_Tigl8>.start-menu_box-r_2-b02{position:absolute;width:100%;height:100%;z-index:1;top:0}.start-menu_box-8_Tigl8>.start-menu_box-h_2-zkg{width:50%;display:inline-block}.start-menu_box-1_3zHU2:before,.start-menu_box-4_3zImJ:before,.start-menu_box-8_Tigl8>.start-menu_box-h_2-zkg:before,.start-menu_box-ct_2zMKJ:before{content:\"\";display:inline-block;padding-bottom:100%;vertical-align:middle}.start-menu_box-4_3zImJ:after,.start-menu_box-8_Tigl8>.start-menu_box-r_2-b02:after{content:attr(data-title);font-size:11px;position:absolute;bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;padding:0 6px;box-sizing:border-box;pointer-events:none;z-index:100}.start-menu_box-content_1Y4em,.start-menu_box-face_3LcQu{position:absolute;top:0;left:0;width:100%;height:100%;background-repeat:no-repeat;background-position:50%;background-size:auto 100%}.start-menu_box-8_Tigl8 .start-menu_box-content_1Y4em,.start-menu_box-8_Tigl8 .start-menu_box-face_3LcQu{background-size:100% auto}.start-menu_box-content_1Y4em:not(.start-menu_box-3D_YOWVF){background-color:#515c6b;overflow:hidden}.start-menu_box-face_3LcQu{overflow:hidden;animation-timing-function:ease-in-out;animation-iteration-count:infinite}.start-menu_box-3D_YOWVF{background-color:transparent;transform-style:preserve-3d;perspective:500px}.start-menu_box-animation_2WUz_{opacity:0}#start_menu_switch_X7VIV:checked+.start-menu_start-menu_RLS6c .start-menu_box-animation_2WUz_{opacity:1;transition:opacity .2s ease-in}.start-menu_box-3D_YOWVF .start-menu_box-face_3LcQu{transform-origin:50px 50px -28.68px;background-color:#515c6b;transform:rotateX(-120deg);visibility:hidden}.start-menu_column-switch_1joLV,.start-menu_switch-responser_1rW-8{position:absolute;display:none;margin:0;width:50%;height:35px;top:0;z-index:4;transition:all .15s}.start-menu_column-switch_1joLV{opacity:0}.start-menu_switch-responser_1rW-8{background-color:#262f3b;opacity:.5;z-index:3}.start-menu_column-switch_1joLV:checked+.start-menu_switch-responser_1rW-8{background-color:#313b48;box-shadow:inset 0 0 4px 0 hsla(0,0%,100%,.7)}.start-menu_column-switch_1joLV:hover+.start-menu_switch-responser_1rW-8{background-color:hsla(0,0%,100%,.15)}.start-menu_switch-2_17EgF,.start-menu_switch-2_17EgF+.start-menu_switch-responser_1rW-8{left:50%}@media (max-width:930px){.start-menu_start-menu_RLS6c{width:627px}}@media (max-width:590px){.start-menu_column-switch_1joLV,.start-menu_switch-responser_1rW-8{display:block}.start-menu_start-menu_RLS6c{width:340px}.start-menu_column-1_1JSVm,.start-menu_column-2_1u85a,.start-menu_column-3_2AJes{position:absolute;transition:left .2s ease-out;padding-top:38px}.start-menu_column-1_1JSVm{left:-279px}.start-menu_column-2_1u85a{left:-233px}.start-menu_column-3_2AJes{left:340px}.start-menu_switch-1_36-9k:checked~.start-menu_column-1_1JSVm{left:0}.start-menu_switch-1_36-9k:checked~.start-menu_column-2_1u85a>.start-menu_scrollbar_1i3sa,.start-menu_switch-2_17EgF:checked~.start-menu_column-3_2AJes>.start-menu_scrollbar_1i3sa{left:2px}.start-menu_switch-1_36-9k:checked~.start-menu_column-2_1u85a{left:64px;padding-left:18px}.start-menu_switch-2_17EgF:checked~.start-menu_column-3_2AJes{left:0;padding-left:18px}}.start-menu_column-2_1u85a:hover>.start-menu_scrollbar_1i3sa,.start-menu_column-3_2AJes:hover>.start-menu_scrollbar_1i3sa{opacity:1;transition:opacity .05s}.start-menu_scrollbar_1i3sa:hover .start-menu_slot-down_3cc9x,.start-menu_scrollbar_1i3sa:hover .start-menu_slot-up_1YrSG{opacity:1;margin-left:0;width:100%}.start-menu_scrollbar_1i3sa:hover .start-menu_slot-middle_dC3Id{width:100%;margin-left:0;background-color:hsla(0,0%,100%,.25)}.start-menu_scrollbar_1i3sa:hover>.start-menu_scroll-btn_rA7kG{opacity:1}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD{opacity:1;transition:none}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-down_3cc9x,.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-up_1YrSG{opacity:1;margin-left:0;width:100%;transition:none}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-middle_dC3Id{width:100%;margin-left:0;background-color:hsla(0,0%,100%,.25);transition:none}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD>.start-menu_scroll-btn_rA7kG{opacity:1;transition:none}.start-menu_scrollbar_1i3sa{height:100%;width:13px;opacity:0;position:absolute;display:flex;flex-direction:column;right:2px;transition:opacity .2s}.start-menu_scroll-btn_rA7kG{width:13px;height:13px;opacity:0;transition:opacity .2s}.start-menu_scroll-btn_rA7kG:hover{background-color:hsla(0,0%,100%,.15);box-shadow:0 0 1px 0 hsla(0,0%,100%,.1)}.start-menu_scroll-btn_rA7kG:active{background-color:hsla(0,0%,100%,.45);box-shadow:0 0 1px 0 hsla(0,0%,100%,.35)}.start-menu_scroll-btn_rA7kG:active>.start-menu_scroll-angle_23McV:after,.start-menu_scroll-btn_rA7kG:active>.start-menu_scroll-angle_23McV:before{background-color:#262f3b}.start-menu_scroll-angle_23McV{opacity:.7}.start-menu_scroll-control_1-jL7{flex:1;display:flex;flex-direction:column}.start-menu_slot-up_1YrSG{width:100%;background-color:hsla(0,0%,100%,.1);transition:opacity .2s;opacity:0;width:2px;margin-left:11px;transition:opacity,width,margin-left .15s,.15s,.15s}.start-menu_slot-down_3cc9x{width:100%;flex:1;background-color:hsla(0,0%,100%,.1);opacity:0;width:0;margin-left:100%;transition:opacity,width,margin-left .15s,.15s,.15s}.start-menu_slot-middle_dC3Id{height:70px;background-color:hsla(0,0%,100%,.55);box-shadow:0 0 1px 0 hsla(0,0%,100%,.35);width:2px;margin-left:11px;transition:width,margin-left .15s,.15s}.start-menu_slot-middle_dC3Id:hover{background-color:hsla(0,0%,100%,.35)!important}.start-menu_slot-middle_dC3Id:active{background-color:hsla(0,0%,100%,.45)!important}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/start-menu.css"],"names":[],"mappings":"AAAA,8DACE,WAAY,AACZ,mBAAoB,AACpB,iBAAkB,AAClB,UAAW,AACX,iDAAqD,AACrD,gDAAqD,CACtD,AACD,6BACE,kBAAmB,AACnB,eAAgB,AAChB,YAAa,AACb,SAAU,AACV,iBAAkB,AAClB,YAAa,AACb,oCAAyC,AACzC,iDAAqD,AACrD,iDAAqD,AACrD,kBAAmB,AACnB,gBAAiB,AACjB,UAAW,AACX,aAAc,AACd,eAAgB,AAChB,kBAAoB,CACrB,AACD,6BACE,mCAA2C,CAC5C,AACD,8BACE,oCAA4C,CAC7C,AACD,2BACE,YAAa,AACb,gBAAiB,AACjB,WAAY,AACZ,aAAc,AACd,sBAAuB,AACvB,8BAA+B,AAC/B,gBAAiB,AACjB,qBAAuB,CACxB,AACD,2BAGE,WAAa,CAGd,AACD,sDANE,YAAa,AACb,gBAAiB,AAEjB,mBAAoB,AACpB,iBAAmB,CASpB,AAPD,2BAKE,sBAAuB,AACvB,MAAQ,CACT,AACD,0BACE,WAAY,AACZ,WAAa,CACd,AACD,6BACE,WAAY,AACZ,YAAa,AACb,cAAe,AACf,kBAAmB,AACnB,YAAa,AACb,QAAS,AACT,2BAA6B,AAC7B,eAAiB,CAClB,AACD,0BACE,YAAa,AACb,YAAa,AACb,sBAAuB,AACvB,yBAA0B,AAC1B,iBAAmB,CACpB,AACD,sEACE,yBAA0B,AAC1B,eAAgB,AAChB,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,iBAAkB,AAClB,kBAAmB,AACnB,YAAa,AACb,YAAa,AACb,SAAW,CACZ,AACD,gEACE,yBAA0B,AAC1B,eAAgB,AAChB,gBAAkB,CACnB,AACD,gEACE,gBAAiB,AACjB,gBAAkB,CACnB,AACD,6BACE,YAAa,AACb,WAAY,AACZ,yBAA0B,AAC1B,qBAAsB,AACtB,gBAAiB,AACjB,iBAAmB,CACpB,AACD,6BACE,YAAa,AACb,YAAa,AACb,gBAAiB,AACjB,kBAAmB,AACnB,wBAAyB,AACzB,qBAAuB,CACxB,AACD,6BACE,YAAa,AACb,WAAY,AACZ,mBAAoB,AACpB,gBAAiB,AACjB,iBAAmB,CACpB,AACD,4BACE,YAAa,AACb,qBAAsB,AACtB,sBAAuB,AACvB,sBAA2B,AAC3B,kBAAoB,CACrB,AACD,4BACE,qBAAsB,AACtB,kBAAoB,CACrB,AACD,8BACE,WAAY,AACZ,YAAa,AACb,iBAAkB,AAClB,eAAgB,AAChB,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,sBAAuB,AACvB,gBAAkB,CACnB,AACD,gCACE,aAAc,AACd,cAAgB,CACjB,AACD,sBACE,qBAAsB,AACtB,WAAY,AACZ,sBAAuB,AACvB,kBAAmB,AACnB,gBAAkB,CACnB,AACD,qEACE,0BAA2B,AAC3B,mBAAqB,CACtB,AACD,uEACE,aAAe,CAChB,AACD,2DACE,oBAAuB,CACxB,AACD,yBACE,uCAAwC,AACxC,iBAAmB,CACpB,AACD,iDACE,kBAAmB,AACnB,aAAc,AACd,eAAgB,AAChB,WAAY,AACZ,YAAa,AACb,UAAW,AACX,KAAO,CACR,AACD,qFACE,kBAAoB,CACrB,AACD,sFACE,kBAAoB,CACrB,AACD,sFACE,kBAAoB,CACrB,AACD,sFACE,kBAAoB,CACrB,AACD,2BACE,uCAAwC,AACxC,mBAAqB,CACtB,AACD,wBACE,UAAY,CACb,AACD,wBACE,WAAa,CACd,AACD,wBACE,WAAY,CACb,AACD,gDACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,UAAW,AACX,KAAO,CACR,AACD,gDACE,UAAW,AACX,oBAAsB,CACvB,AACD,qJACE,WAAY,AACZ,qBAAsB,AACtB,oBAAqB,AACrB,qBAAuB,CACxB,AACD,oFACE,yBAA0B,AAC1B,eAAgB,AAChB,kBAAmB,AACnB,WAAY,AACZ,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,WAAY,AACZ,cAAe,AACf,sBAAuB,AACvB,oBAAqB,AACrB,WAAa,CACd,AACD,yDACE,kBAAmB,AACnB,MAAO,AACP,OAAQ,AACR,WAAY,AACZ,YAAa,AACb,4BAA6B,AAC7B,wBAA2B,AAC3B,yBAA2B,CAC5B,AACD,yGACE,yBAA2B,CAC5B,AACD,4DACE,yBAA0B,AAC1B,eAAiB,CAClB,AACD,2BACE,gBAAiB,AACjB,sCAAuC,AACvC,kCAAoC,CACrC,AACD,yBACE,6BAA8B,AAC9B,4BAA6B,AAC7B,iBAAmB,CACpB,AACD,gCACE,SAAW,CACZ,AACD,8FACE,UAAW,AACX,8BAAiC,CAClC,AACD,oDACE,oCAAqC,AACrC,yBAA0B,AAC1B,2BAA4B,AAC5B,iBAAmB,CACpB,AAED,mEACE,kBAAmB,AACnB,aAAc,AACd,SAAU,AACV,UAAW,AACX,YAAa,AACb,MAAO,AACP,UAAW,AACX,mBAAsB,CACvB,AACD,gCACE,SAAW,CACZ,AACD,mCACE,yBAAkC,AAClC,WAAa,AACb,SAAW,CACZ,AACD,2EACE,yBAAkC,AAClC,6CAAqD,CACtD,AACD,yEACE,oCAA4C,CAC7C,AACD,yFACE,QAAU,CACX,AACD,yBACE,6BACE,WAAa,CACd,CACF,AACD,yBACE,mEACE,aAAe,CAChB,AACD,6BACE,WAAa,CACd,AACD,iFACE,kBAAmB,AACnB,6BAA+B,AAC/B,gBAAkB,CACnB,AACD,2BACE,WAAa,CACd,AACD,2BACE,WAAa,CACd,AACD,2BACE,UAAY,CACb,AACD,8DACE,MAAQ,CACT,AACD,oLACE,QAAU,CACX,AACD,8DACE,UAAW,AACX,iBAAmB,CACpB,AACD,8DACE,OAAQ,AACR,iBAAmB,CACpB,CACF,AACD,0HACE,UAAW,AACX,uBAA0B,CAC3B,AACD,0HACE,UAAW,AACX,cAAe,AACf,UAAY,CACb,AACD,gEACE,WAAY,AACZ,cAAe,AACf,oCAAyC,CAC1C,AACD,+DACE,SAAW,CACZ,AACD,sDACE,UAAW,AACX,eAAiB,CAClB,AACD,kKACE,UAAW,AACX,cAAe,AACf,WAAY,AACZ,eAAiB,CAClB,AACD,oFACE,WAAY,AACZ,cAAe,AACf,qCAAyC,AACzC,eAAiB,CAClB,AACD,mFACE,UAAW,AACX,eAAiB,CAClB,AACD,4BACE,YAAa,AACb,WAAY,AACZ,UAAW,AACX,kBAAmB,AACnB,aAAc,AACd,sBAAuB,AACvB,UAAW,AACX,sBAAyB,CAC1B,AACD,6BACE,WAAY,AACZ,YAAa,AACb,UAAW,AACX,sBAAyB,CAC1B,AACD,mCACE,qCAAyC,AACzC,uCAA+C,CAChD,AACD,oCACE,qCAAyC,AACzC,wCAA+C,CAChD,AACD,mJACE,wBAA0B,CAC3B,AACD,+BACE,UAAa,CACd,AACD,iCACE,OAAQ,AACR,aAAc,AACd,qBAAuB,CACxB,AACD,0BACE,WAAY,AACZ,oCAAwC,AACxC,uBAAyB,AACzB,UAAW,AACX,UAAW,AACX,iBAAkB,AAClB,mDAAwD,CACzD,AACD,4BACE,WAAY,AACZ,OAAQ,AACR,oCAAwC,AACxC,UAAW,AACX,QAAS,AACT,iBAAkB,AAClB,mDAAwD,CACzD,AACD,8BACE,YAAa,AACb,qCAAyC,AACzC,yCAA+C,AAC/C,UAAW,AACX,iBAAkB,AAClB,sCAA0C,CAC3C,AACD,oCACE,8CAAmD,CACpD,AACD,qCACE,8CAAmD,CACpD","file":"start-menu.css","sourcesContent":[":global(#start_menu_switch_X7VIV):checked+.start-menu{\r\n  height: 85%;\r\n  visibility: visible;\r\n  min-height: 400px;\r\n  opacity: 1;\r\n  transition: height,opacity,visibility 0.5s,0.5s,0.5s;\r\n  transition-timing-function: cubic-bezier(0, 1, 0, 1);\r\n}\r\n.start-menu{\r\n  position: absolute;\r\n  z-index: 999900;\r\n  bottom: 40px;\r\n  height: 0;\r\n  max-height: 900px;\r\n  width: 950px;\r\n  background-color: rgba(38, 47, 59, 0.98);\r\n  transition: height,opacity,visibility 0.1s,0.1s,0.1s;\r\n  transition-timing-function: cubic-bezier(1, 0, 1, 0);\r\n  visibility: hidden;\r\n  overflow: hidden;\r\n  opacity: 0;\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n  flex-direction: row;\r\n}\r\n.item:hover{\r\n  background-color: rgba(255, 255, 255, 0.1);\r\n}\r\n.item:active{\r\n  background-color: rgba(255, 255, 255, 0.15);\r\n}\r\n.column-1{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  width: 46px;\r\n  display: flex;\r\n  flex-direction: column;\r\n  justify-content: space-between;\r\n  padding-top: 5px;\r\n  box-sizing: border-box;\r\n}\r\n.column-2{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  width: 233px;\r\n  padding-right: 15px;\r\n  position: relative;\r\n}\r\n.column-3{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  position: relative;\r\n  padding-right: 15px;\r\n  box-sizing: border-box;\r\n  flex: 1;\r\n}\r\n.item-c1{\r\n  width: 46px;\r\n  height: 46px;\r\n}\r\n.icon-ct-c1{\r\n  width: 25px;\r\n  height: 25px;\r\n  display: block;\r\n  position: relative;\r\n  margin: auto;\r\n  top: 50%;\r\n  transform: translate(0,-50%);\r\n  overflow: hidden;\r\n}\r\n.item-c2{\r\n  height: 34px;\r\n  width: 233px;\r\n  box-sizing: border-box;\r\n  padding: 2px 5px 2px 16px;\r\n  position: relative;\r\n}\r\n.item-c2:not(.section-title):before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  line-height: 30px;\r\n  position: absolute;\r\n  width: 175px;\r\n  height: 30px;\r\n  left: 54px;\r\n}\r\n.item-c2.section-title:before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  line-height: 35px;\r\n}\r\n.item-c2.section-title:active{\r\n  margin-left: 2px;\r\n  margin-right: 2px;\r\n}\r\n.icon-ct-c2{\r\n  height: 30px;\r\n  width: 30px;\r\n  background-color: #515c6b;\r\n  display: inline-block;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n.content-c2{\r\n  height: 100%;\r\n  width: 300px;\r\n  overflow: hidden;\r\n  overflow-y: scroll;\r\n  padding: 8px 20px 60px 0;\r\n  box-sizing: border-box;\r\n}\r\n.content-c3{\r\n  height: 100%;\r\n  width: 110%;\r\n  padding-right: 50px;\r\n  overflow: hidden;\r\n  overflow-y: scroll;\r\n}\r\n.c3-column{\r\n  width: 322px;\r\n  display: inline-block;\r\n  box-sizing: border-box;\r\n  padding: 12px 5px 10px 5px;\r\n  vertical-align: top;\r\n}\r\n.box-group{\r\n  display: inline-block;\r\n  margin-bottom: 20px;\r\n}\r\n.group-title{\r\n  width: 100%;\r\n  height: 30px;\r\n  line-height: 30px;\r\n  font-size: 12px;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  box-sizing: border-box;\r\n  padding-left: 2px;\r\n}\r\n.group-content{\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n}\r\n.box{\r\n  display: inline-block;\r\n  margin: 2px;\r\n  box-sizing: border-box;\r\n  position: relative;\r\n  overflow: visible;\r\n}\r\n.box-content:hover, .box-face:hover{\r\n  outline: 2px solid #bdbdbd;\r\n  outline-offset: -2px;\r\n}\r\n.box-content:active, .box-face:active{\r\n  outline: unset;\r\n}\r\n.box:not(.box-ct):active{\r\n  transform: scale(0.98);\r\n}\r\n.box-ct{\r\n  background-color: transparent!important;\r\n  position: relative;\r\n}\r\n.box-ct>.box-r{\r\n  position: absolute;\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 1;\r\n  top: 0;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(1){\r\n  margin: 0 2px 2px 0;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(2){\r\n  margin: 0 0 2px 2px;;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(3){\r\n  margin: 2px 2px 0 0;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(4){\r\n  margin: 2px 0 0 2px;\r\n}\r\n.box-null{\r\n  background-color: transparent!important;\r\n  pointer-events: none;\r\n}\r\n.box-1{\r\n  width: 48px;\r\n}\r\n.box-4{\r\n  width: 100px;\r\n}\r\n.box-8{\r\n  width: 204px\r\n}\r\n.box-8>.box-r{\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 1;\r\n  top: 0;\r\n}\r\n.box-8>.box-h{\r\n  width: 50%;\r\n  display: inline-block;\r\n}\r\n.box-4:before, .box-8>.box-h:before, .box-ct:before, .box-1:before{\r\n  content: \"\";\r\n  display: inline-block;\r\n  padding-bottom: 100%;\r\n  vertical-align: middle;\r\n}\r\n.box-4:after, .box-8>.box-r:after{\r\n  content: attr(data-title);\r\n  font-size: 11px;\r\n  position: absolute;\r\n  bottom: 5px;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  width: 100%;\r\n  padding: 0 6px;\r\n  box-sizing: border-box;\r\n  pointer-events: none;\r\n  z-index: 100;\r\n}\r\n.box-face, .box-content{\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  background-repeat: no-repeat;\r\n  background-position:center;\r\n  background-size: auto 100%;\r\n}\r\n.box-8 .box-face, .box-8 .box-content{\r\n  background-size: 100% auto;\r\n}\r\n.box-content:not(.box-3D){\r\n  background-color: #515c6b;\r\n  overflow: hidden;\r\n}\r\n.box-face{\r\n  overflow: hidden;\r\n  animation-timing-function: ease-in-out;\r\n  animation-iteration-count: infinite;\r\n}\r\n.box-3D{\r\n  background-color: transparent;\r\n  transform-style: preserve-3d;\r\n  perspective: 500px;\r\n}\r\n.box-animation{\r\n  opacity: 0;\r\n}\r\n:global(#start_menu_switch_X7VIV):checked+.start-menu .box-animation{\r\n  opacity: 1;\r\n  transition: opacity 0.2s ease-in;\r\n}\r\n.box-3D .box-face{\r\n  transform-origin: 50px 50px -28.68px;\r\n  background-color: #515c6b;\r\n  transform: rotateX(-120deg);\r\n  visibility: hidden;\r\n}\r\n\r\n.column-switch, .switch-responser{\r\n  position: absolute;\r\n  display: none;\r\n  margin: 0;\r\n  width: 50%;\r\n  height: 35px;\r\n  top: 0;\r\n  z-index: 4;\r\n  transition: all 0.15s;\r\n}\r\n.column-switch{\r\n  opacity: 0;\r\n}\r\n.switch-responser{\r\n  background-color: rgb(38, 47, 59);\r\n  opacity: 0.5;\r\n  z-index: 3;\r\n}\r\n.column-switch:checked+.switch-responser{\r\n  background-color: rgb(49, 59, 72);\r\n  box-shadow: 0 0 4px 0 rgba(255, 255, 255, 0.7) inset;\r\n}\r\n.column-switch:hover+.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.15);\r\n}\r\n.switch-2, .switch-2+.switch-responser{\r\n  left: 50%;\r\n}\r\n@media (max-width: 930px) {\r\n  .start-menu{\r\n    width: 627px;\r\n  }\r\n}\r\n@media (max-width: 590px){\r\n  .column-switch, .switch-responser{\r\n    display: block;\r\n  }\r\n  .start-menu{\r\n    width: 340px;\r\n  }\r\n  .column-1, .column-2, .column-3{\r\n    position: absolute;\r\n    transition: left 0.2s ease-out;\r\n    padding-top: 38px;\r\n  }\r\n  .column-1{\r\n    left: -279px;\r\n  }\r\n  .column-2{\r\n    left: -233px;\r\n  }\r\n  .column-3{\r\n    left: 340px;\r\n  }\r\n  .switch-1:checked~.column-1{\r\n    left: 0;\r\n  }\r\n  .switch-1:checked~.column-2>.scrollbar, .switch-2:checked~.column-3>.scrollbar{\r\n    left: 2px;\r\n  }\r\n  .switch-1:checked~.column-2{\r\n    left: 64px;\r\n    padding-left: 18px;\r\n  }\r\n  .switch-2:checked~.column-3{\r\n    left: 0;\r\n    padding-left: 18px;\r\n  }\r\n}\r\n.column-2:hover>.scrollbar, .column-3:hover>.scrollbar{\r\n  opacity: 1;\r\n  transition: opacity 0.05s;\r\n}\r\n.scrollbar:hover .slot-up, .scrollbar:hover .slot-down{\r\n  opacity: 1;\r\n  margin-left: 0;\r\n  width: 100%;\r\n}\r\n.scrollbar:hover .slot-middle{\r\n  width: 100%;\r\n  margin-left: 0;\r\n  background-color: rgba(255,255,255,0.25);\r\n}\r\n.scrollbar:hover>.scroll-btn{\r\n  opacity: 1;\r\n}\r\n.scrollbar.dragging{\r\n  opacity: 1;\r\n  transition: none;\r\n}\r\n.scrollbar.dragging .slot-up, .scrollbar.dragging .slot-down{\r\n  opacity: 1;\r\n  margin-left: 0;\r\n  width: 100%;\r\n  transition: none;\r\n}\r\n.scrollbar.dragging .slot-middle{\r\n  width: 100%;\r\n  margin-left: 0;\r\n  background-color: rgba(255,255,255,0.25);\r\n  transition: none;\r\n}\r\n.scrollbar.dragging>.scroll-btn{\r\n  opacity: 1;\r\n  transition: none;\r\n}\r\n.scrollbar{\r\n  height: 100%;\r\n  width: 13px;\r\n  opacity: 0;\r\n  position: absolute;\r\n  display: flex;\r\n  flex-direction: column;\r\n  right: 2px;\r\n  transition: opacity 0.2s;\r\n}\r\n.scroll-btn{\r\n  width: 13px;\r\n  height: 13px;\r\n  opacity: 0;\r\n  transition: opacity 0.2s;\r\n}\r\n.scroll-btn:hover{\r\n  background-color: rgba(255,255,255,0.15);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.10);\r\n}\r\n.scroll-btn:active{\r\n  background-color: rgba(255,255,255,0.45);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);\r\n}\r\n.scroll-btn:active>.scroll-angle:before, .scroll-btn:active>.scroll-angle:after{\r\n  background-color: #262f3b;\r\n}\r\n.scroll-angle{\r\n  opacity: 0.7;\r\n}\r\n.scroll-control{\r\n  flex: 1;\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.slot-up{\r\n  width: 100%;\r\n  background-color: rgba(255,255,255,0.1);\r\n  transition: opacity 0.2s;\r\n  opacity: 0;\r\n  width: 2px;\r\n  margin-left: 11px;\r\n  transition: opacity,width,margin-left 0.15s,0.15s,0.15s;\r\n}\r\n.slot-down{\r\n  width: 100%;\r\n  flex: 1;\r\n  background-color: rgba(255,255,255,0.1);\r\n  opacity: 0;\r\n  width: 0;\r\n  margin-left: 100%;\r\n  transition: opacity,width,margin-left 0.15s,0.15s,0.15s;\r\n}\r\n.slot-middle{\r\n  height: 70px;\r\n  background-color: rgba(255,255,255,0.55);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);\r\n  width: 2px;\r\n  margin-left: 11px;\r\n  transition: width,margin-left 0.15s,0.15s;\r\n}\r\n.slot-middle:hover{\r\n  background-color: rgba(255,255,255,0.35)!important;\r\n}\r\n.slot-middle:active{\r\n  background-color: rgba(255,255,255,0.45)!important;\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".start-menu_start-menu_RLS6c{position:absolute;z-index:999900;bottom:40px;height:0;max-height:900px;width:950px;background-color:rgba(38,47,59,.98);transition:height,opacity,visibility .1s,.1s,.1s;transition-timing-function:cubic-bezier(1,0,1,0);visibility:hidden;overflow:hidden;opacity:0;display:none;flex-wrap:wrap;flex-direction:row}.start-menu_item_21AHz:hover{background-color:hsla(0,0%,100%,.1)}.start-menu_item_21AHz:active{background-color:hsla(0,0%,100%,.15)}.start-menu_column-1_1JSVm{height:100%;overflow:hidden;width:46px;display:flex;flex-direction:column;justify-content:space-between;padding-top:5px;box-sizing:border-box}.start-menu_column-2_1u85a{width:233px}.start-menu_column-2_1u85a,.start-menu_column-3_2AJes{height:100%;overflow:hidden;padding-right:15px;position:relative}.start-menu_column-3_2AJes{box-sizing:border-box;flex:1}.start-menu_item-c1_3OGCV{width:46px;height:46px}.start-menu_icon-ct-c1_1D5p4{width:25px;height:25px;display:block;position:relative;margin:auto;top:50%;transform:translateY(-50%);overflow:hidden}.start-menu_item-c2_1LmG4{height:34px;width:233px;box-sizing:border-box;padding:2px 5px 2px 16px;position:relative}.start-menu_item-c2_1LmG4:not(.start-menu_section-title_1lXOD):before{content:attr(data-title);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:30px;position:absolute;width:175px;height:30px;left:54px}.start-menu_item-c2_1LmG4.start-menu_section-title_1lXOD:before{content:attr(data-title);font-size:12px;line-height:35px}.start-menu_item-c2_1LmG4.start-menu_section-title_1lXOD:active{margin-left:2px;margin-right:2px}.start-menu_icon-ct-c2_3leM4{height:30px;width:30px;background-color:#515c6b;display:inline-block;overflow:hidden;position:relative}.start-menu_content-c2_1xhdq{height:100%;width:300px;overflow:hidden;overflow-y:scroll;padding:8px 20px 60px 0;box-sizing:border-box}.start-menu_content-c3_3-GiE{height:100%;width:110%;padding-right:50px;overflow:hidden;overflow-y:scroll}.start-menu_c3-column_2CxD_{width:322px;display:inline-block;box-sizing:border-box;padding:12px 5px 10px;vertical-align:top}.start-menu_box-group_LmzHl{display:inline-block;margin-bottom:20px}.start-menu_group-title_3kENJ{width:100%;height:30px;line-height:30px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box;padding-left:2px}.start-menu_group-content_14orD{display:flex;flex-wrap:wrap}.start-menu_box_I77kG{display:inline-block;margin:2px;box-sizing:border-box;position:relative;overflow:visible}.start-menu_box-content_1Y4em:hover,.start-menu_box-face_3LcQu:hover{outline:2px solid #bdbdbd;outline-offset:-2px}.start-menu_box-content_1Y4em:active,.start-menu_box-face_3LcQu:active{outline:unset}.start-menu_box_I77kG:not(.start-menu_box-ct_2zMKJ):active{transform:scale(.98)}.start-menu_box-ct_2zMKJ{background-color:transparent!important;position:relative}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02{position:absolute;display:flex;flex-wrap:wrap;width:100%;height:100%;z-index:1;top:0}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:first-child{margin:0 2px 2px 0}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:nth-child(2){margin:0 0 2px 2px}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:nth-child(3){margin:2px 2px 0 0}.start-menu_box-ct_2zMKJ>.start-menu_box-r_2-b02>.start-menu_box-1_3zHU2:nth-child(4){margin:2px 0 0 2px}.start-menu_box-null_29fW6{background-color:transparent!important;pointer-events:none}.start-menu_box-1_3zHU2{width:48px}.start-menu_box-4_3zImJ{width:100px}.start-menu_box-8_Tigl8{width:204px}.start-menu_box-8_Tigl8>.start-menu_box-r_2-b02{position:absolute;width:100%;height:100%;z-index:1;top:0}.start-menu_box-8_Tigl8>.start-menu_box-h_2-zkg{width:50%;display:inline-block}.start-menu_box-1_3zHU2:before,.start-menu_box-4_3zImJ:before,.start-menu_box-8_Tigl8>.start-menu_box-h_2-zkg:before,.start-menu_box-ct_2zMKJ:before{content:\"\";display:inline-block;padding-bottom:100%;vertical-align:middle}.start-menu_box-4_3zImJ:after,.start-menu_box-8_Tigl8>.start-menu_box-r_2-b02:after{content:attr(data-title);font-size:11px;position:absolute;bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;padding:0 6px;box-sizing:border-box;pointer-events:none;z-index:100}.start-menu_box-content_1Y4em,.start-menu_box-face_3LcQu{position:absolute;top:0;left:0;width:100%;height:100%;background-repeat:no-repeat;background-position:50%;background-size:auto 100%}.start-menu_box-8_Tigl8 .start-menu_box-content_1Y4em,.start-menu_box-8_Tigl8 .start-menu_box-face_3LcQu{background-size:100% auto}.start-menu_box-content_1Y4em:not(.start-menu_box-3D_YOWVF){background-color:#515c6b;overflow:hidden}.start-menu_box-face_3LcQu{overflow:hidden;animation-timing-function:ease-in-out;animation-iteration-count:infinite}.start-menu_box-3D_YOWVF{background-color:transparent;transform-style:preserve-3d;perspective:500px}.start-menu_box-animation_2WUz_{opacity:0}#start_menu_switch_X7VIV:checked+.start-menu_start-menu_RLS6c .start-menu_box-animation_2WUz_{opacity:1;transition:opacity .2s ease-in}.start-menu_box-3D_YOWVF .start-menu_box-face_3LcQu{transform-origin:50px 50px -28.68px;background-color:#515c6b;transform:rotateX(-120deg);visibility:hidden}.start-menu_column-switch_1joLV,.start-menu_switch-responser_1rW-8{position:absolute;display:none;margin:0;width:50%;height:35px;top:0;z-index:4;transition:all .15s}.start-menu_column-switch_1joLV{opacity:0}.start-menu_switch-responser_1rW-8{background-color:#262f3b;opacity:.5;z-index:3}.start-menu_column-switch_1joLV:checked+.start-menu_switch-responser_1rW-8{background-color:#313b48;box-shadow:inset 0 0 4px 0 hsla(0,0%,100%,.7)}.start-menu_column-switch_1joLV:hover+.start-menu_switch-responser_1rW-8{background-color:hsla(0,0%,100%,.15)}.start-menu_switch-2_17EgF,.start-menu_switch-2_17EgF+.start-menu_switch-responser_1rW-8{left:50%}@media (max-width:930px){.start-menu_start-menu_RLS6c{width:627px}}@media (max-width:590px){.start-menu_column-switch_1joLV,.start-menu_switch-responser_1rW-8{display:block}.start-menu_start-menu_RLS6c{width:340px}.start-menu_column-1_1JSVm,.start-menu_column-2_1u85a,.start-menu_column-3_2AJes{position:absolute;transition:left .2s ease-out;padding-top:38px}.start-menu_column-1_1JSVm{left:-279px}.start-menu_column-2_1u85a{left:-233px}.start-menu_column-3_2AJes{left:340px}.start-menu_switch-1_36-9k:checked~.start-menu_column-1_1JSVm{left:0}.start-menu_switch-1_36-9k:checked~.start-menu_column-2_1u85a>.start-menu_scrollbar_1i3sa,.start-menu_switch-2_17EgF:checked~.start-menu_column-3_2AJes>.start-menu_scrollbar_1i3sa{left:2px}.start-menu_switch-1_36-9k:checked~.start-menu_column-2_1u85a{left:64px;padding-left:18px}.start-menu_switch-2_17EgF:checked~.start-menu_column-3_2AJes{left:0;padding-left:18px}}.start-menu_column-2_1u85a:hover>.start-menu_scrollbar_1i3sa,.start-menu_column-3_2AJes:hover>.start-menu_scrollbar_1i3sa{opacity:1;transition:opacity .05s}.start-menu_scrollbar_1i3sa:hover .start-menu_slot-down_3cc9x,.start-menu_scrollbar_1i3sa:hover .start-menu_slot-up_1YrSG{opacity:1;margin-left:0;width:100%}.start-menu_scrollbar_1i3sa:hover .start-menu_slot-middle_dC3Id{width:100%;margin-left:0;background-color:hsla(0,0%,100%,.25)}.start-menu_scrollbar_1i3sa:hover>.start-menu_scroll-btn_rA7kG{opacity:1}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD{opacity:1;transition:none}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-down_3cc9x,.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-up_1YrSG{opacity:1;margin-left:0;width:100%;transition:none}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD .start-menu_slot-middle_dC3Id{width:100%;margin-left:0;background-color:hsla(0,0%,100%,.25);transition:none}.start-menu_scrollbar_1i3sa.start-menu_dragging_1EYlD>.start-menu_scroll-btn_rA7kG{opacity:1;transition:none}.start-menu_scrollbar_1i3sa{height:100%;width:13px;opacity:0;position:absolute;display:flex;flex-direction:column;right:2px;transition:opacity .2s}.start-menu_scroll-btn_rA7kG{width:13px;height:13px;opacity:0;transition:opacity .2s}.start-menu_scroll-btn_rA7kG:hover{background-color:hsla(0,0%,100%,.15);box-shadow:0 0 1px 0 hsla(0,0%,100%,.1)}.start-menu_scroll-btn_rA7kG:active{background-color:hsla(0,0%,100%,.45);box-shadow:0 0 1px 0 hsla(0,0%,100%,.35)}.start-menu_scroll-btn_rA7kG:active>.start-menu_scroll-angle_23McV:after,.start-menu_scroll-btn_rA7kG:active>.start-menu_scroll-angle_23McV:before{background-color:#262f3b}.start-menu_scroll-angle_23McV{opacity:.7}.start-menu_scroll-control_1-jL7{flex:1;display:flex;flex-direction:column}.start-menu_slot-up_1YrSG{width:100%;background-color:hsla(0,0%,100%,.1);transition:opacity .2s;opacity:0;width:2px;margin-left:11px;transition:opacity,width,margin-left .15s,.15s,.15s}.start-menu_slot-down_3cc9x{width:100%;flex:1;background-color:hsla(0,0%,100%,.1);opacity:0;width:0;margin-left:100%;transition:opacity,width,margin-left .15s,.15s,.15s}.start-menu_slot-middle_dC3Id{height:70px;background-color:hsla(0,0%,100%,.55);box-shadow:0 0 1px 0 hsla(0,0%,100%,.35);width:2px;margin-left:11px;transition:width,margin-left .15s,.15s}.start-menu_slot-middle_dC3Id:hover{background-color:hsla(0,0%,100%,.35)!important}.start-menu_slot-middle_dC3Id:active{background-color:hsla(0,0%,100%,.45)!important}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/start-menu.css"],"names":[],"mappings":"AAQA,6BACE,kBAAmB,AACnB,eAAgB,AAChB,YAAa,AACb,SAAU,AACV,iBAAkB,AAClB,YAAa,AACb,oCAAyC,AACzC,iDAAqD,AACrD,iDAAqD,AACrD,kBAAmB,AACnB,gBAAiB,AACjB,UAAW,AACX,aAAc,AAEd,eAAgB,AAChB,kBAAoB,CACrB,AACD,6BACE,mCAA2C,CAC5C,AACD,8BACE,oCAA4C,CAC7C,AACD,2BACE,YAAa,AACb,gBAAiB,AACjB,WAAY,AACZ,aAAc,AACd,sBAAuB,AACvB,8BAA+B,AAC/B,gBAAiB,AACjB,qBAAuB,CACxB,AACD,2BAGE,WAAa,CAGd,AACD,sDANE,YAAa,AACb,gBAAiB,AAEjB,mBAAoB,AACpB,iBAAmB,CASpB,AAPD,2BAKE,sBAAuB,AACvB,MAAQ,CACT,AACD,0BACE,WAAY,AACZ,WAAa,CACd,AACD,6BACE,WAAY,AACZ,YAAa,AACb,cAAe,AACf,kBAAmB,AACnB,YAAa,AACb,QAAS,AACT,2BAA6B,AAC7B,eAAiB,CAClB,AACD,0BACE,YAAa,AACb,YAAa,AACb,sBAAuB,AACvB,yBAA0B,AAC1B,iBAAmB,CACpB,AACD,sEACE,yBAA0B,AAC1B,eAAgB,AAChB,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,iBAAkB,AAClB,kBAAmB,AACnB,YAAa,AACb,YAAa,AACb,SAAW,CACZ,AACD,gEACE,yBAA0B,AAC1B,eAAgB,AAChB,gBAAkB,CACnB,AACD,gEACE,gBAAiB,AACjB,gBAAkB,CACnB,AACD,6BACE,YAAa,AACb,WAAY,AACZ,yBAA0B,AAC1B,qBAAsB,AACtB,gBAAiB,AACjB,iBAAmB,CACpB,AACD,6BACE,YAAa,AACb,YAAa,AACb,gBAAiB,AACjB,kBAAmB,AACnB,wBAAyB,AACzB,qBAAuB,CACxB,AACD,6BACE,YAAa,AACb,WAAY,AACZ,mBAAoB,AACpB,gBAAiB,AACjB,iBAAmB,CACpB,AACD,4BACE,YAAa,AACb,qBAAsB,AACtB,sBAAuB,AACvB,sBAA2B,AAC3B,kBAAoB,CACrB,AACD,4BACE,qBAAsB,AACtB,kBAAoB,CACrB,AACD,8BACE,WAAY,AACZ,YAAa,AACb,iBAAkB,AAClB,eAAgB,AAChB,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,sBAAuB,AACvB,gBAAkB,CACnB,AACD,gCACE,aAAc,AACd,cAAgB,CACjB,AACD,sBACE,qBAAsB,AACtB,WAAY,AACZ,sBAAuB,AACvB,kBAAmB,AACnB,gBAAkB,CACnB,AACD,qEACE,0BAA2B,AAC3B,mBAAqB,CACtB,AACD,uEACE,aAAe,CAChB,AACD,2DACE,oBAAuB,CACxB,AACD,yBACE,uCAAwC,AACxC,iBAAmB,CACpB,AACD,iDACE,kBAAmB,AACnB,aAAc,AACd,eAAgB,AAChB,WAAY,AACZ,YAAa,AACb,UAAW,AACX,KAAO,CACR,AACD,qFACE,kBAAoB,CACrB,AACD,sFACE,kBAAoB,CACrB,AACD,sFACE,kBAAoB,CACrB,AACD,sFACE,kBAAoB,CACrB,AACD,2BACE,uCAAwC,AACxC,mBAAqB,CACtB,AACD,wBACE,UAAY,CACb,AACD,wBACE,WAAa,CACd,AACD,wBACE,WAAY,CACb,AACD,gDACE,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,UAAW,AACX,KAAO,CACR,AACD,gDACE,UAAW,AACX,oBAAsB,CACvB,AACD,qJACE,WAAY,AACZ,qBAAsB,AACtB,oBAAqB,AACrB,qBAAuB,CACxB,AACD,oFACE,yBAA0B,AAC1B,eAAgB,AAChB,kBAAmB,AACnB,WAAY,AACZ,gBAAiB,AACjB,uBAAwB,AACxB,mBAAoB,AACpB,WAAY,AACZ,cAAe,AACf,sBAAuB,AACvB,oBAAqB,AACrB,WAAa,CACd,AACD,yDACE,kBAAmB,AACnB,MAAO,AACP,OAAQ,AACR,WAAY,AACZ,YAAa,AACb,4BAA6B,AAC7B,wBAA2B,AAC3B,yBAA2B,CAC5B,AACD,yGACE,yBAA2B,CAC5B,AACD,4DACE,yBAA0B,AAC1B,eAAiB,CAClB,AACD,2BACE,gBAAiB,AACjB,sCAAuC,AACvC,kCAAoC,CACrC,AACD,yBACE,6BAA8B,AAC9B,4BAA6B,AAC7B,iBAAmB,CACpB,AACD,gCACE,SAAW,CACZ,AACD,8FACE,UAAW,AACX,8BAAiC,CAClC,AACD,oDACE,oCAAqC,AACrC,yBAA0B,AAC1B,2BAA4B,AAC5B,iBAAmB,CACpB,AAED,mEACE,kBAAmB,AACnB,aAAc,AACd,SAAU,AACV,UAAW,AACX,YAAa,AACb,MAAO,AACP,UAAW,AACX,mBAAsB,CACvB,AACD,gCACE,SAAW,CACZ,AACD,mCACE,yBAAkC,AAClC,WAAa,AACb,SAAW,CACZ,AACD,2EACE,yBAAkC,AAClC,6CAAqD,CACtD,AACD,yEACE,oCAA4C,CAC7C,AACD,yFACE,QAAU,CACX,AACD,yBACE,6BACE,WAAa,CACd,CACF,AACD,yBACE,mEACE,aAAe,CAChB,AACD,6BACE,WAAa,CACd,AACD,iFACE,kBAAmB,AACnB,6BAA+B,AAC/B,gBAAkB,CACnB,AACD,2BACE,WAAa,CACd,AACD,2BACE,WAAa,CACd,AACD,2BACE,UAAY,CACb,AACD,8DACE,MAAQ,CACT,AACD,oLACE,QAAU,CACX,AACD,8DACE,UAAW,AACX,iBAAmB,CACpB,AACD,8DACE,OAAQ,AACR,iBAAmB,CACpB,CACF,AACD,0HACE,UAAW,AACX,uBAA0B,CAC3B,AACD,0HACE,UAAW,AACX,cAAe,AACf,UAAY,CACb,AACD,gEACE,WAAY,AACZ,cAAe,AACf,oCAAyC,CAC1C,AACD,+DACE,SAAW,CACZ,AACD,sDACE,UAAW,AACX,eAAiB,CAClB,AACD,kKACE,UAAW,AACX,cAAe,AACf,WAAY,AACZ,eAAiB,CAClB,AACD,oFACE,WAAY,AACZ,cAAe,AACf,qCAAyC,AACzC,eAAiB,CAClB,AACD,mFACE,UAAW,AACX,eAAiB,CAClB,AACD,4BACE,YAAa,AACb,WAAY,AACZ,UAAW,AACX,kBAAmB,AACnB,aAAc,AACd,sBAAuB,AACvB,UAAW,AACX,sBAAyB,CAC1B,AACD,6BACE,WAAY,AACZ,YAAa,AACb,UAAW,AACX,sBAAyB,CAC1B,AACD,mCACE,qCAAyC,AACzC,uCAA+C,CAChD,AACD,oCACE,qCAAyC,AACzC,wCAA+C,CAChD,AACD,mJACE,wBAA0B,CAC3B,AACD,+BACE,UAAa,CACd,AACD,iCACE,OAAQ,AACR,aAAc,AACd,qBAAuB,CACxB,AACD,0BACE,WAAY,AACZ,oCAAwC,AACxC,uBAAyB,AACzB,UAAW,AACX,UAAW,AACX,iBAAkB,AAClB,mDAAwD,CACzD,AACD,4BACE,WAAY,AACZ,OAAQ,AACR,oCAAwC,AACxC,UAAW,AACX,QAAS,AACT,iBAAkB,AAClB,mDAAwD,CACzD,AACD,8BACE,YAAa,AACb,qCAAyC,AACzC,yCAA+C,AAC/C,UAAW,AACX,iBAAkB,AAClB,sCAA0C,CAC3C,AACD,oCACE,8CAAmD,CACpD,AACD,qCACE,8CAAmD,CACpD","file":"start-menu.css","sourcesContent":[":global(#start_menu_switch_X7VIV):checked+.start-menu{\r\n  /* height: 85%;\r\n  visibility: visible;\r\n  min-height: 400px;\r\n  opacity: 1;\r\n  transition: height,opacity,visibility 0.5s,0.5s,0.5s;\r\n  transition-timing-function: cubic-bezier(0, 1, 0, 1); */\r\n}\r\n.start-menu{\r\n  position: absolute;\r\n  z-index: 999900;\r\n  bottom: 40px;\r\n  height: 0;\r\n  max-height: 900px;\r\n  width: 950px;\r\n  background-color: rgba(38, 47, 59, 0.98);\r\n  transition: height,opacity,visibility 0.1s,0.1s,0.1s;\r\n  transition-timing-function: cubic-bezier(1, 0, 1, 0);\r\n  visibility: hidden;\r\n  overflow: hidden;\r\n  opacity: 0;\r\n  display: none;\r\n  /* display: flex; */\r\n  flex-wrap: wrap;\r\n  flex-direction: row;\r\n}\r\n.item:hover{\r\n  background-color: rgba(255, 255, 255, 0.1);\r\n}\r\n.item:active{\r\n  background-color: rgba(255, 255, 255, 0.15);\r\n}\r\n.column-1{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  width: 46px;\r\n  display: flex;\r\n  flex-direction: column;\r\n  justify-content: space-between;\r\n  padding-top: 5px;\r\n  box-sizing: border-box;\r\n}\r\n.column-2{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  width: 233px;\r\n  padding-right: 15px;\r\n  position: relative;\r\n}\r\n.column-3{\r\n  height: 100%;\r\n  overflow: hidden;\r\n  position: relative;\r\n  padding-right: 15px;\r\n  box-sizing: border-box;\r\n  flex: 1;\r\n}\r\n.item-c1{\r\n  width: 46px;\r\n  height: 46px;\r\n}\r\n.icon-ct-c1{\r\n  width: 25px;\r\n  height: 25px;\r\n  display: block;\r\n  position: relative;\r\n  margin: auto;\r\n  top: 50%;\r\n  transform: translate(0,-50%);\r\n  overflow: hidden;\r\n}\r\n.item-c2{\r\n  height: 34px;\r\n  width: 233px;\r\n  box-sizing: border-box;\r\n  padding: 2px 5px 2px 16px;\r\n  position: relative;\r\n}\r\n.item-c2:not(.section-title):before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  line-height: 30px;\r\n  position: absolute;\r\n  width: 175px;\r\n  height: 30px;\r\n  left: 54px;\r\n}\r\n.item-c2.section-title:before{\r\n  content: attr(data-title);\r\n  font-size: 12px;\r\n  line-height: 35px;\r\n}\r\n.item-c2.section-title:active{\r\n  margin-left: 2px;\r\n  margin-right: 2px;\r\n}\r\n.icon-ct-c2{\r\n  height: 30px;\r\n  width: 30px;\r\n  background-color: #515c6b;\r\n  display: inline-block;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n.content-c2{\r\n  height: 100%;\r\n  width: 300px;\r\n  overflow: hidden;\r\n  overflow-y: scroll;\r\n  padding: 8px 20px 60px 0;\r\n  box-sizing: border-box;\r\n}\r\n.content-c3{\r\n  height: 100%;\r\n  width: 110%;\r\n  padding-right: 50px;\r\n  overflow: hidden;\r\n  overflow-y: scroll;\r\n}\r\n.c3-column{\r\n  width: 322px;\r\n  display: inline-block;\r\n  box-sizing: border-box;\r\n  padding: 12px 5px 10px 5px;\r\n  vertical-align: top;\r\n}\r\n.box-group{\r\n  display: inline-block;\r\n  margin-bottom: 20px;\r\n}\r\n.group-title{\r\n  width: 100%;\r\n  height: 30px;\r\n  line-height: 30px;\r\n  font-size: 12px;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  box-sizing: border-box;\r\n  padding-left: 2px;\r\n}\r\n.group-content{\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n}\r\n.box{\r\n  display: inline-block;\r\n  margin: 2px;\r\n  box-sizing: border-box;\r\n  position: relative;\r\n  overflow: visible;\r\n}\r\n.box-content:hover, .box-face:hover{\r\n  outline: 2px solid #bdbdbd;\r\n  outline-offset: -2px;\r\n}\r\n.box-content:active, .box-face:active{\r\n  outline: unset;\r\n}\r\n.box:not(.box-ct):active{\r\n  transform: scale(0.98);\r\n}\r\n.box-ct{\r\n  background-color: transparent!important;\r\n  position: relative;\r\n}\r\n.box-ct>.box-r{\r\n  position: absolute;\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 1;\r\n  top: 0;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(1){\r\n  margin: 0 2px 2px 0;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(2){\r\n  margin: 0 0 2px 2px;;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(3){\r\n  margin: 2px 2px 0 0;\r\n}\r\n.box-ct>.box-r>.box-1:nth-child(4){\r\n  margin: 2px 0 0 2px;\r\n}\r\n.box-null{\r\n  background-color: transparent!important;\r\n  pointer-events: none;\r\n}\r\n.box-1{\r\n  width: 48px;\r\n}\r\n.box-4{\r\n  width: 100px;\r\n}\r\n.box-8{\r\n  width: 204px\r\n}\r\n.box-8>.box-r{\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 1;\r\n  top: 0;\r\n}\r\n.box-8>.box-h{\r\n  width: 50%;\r\n  display: inline-block;\r\n}\r\n.box-4:before, .box-8>.box-h:before, .box-ct:before, .box-1:before{\r\n  content: \"\";\r\n  display: inline-block;\r\n  padding-bottom: 100%;\r\n  vertical-align: middle;\r\n}\r\n.box-4:after, .box-8>.box-r:after{\r\n  content: attr(data-title);\r\n  font-size: 11px;\r\n  position: absolute;\r\n  bottom: 5px;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n  width: 100%;\r\n  padding: 0 6px;\r\n  box-sizing: border-box;\r\n  pointer-events: none;\r\n  z-index: 100;\r\n}\r\n.box-face, .box-content{\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  background-repeat: no-repeat;\r\n  background-position:center;\r\n  background-size: auto 100%;\r\n}\r\n.box-8 .box-face, .box-8 .box-content{\r\n  background-size: 100% auto;\r\n}\r\n.box-content:not(.box-3D){\r\n  background-color: #515c6b;\r\n  overflow: hidden;\r\n}\r\n.box-face{\r\n  overflow: hidden;\r\n  animation-timing-function: ease-in-out;\r\n  animation-iteration-count: infinite;\r\n}\r\n.box-3D{\r\n  background-color: transparent;\r\n  transform-style: preserve-3d;\r\n  perspective: 500px;\r\n}\r\n.box-animation{\r\n  opacity: 0;\r\n}\r\n:global(#start_menu_switch_X7VIV):checked+.start-menu .box-animation{\r\n  opacity: 1;\r\n  transition: opacity 0.2s ease-in;\r\n}\r\n.box-3D .box-face{\r\n  transform-origin: 50px 50px -28.68px;\r\n  background-color: #515c6b;\r\n  transform: rotateX(-120deg);\r\n  visibility: hidden;\r\n}\r\n\r\n.column-switch, .switch-responser{\r\n  position: absolute;\r\n  display: none;\r\n  margin: 0;\r\n  width: 50%;\r\n  height: 35px;\r\n  top: 0;\r\n  z-index: 4;\r\n  transition: all 0.15s;\r\n}\r\n.column-switch{\r\n  opacity: 0;\r\n}\r\n.switch-responser{\r\n  background-color: rgb(38, 47, 59);\r\n  opacity: 0.5;\r\n  z-index: 3;\r\n}\r\n.column-switch:checked+.switch-responser{\r\n  background-color: rgb(49, 59, 72);\r\n  box-shadow: 0 0 4px 0 rgba(255, 255, 255, 0.7) inset;\r\n}\r\n.column-switch:hover+.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.15);\r\n}\r\n.switch-2, .switch-2+.switch-responser{\r\n  left: 50%;\r\n}\r\n@media (max-width: 930px) {\r\n  .start-menu{\r\n    width: 627px;\r\n  }\r\n}\r\n@media (max-width: 590px){\r\n  .column-switch, .switch-responser{\r\n    display: block;\r\n  }\r\n  .start-menu{\r\n    width: 340px;\r\n  }\r\n  .column-1, .column-2, .column-3{\r\n    position: absolute;\r\n    transition: left 0.2s ease-out;\r\n    padding-top: 38px;\r\n  }\r\n  .column-1{\r\n    left: -279px;\r\n  }\r\n  .column-2{\r\n    left: -233px;\r\n  }\r\n  .column-3{\r\n    left: 340px;\r\n  }\r\n  .switch-1:checked~.column-1{\r\n    left: 0;\r\n  }\r\n  .switch-1:checked~.column-2>.scrollbar, .switch-2:checked~.column-3>.scrollbar{\r\n    left: 2px;\r\n  }\r\n  .switch-1:checked~.column-2{\r\n    left: 64px;\r\n    padding-left: 18px;\r\n  }\r\n  .switch-2:checked~.column-3{\r\n    left: 0;\r\n    padding-left: 18px;\r\n  }\r\n}\r\n.column-2:hover>.scrollbar, .column-3:hover>.scrollbar{\r\n  opacity: 1;\r\n  transition: opacity 0.05s;\r\n}\r\n.scrollbar:hover .slot-up, .scrollbar:hover .slot-down{\r\n  opacity: 1;\r\n  margin-left: 0;\r\n  width: 100%;\r\n}\r\n.scrollbar:hover .slot-middle{\r\n  width: 100%;\r\n  margin-left: 0;\r\n  background-color: rgba(255,255,255,0.25);\r\n}\r\n.scrollbar:hover>.scroll-btn{\r\n  opacity: 1;\r\n}\r\n.scrollbar.dragging{\r\n  opacity: 1;\r\n  transition: none;\r\n}\r\n.scrollbar.dragging .slot-up, .scrollbar.dragging .slot-down{\r\n  opacity: 1;\r\n  margin-left: 0;\r\n  width: 100%;\r\n  transition: none;\r\n}\r\n.scrollbar.dragging .slot-middle{\r\n  width: 100%;\r\n  margin-left: 0;\r\n  background-color: rgba(255,255,255,0.25);\r\n  transition: none;\r\n}\r\n.scrollbar.dragging>.scroll-btn{\r\n  opacity: 1;\r\n  transition: none;\r\n}\r\n.scrollbar{\r\n  height: 100%;\r\n  width: 13px;\r\n  opacity: 0;\r\n  position: absolute;\r\n  display: flex;\r\n  flex-direction: column;\r\n  right: 2px;\r\n  transition: opacity 0.2s;\r\n}\r\n.scroll-btn{\r\n  width: 13px;\r\n  height: 13px;\r\n  opacity: 0;\r\n  transition: opacity 0.2s;\r\n}\r\n.scroll-btn:hover{\r\n  background-color: rgba(255,255,255,0.15);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.10);\r\n}\r\n.scroll-btn:active{\r\n  background-color: rgba(255,255,255,0.45);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);\r\n}\r\n.scroll-btn:active>.scroll-angle:before, .scroll-btn:active>.scroll-angle:after{\r\n  background-color: #262f3b;\r\n}\r\n.scroll-angle{\r\n  opacity: 0.7;\r\n}\r\n.scroll-control{\r\n  flex: 1;\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.slot-up{\r\n  width: 100%;\r\n  background-color: rgba(255,255,255,0.1);\r\n  transition: opacity 0.2s;\r\n  opacity: 0;\r\n  width: 2px;\r\n  margin-left: 11px;\r\n  transition: opacity,width,margin-left 0.15s,0.15s,0.15s;\r\n}\r\n.slot-down{\r\n  width: 100%;\r\n  flex: 1;\r\n  background-color: rgba(255,255,255,0.1);\r\n  opacity: 0;\r\n  width: 0;\r\n  margin-left: 100%;\r\n  transition: opacity,width,margin-left 0.15s,0.15s,0.15s;\r\n}\r\n.slot-middle{\r\n  height: 70px;\r\n  background-color: rgba(255,255,255,0.55);\r\n  box-shadow: 0 0 1px 0px rgba(255,255,255,0.35);\r\n  width: 2px;\r\n  margin-left: 11px;\r\n  transition: width,margin-left 0.15s,0.15s;\r\n}\r\n.slot-middle:hover{\r\n  background-color: rgba(255,255,255,0.35)!important;\r\n}\r\n.slot-middle:active{\r\n  background-color: rgba(255,255,255,0.45)!important;\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -7370,7 +7753,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".taskbar_taskbar_3hPyP{display:flex;position:fixed;z-index:999990;bottom:0;height:40px;width:100%;background-color:rgba(30,37,46,.85)}.taskbar_tb-left_2HjgG,.taskbar_tb-task_1bBpb{display:flex;flex:1}.taskbar_tb-left_2HjgG,.taskbar_tb-right_27mqb{height:inherit}.taskbar_tb-sys_37Ijg{display:flex}.taskbar_tb-sys_37Ijg,.taskbar_tb-task_1bBpb{margin-right:4px}.taskbar_item_36Zmi{margin-right:1px;height:inherit;display:inline-block;width:48px;overflow:hidden;position:relative}.taskbar_item_36Zmi:hover{background-color:hsla(0,0%,100%,.08)}.taskbar_item_36Zmi:active{background-color:hsla(0,0%,100%,.03)}.taskbar_item-cortana_3qlA0:active{background-color:hsla(0,0%,100%,.13)}.taskbar_item-cortana_3qlA0,.taskbar_item-menu_8Jfia{margin-right:0;width:48px}.taskbar_item-task_2Y0xn.taskbar_selected_3yiju:before{height:100%;width:100%}.taskbar_item-task_2Y0xn.taskbar_selected_3yiju:after{width:100%}.taskbar_item-task_2Y0xn{max-width:48px;min-width:35px;height:100%;flex:1;position:relative}.taskbar_item-task_2Y0xn:before{content:\"\";position:absolute;bottom:0;height:0;width:80%;background-color:rgba(140,164,190,.2);transition:height,width .2s,.2s}.taskbar_item-task_2Y0xn:after{content:\"\";position:absolute;bottom:0;left:50%;transform:translate(-50%);display:inline-block;width:88%;height:7.5%;background-color:#8a9db6;transition:width .2s}.taskbar_item-task_2Y0xn:hover:after{content:\"\";width:100%}.taskbar_icon-ct_1NQ-R{display:block;position:relative;width:30px;height:100%;overflow:hidden;margin:auto}#start_menu_switch_X7VIV:hover~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background-color:hsla(0,0%,100%,.08)}#start_menu_switch_X7VIV:active~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background-color:hsla(0,0%,100%,.03)}#start_menu_switch_X7VIV:checked~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background-color:hsla(0,0%,100%,.17);box-shadow:0 0 5px 0 rgba(0,0,0,.3)}#start_menu_switch_X7VIV:checked:active~.taskbar_taskbar_3hPyP .taskbar_icon-start-menu_2T9Bz:before{background-color:#515c6b;color:#515c6b}#start_menu_switch_X7VIV:hover~.taskbar_taskbar_3hPyP .taskbar_icon-start-menu_2T9Bz:before{background-color:#6e7d91;color:#6e7d91}.taskbar_task-switch_3CGgb{display:none;margin:0;opacity:0;position:absolute;left:0;height:100%;width:100%}.taskbar_switch-responser_3Z2GJ{position:absolute;z-index:-1;left:96px;display:none;left:0;width:100%;height:100%}.taskbar_switchAU_1cBFM{left:10px!important}.taskbar_tasks-ct_cOZKi{display:flex;flex:1;position:relative;margin-right:1px}.taskbar_task-switch_3CGgb:hover~.taskbar_switch-responser_3Z2GJ{background-color:hsla(0,0%,100%,.12)}.taskbar_task-switch_3CGgb:active~.taskbar_switch-responser_3Z2GJ{background-color:hsla(0,0%,100%,.07)}.taskbar_task-switch_3CGgb:checked~.taskbar_switch-responser_3Z2GJ{background-color:hsla(0,0%,100%,.12)}.taskbar_task-switch_3CGgb:checked:active~.taskbar_switch-responser_3Z2GJ{background-color:hsla(0,0%,100%,.07)!important}.taskbar_task-switch_3CGgb:checked:hover~.taskbar_switch-responser_3Z2GJ{background-color:hsla(0,0%,100%,.18)}.taskbar_tb-tasks_hi9pa{display:block}@media (max-width:486px){.taskbar_switch-responser_3Z2GJ,.taskbar_task-switch_3CGgb{display:block}.taskbar_tb-tasks_hi9pa{position:absolute;bottom:40px;flex-wrap:wrap;width:240px;height:auto;background-color:rgba(30,37,46,.85);box-shadow:0 0 5px 0 rgba(0,0,0,.5);z-index:-10;display:none}.taskbar_tb-tasks_hi9pa>.taskbar_item-task_2Y0xn{min-width:40px;height:40px}.taskbar_task-switch_3CGgb:checked~.taskbar_tb-tasks_hi9pa{display:block}#taskbar_items-task-switch_y5Qun{display:inline-block}#taskbar_act-hover-items-task-switch_2j4hP{width:200px;display:inline-block}#taskbar_items-task-switch_y5Qun:checked~.taskbar_tb-task_1bBpb.taskbar_resp-pos486_1ydIk{display:none}}.taskbar_tb-right_27mqb>.taskbar_item_36Zmi,.taskbar_tbg_Ghdr-{float:right}.taskbar_show-desktop_1n3Wx{width:5px;border-left:1px solid #999}.taskbar_operations_2Ir6d{width:42px;margin-right:8px}.taskbar_date-time_3W13N{height:50%;font-size:12px;color:#fff;text-align:center;line-height:150%}.taskbar_dtp_3FZu4:active,.taskbar_operations_2Ir6d:active{background-color:hsla(0,0%,78%,.18)}.taskbar_dtp_3FZu4{width:76px}.taskbar_tb-bg_340TU{width:auto;height:100%;display:inline-block}.taskbar_item-bg_gQ5oR{width:23px;height:100%;display:inline-block}.taskbar_item-bg_gQ5oR:hover{background-color:hsla(0,0%,78%,.12)}.taskbar_item-bg_gQ5oR:active{background-color:hsla(0,0%,78%,.07)}.taskbar_icon-ct-bg_gH6-4{display:block;overflow:hidden;width:24px;height:24px;margin:auto;margin-top:8px}.taskbar_item-bg-hidden-switch_3puHx{margin:0;opacity:0;z-index:1}.taskbar_bg-switch-response_30opY,.taskbar_item-bg-hidden-switch_3puHx{position:absolute;width:100%;height:100%}.taskbar_item-bg-hidden-switch_3puHx:checked~.taskbar_items-bg-hidden_3BBz3{display:flex}.taskbar_item-bg-hidden-switch_3puHx:hover~.taskbar_bg-switch-response_30opY{background-color:hsla(0,0%,100%,.12)}.taskbar_item-bg-hidden-switch_3puHx:active~.taskbar_bg-switch-response_30opY{background-color:hsla(0,0%,100%,.07)}.taskbar_items-bg-hidden-ct_mgt9k{height:100%;width:23px;position:relative;display:inline-block}.taskbar_items-bg-hidden_3BBz3{display:none;flex-wrap:wrap;position:absolute;bottom:40px;background-color:rgba(52,61,73,.9);box-shadow:0 0 5px 0 rgba(0,0,0,.5);width:160px;transform:translateX(-43%)}.taskbar_item-bg-h_7kZFx{width:40px;height:40px;margin:0;position:relative}.taskbar_items-bg-ct_3Kyrx{display:inline-block;height:100%}.taskbar_items-bg-ct_3Kyrx>.taskbar_item_36Zmi{float:right}.taskbar_item-bg-lang_dpmDV{font-size:16px;color:#fff;display:block;text-align:center}.taskbar_items-bg-hidden_3BBz3 .taskbar_shrink_19PUx{display:none}@media (max-width:640px){.taskbar_shrink_19PUx.taskbar_item-bg_gQ5oR{display:none}.taskbar_items-bg-hidden_3BBz3 .taskbar_shrink_19PUx{display:inline-block}}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/taskbar.css"],"names":[],"mappings":"AAAA,uBACE,aAAc,AACd,eAAgB,AAChB,eAAgB,AAChB,SAAU,AACV,YAAa,AACb,WAAY,AACZ,mCAAyC,CAC1C,AACD,8CACE,aAAc,AACd,MAAQ,CACT,AACD,+CACE,cAAgB,CACjB,AACD,sBACE,YAAc,CACf,AACD,6CACE,gBAAkB,CACnB,AACD,oBACE,iBAAkB,AAClB,eAAgB,AAChB,qBAAsB,AACtB,WAAY,AACZ,gBAAiB,AACjB,iBAAmB,CACpB,AACD,0BACE,oCAA4C,CAC7C,AACD,2BACE,oCAA4C,CAC7C,AACD,mCACE,oCAA4C,CAC7C,AACD,qDACE,eAAgB,AAChB,UAAY,CACb,AAID,uDACE,YAAa,AACb,UAAY,CACb,AACD,sDACE,UAAY,CACb,AACD,yBACE,eAAgB,AAChB,eAAgB,AAChB,YAAa,AACb,OAAQ,AACR,iBAAmB,CACpB,AACD,gCACE,WAAY,AACZ,kBAAmB,AACnB,SAAU,AACV,SAAU,AACV,UAAW,AACX,sCAA2C,AAC3C,+BAAmC,CACpC,AACD,+BACE,WAAY,AACZ,kBAAmB,AACnB,SAAY,AACZ,SAAU,AACV,0BAA6B,AAC7B,qBAAsB,AACtB,UAAW,AACX,YAAa,AACb,yBAA0B,AAC1B,oBAAuB,CACxB,AACD,qCACE,WAAY,AACZ,UAAY,CACb,AACD,uBACE,cAAe,AACf,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,gBAAiB,AACjB,WAAa,CACd,AAED,+EACE,oCAA4C,CAC7C,AACD,gFACE,oCAA4C,CAC7C,AACD,iFACE,qCAA4C,AAC5C,mCAAyC,CAC1C,AACD,qGACE,yBAA0B,AAC1B,aAAe,CAChB,AACD,4FACE,yBAA0B,AAC1B,aAAe,CAChB,AACD,2BACE,aAAc,AACd,SAAU,AACV,UAAW,AACX,kBAAmB,AACnB,OAAQ,AACR,YAAa,AACb,UAAY,CACb,AACD,gCACE,kBAAmB,AACnB,WAAY,AACZ,UAAW,AACX,aAAc,AACd,OAAQ,AACR,WAAY,AACZ,WAAa,CACd,AACD,wBACE,mBAAqB,CACtB,AACD,wBACE,aAAc,AACd,OAAQ,AACR,kBAAmB,AACnB,gBAAkB,CACnB,AACD,iEACE,oCAA4C,CAC7C,AACD,kEACE,oCAA4C,CAC7C,AACD,mEACE,oCAA4C,CAC7C,AACD,0EACE,8CAAsD,CACvD,AACD,yEACE,oCAA4C,CAC7C,AACD,wBACE,aAAe,CAChB,AACD,yBAIE,2DACE,aAAe,CAChB,AACD,wBACE,kBAAmB,AACnB,YAAa,AACb,eAAgB,AAChB,YAAa,AACb,YAAa,AACb,oCAAyC,AACzC,oCAA2C,AAC3C,YAAa,AACb,YAAc,CACf,AACD,iDACE,eAAgB,AAChB,WAAa,CACd,AACD,2DACE,aAAe,CAChB,AACD,iCACE,oBAAsB,CACvB,AACD,2CACE,YAAa,AACb,oBAAsB,CACvB,AACD,0FACE,YAAc,CACf,CACF,AAED,+DACE,WAAa,CACd,AACD,4BACE,UAAW,AACX,0BAA4B,CAC7B,AACD,0BACE,WAAY,AACZ,gBAAkB,CACnB,AACD,yBACE,WAAY,AACZ,eAAgB,AAChB,WAAY,AACZ,kBAAmB,AACnB,gBAAkB,CACnB,AACD,2DACE,mCAA4C,CAC7C,AACD,mBACE,UAAY,CACb,AACD,qBACE,WAAY,AACZ,YAAa,AACb,oBAAsB,CACvB,AACD,uBACE,WAAY,AACZ,YAAa,AACb,oBAAsB,CACvB,AACD,6BACE,mCAA4C,CAC7C,AACD,8BACE,mCAA4C,CAC7C,AACD,0BACE,cAAe,AACf,gBAAiB,AACjB,WAAY,AACZ,YAAa,AACb,YAAa,AACb,cAAgB,CACjB,AACD,qCAIE,SAAU,AACV,UAAW,AACX,SAAW,CACZ,AACD,uEAPE,kBAAmB,AACnB,WAAY,AACZ,WAAa,CASd,AACD,4EACE,YAAc,CACf,AACD,6EACE,oCAA4C,CAC7C,AACD,8EACE,oCAA4C,CAC7C,AACD,kCACE,YAAa,AACb,WAAY,AACZ,kBAAmB,AACnB,oBAAsB,CACvB,AACD,+BACE,aAAc,AACd,eAAgB,AAChB,kBAAmB,AACnB,YAAa,AACb,mCAAwC,AACxC,oCAA2C,AAC3C,YAAa,AACb,0BAA4B,CAC7B,AACD,yBACE,WAAY,AACZ,YAAa,AACb,SAAU,AACV,iBAAmB,CACpB,AACD,2BACE,qBAAsB,AACtB,WAAa,CACd,AACD,+CACE,WAAa,CACd,AACD,4BACE,eAAgB,AAChB,WAAY,AACZ,cAAe,AACf,iBAAmB,CACpB,AACD,qDACE,YAAc,CACf,AACD,yBACE,4CACE,YAAc,CACf,AACD,qDACE,oBAAsB,CACvB,CACF","file":"taskbar.css","sourcesContent":[".taskbar {\r\n  display: flex;\r\n  position: fixed;\r\n  z-index: 999990;\r\n  bottom: 0;\r\n  height: 40px;\r\n  width: 100%;\r\n  background-color: rgba(30, 37, 46, 0.85);\r\n}\r\n.tb-left, .tb-task {\r\n  display: flex;\r\n  flex: 1;\r\n}\r\n.tb-left, .tb-right{\r\n  height: inherit;\r\n}\r\n.tb-sys{\r\n  display: flex;\r\n}\r\n.tb-sys, .tb-task {\r\n  margin-right: 4px;\r\n}\r\n.item{\r\n  margin-right: 1px;\r\n  height: inherit;\r\n  display: inline-block;\r\n  width: 48px;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n.item:hover{\r\n  background-color: rgba(255, 255, 255, 0.08);\r\n}\r\n.item:active{\r\n  background-color: rgba(255, 255, 255, 0.03);\r\n}\r\n.item-cortana:active{\r\n  background-color: rgba(255, 255, 255, 0.13);\r\n}\r\n.item-menu, .item-cortana{\r\n  margin-right: 0;\r\n  width: 48px;\r\n}\r\n.item-task.selected{\r\n\r\n}\r\n.item-task.selected:before{\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.item-task.selected:after{\r\n  width: 100%;\r\n}\r\n.item-task{\r\n  max-width: 48px;\r\n  min-width: 35px;\r\n  height: 100%;\r\n  flex: 1;\r\n  position: relative;\r\n}\r\n.item-task:before {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: 0;\r\n  height: 0;\r\n  width: 80%;\r\n  background-color: rgba(140, 164, 190, 0.2);\r\n  transition: height,width 0.2s,0.2s;\r\n}\r\n.item-task:after {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: 0px;\r\n  left: 50%;\r\n  transform: translate(-50%,0);\r\n  display: inline-block;\r\n  width: 88%;\r\n  height: 7.5%;\r\n  background-color: #8a9db6;\r\n  transition: width 0.2s;\r\n}\r\n.item-task:hover:after {\r\n  content: '';\r\n  width: 100%;\r\n}\r\n.icon-ct{\r\n  display: block;\r\n  position: relative;\r\n  width: 30px;\r\n  height: 100%;\r\n  overflow: hidden;\r\n  margin: auto;\r\n}\r\n\r\n:global(#start_menu_switch_X7VIV):hover~.taskbar .item-menu {\r\n  background-color: rgba(255, 255, 255, 0.08);\r\n}\r\n:global(#start_menu_switch_X7VIV):active~.taskbar .item-menu {\r\n  background-color: rgba(255, 255, 255, 0.03);\r\n}\r\n:global(#start_menu_switch_X7VIV):checked~.taskbar .item-menu {\r\n  background-color: rgba(255, 255, 255, 0.17);\r\n  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);\r\n}\r\n:global(#start_menu_switch_X7VIV):checked:active~.taskbar .icon-start-menu:before {\r\n  background-color: #515c6b;\r\n  color: #515c6b;\r\n}\r\n:global(#start_menu_switch_X7VIV):hover~.taskbar .icon-start-menu:before {\r\n  background-color: #6e7d91;\r\n  color: #6e7d91;\r\n}\r\n.task-switch{\r\n  display: none;\r\n  margin: 0;\r\n  opacity: 0;\r\n  position: absolute;\r\n  left: 0;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.switch-responser{\r\n  position: absolute;\r\n  z-index: -1;\r\n  left: 96px;\r\n  display: none;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n.switchAU{\r\n  left: 10px!important;\r\n}\r\n.tasks-ct{\r\n  display: flex;\r\n  flex: 1;\r\n  position: relative;\r\n  margin-right: 1px;\r\n}\r\n.task-switch:hover~.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.12);\r\n}\r\n.task-switch:active~.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.07);\r\n}\r\n.task-switch:checked~.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.12);\r\n}\r\n.task-switch:checked:active~.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.07)!important;\r\n}\r\n.task-switch:checked:hover~.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.18);\r\n}\r\n.tb-tasks{\r\n  display: block;\r\n}\r\n@media (max-width: 486px) {\r\n  .task-switch{\r\n    display: block;\r\n  }\r\n  .switch-responser{\r\n    display: block;\r\n  }\r\n  .tb-tasks {\r\n    position: absolute;\r\n    bottom: 40px;\r\n    flex-wrap: wrap;\r\n    width: 240px;\r\n    height: auto;\r\n    background-color: rgba(30, 37, 46, 0.85);\r\n    box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.5);;\r\n    z-index: -10;\r\n    display: none;\r\n  }\r\n  .tb-tasks>.item-task{\r\n    min-width: 40px;\r\n    height: 40px;\r\n  }\r\n  .task-switch:checked~.tb-tasks{\r\n    display: block;\r\n  }\r\n  #items-task-switch{\r\n    display: inline-block;\r\n  }\r\n  #act-hover-items-task-switch{\r\n    width: 200px;\r\n    display: inline-block;\r\n  }\r\n  #items-task-switch:checked~.tb-task.resp-pos486{\r\n    display: none;\r\n  }\r\n}\r\n\r\n.tb-right>.item, .tbg{\r\n  float: right;\r\n}\r\n.show-desktop{\r\n  width: 5px;\r\n  border-left: 1px solid #999;\r\n}\r\n.operations{\r\n  width: 42px;\r\n  margin-right: 8px;\r\n}\r\n.date-time{\r\n  height: 50%;\r\n  font-size: 12px;\r\n  color: #fff;\r\n  text-align: center;\r\n  line-height: 150%;\r\n}\r\n.dtp:active, .operations:active{\r\n  background-color: rgba(200, 200, 200, 0.18);\r\n}\r\n.dtp{\r\n  width: 76px;\r\n}\r\n.tb-bg{\r\n  width: auto;\r\n  height: 100%;\r\n  display: inline-block;\r\n}\r\n.item-bg{\r\n  width: 23px;\r\n  height: 100%;\r\n  display: inline-block;\r\n}\r\n.item-bg:hover{\r\n  background-color: rgba(200, 200, 200, 0.12);\r\n}\r\n.item-bg:active{\r\n  background-color: rgba(200, 200, 200, 0.07);\r\n}\r\n.icon-ct-bg{\r\n  display: block;\r\n  overflow: hidden;\r\n  width: 24px;\r\n  height: 24px;\r\n  margin: auto;\r\n  margin-top: 8px;\r\n}\r\n.item-bg-hidden-switch{\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  margin: 0;\r\n  opacity: 0;\r\n  z-index: 1;\r\n}\r\n.bg-switch-response{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n}\r\n.item-bg-hidden-switch:checked~.items-bg-hidden {\r\n  display: flex;\r\n}\r\n.item-bg-hidden-switch:hover~.bg-switch-response{\r\n  background-color: rgba(255, 255, 255, 0.12);\r\n}\r\n.item-bg-hidden-switch:active~.bg-switch-response{\r\n  background-color: rgba(255, 255, 255, 0.07);\r\n}\r\n.items-bg-hidden-ct{\r\n  height: 100%;\r\n  width: 23px;\r\n  position: relative;\r\n  display: inline-block;\r\n}\r\n.items-bg-hidden{\r\n  display: none;\r\n  flex-wrap: wrap;\r\n  position: absolute;\r\n  bottom: 40px;\r\n  background-color: rgba(52, 61, 73, 0.9);\r\n  box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.5);\r\n  width: 160px;\r\n  transform: translateX(-43%);\r\n}\r\n.item-bg-h{\r\n  width: 40px;\r\n  height: 40px;\r\n  margin: 0;\r\n  position: relative;\r\n}\r\n.items-bg-ct{\r\n  display: inline-block;\r\n  height: 100%;\r\n}\r\n.items-bg-ct>.item{\r\n  float: right;\r\n}\r\n.item-bg-lang{\r\n  font-size: 16px;\r\n  color: #fff;\r\n  display: block;\r\n  text-align: center;\r\n}\r\n.items-bg-hidden .shrink {\r\n  display: none;\r\n}\r\n@media (max-width: 640px) {\r\n  .shrink.item-bg {\r\n    display: none;\r\n  }\r\n  .items-bg-hidden .shrink {\r\n    display: inline-block;\r\n  }\r\n}\r\n"],"sourceRoot":""}]);
+exports.push([module.i, ".taskbar_taskbar_3hPyP{display:flex;position:fixed;z-index:999990;bottom:0;height:40px;width:100%;background-color:rgba(30,37,46,.85)}.taskbar_tb-left_2HjgG,.taskbar_tb-task_1bBpb{display:flex;flex:1}.taskbar_tb-left_2HjgG,.taskbar_tb-right_27mqb{height:inherit}.taskbar_tb-sys_37Ijg{display:flex}.taskbar_tb-sys_37Ijg,.taskbar_tb-task_1bBpb{margin-right:4px}.taskbar_item_36Zmi{margin-right:1px;height:inherit;display:inline-block;width:48px;position:relative}.taskbar_item_36Zmi:hover{background-color:hsla(0,0%,100%,.08)}.taskbar_item_36Zmi:active{background-color:hsla(0,0%,100%,.03)}.taskbar_item-cortana_3qlA0:active{background-color:hsla(0,0%,100%,.13)}.taskbar_item-cortana_3qlA0,.taskbar_item-menu_8Jfia{margin-right:0;width:48px}.taskbar_item-task_2Y0xn.taskbar_selected_3yiju:after{height:100%;width:100%}.taskbar_item-task_2Y0xn.taskbar_selected_3yiju:before{width:100%}.taskbar_item-task_2Y0xn{max-width:48px;min-width:35px;height:100%;flex:1;position:relative}.taskbar_item-task_2Y0xn:after{content:\"\";position:absolute;bottom:0;height:0;width:80%;background-color:rgba(140,164,190,.2);transition:height,width .2s,.2s;z-index:-1}.taskbar_item-task_2Y0xn:before{content:\"\";position:absolute;bottom:0;left:50%;transform:translate(-50%);display:inline-block;width:88%;height:7.5%;background-color:#8a9db6;transition:width .2s;z-index:10}.taskbar_item-task_2Y0xn:hover:before{content:\"\";width:100%}.taskbar_item-task_2Y0xn.taskbar_x_3JfN5:hover{background:hsla(0,0%,100%,.08);background:linear-gradient(90deg,hsla(0,0%,100%,.08) 0,hsla(0,0%,100%,.08) 92%,transparent 0,transparent 94%,hsla(0,0%,100%,.04) 0,hsla(0,0%,100%,.04))}.taskbar_item-task_2Y0xn.taskbar_x_3JfN5:active{background:hsla(0,0%,100%,.03);background:linear-gradient(90deg,hsla(0,0%,100%,.04) 0,hsla(0,0%,100%,.04) 92%,transparent 0,transparent 94%,hsla(0,0%,100%,.02) 0,hsla(0,0%,100%,.02))}.taskbar_item-task_2Y0xn.taskbar_x_3JfN5.taskbar_selected_3yiju:after{background:#8a9db6;background:linear-gradient(90deg,rgba(140,164,190,.2) 0,rgba(140,164,190,.2) 92%,transparent 0,transparent 94%,rgba(106,122,140,.2) 0,rgba(106,122,140,.2))}.taskbar_item-task_2Y0xn.taskbar_x_3JfN5:before{background:#8a9db6;background:linear-gradient(90deg,#8a9db6 0,#8a9db6 81%,#535e6d 0,#535e6d 83%,#6e7e92 0,#6e7e92)}.taskbar_item-task_2Y0xn.taskbar_x_3JfN5.taskbar_selected_3yiju:before,.taskbar_item-task_2Y0xn.taskbar_x_3JfN5:active:before,.taskbar_item-task_2Y0xn.taskbar_x_3JfN5:hover:before{background:#8a9db6;background:linear-gradient(90deg,#8a9db6 0,#8a9db6 92%,#535e6d 0,#535e6d 94%,#6e7e92 0,#6e7e92)}.taskbar_icon-ct_1NQ-R{display:block;position:relative;width:30px;height:100%;overflow:hidden;margin:auto}.taskbar_preview_3kmN0.taskbar_display_2yC_-{transform:translateY(0);opacity:1}.taskbar_preview_3kmN0{width:200px;height:150px;position:fixed;bottom:40px;left:100px;background-color:rgba(52,61,73,.9);box-shadow:0 0 5px 0 rgba(0,0,0,.5);transform:translateY(15px);opacity:0;display:none;z-index:10;transition:all .2s ease-out}#start_menu_switch_X7VIV:hover~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background-color:hsla(0,0%,100%,.08)}#start_menu_switch_X7VIV:active~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background-color:hsla(0,0%,100%,.03)}#start_menu_switch_X7VIV:checked~.taskbar_taskbar_3hPyP .taskbar_item-menu_8Jfia{background-color:hsla(0,0%,100%,.17);box-shadow:0 0 5px 0 rgba(0,0,0,.3)}#start_menu_switch_X7VIV:checked:active~.taskbar_taskbar_3hPyP .taskbar_icon-start-menu_2T9Bz:before{background-color:#515c6b;color:#515c6b}#start_menu_switch_X7VIV:hover~.taskbar_taskbar_3hPyP .taskbar_icon-start-menu_2T9Bz:before{background-color:#6e7d91;color:#6e7d91}.taskbar_task-switch_3CGgb{display:none;margin:0;opacity:0;position:absolute;left:0;height:100%;width:100%}.taskbar_switch-responser_3Z2GJ{position:absolute;z-index:-1;left:96px;display:none;left:0;width:100%;height:100%}.taskbar_switchAU_1cBFM{left:10px!important}.taskbar_tasks-ct_cOZKi{display:flex;flex:1;position:relative;margin-right:1px}.taskbar_task-switch_3CGgb:hover~.taskbar_switch-responser_3Z2GJ{background-color:hsla(0,0%,100%,.12)}.taskbar_task-switch_3CGgb:active~.taskbar_switch-responser_3Z2GJ{background-color:hsla(0,0%,100%,.07)}.taskbar_task-switch_3CGgb:checked~.taskbar_switch-responser_3Z2GJ{background-color:hsla(0,0%,100%,.12)}.taskbar_task-switch_3CGgb:checked:active~.taskbar_switch-responser_3Z2GJ{background-color:hsla(0,0%,100%,.07)!important}.taskbar_task-switch_3CGgb:checked:hover~.taskbar_switch-responser_3Z2GJ{background-color:hsla(0,0%,100%,.18)}.taskbar_tb-tasks_hi9pa{display:block}@media (max-width:486px){.taskbar_switch-responser_3Z2GJ,.taskbar_task-switch_3CGgb{display:block}.taskbar_tb-tasks_hi9pa{position:absolute;bottom:40px;flex-wrap:wrap;width:240px;height:auto;background-color:rgba(30,37,46,.85);box-shadow:0 0 5px 0 rgba(0,0,0,.5);z-index:-10;display:none}.taskbar_tb-tasks_hi9pa>.taskbar_item-task_2Y0xn{min-width:40px;height:40px}.taskbar_task-switch_3CGgb:checked~.taskbar_tb-tasks_hi9pa{display:block}#taskbar_items-task-switch_y5Qun{display:inline-block}#taskbar_act-hover-items-task-switch_2j4hP{width:200px;display:inline-block}#taskbar_items-task-switch_y5Qun:checked~.taskbar_tb-task_1bBpb.taskbar_resp-pos486_1ydIk{display:none}}.taskbar_tb-right_27mqb>.taskbar_item_36Zmi,.taskbar_tbg_Ghdr-{float:right}.taskbar_show-desktop_1n3Wx{width:5px;border-left:1px solid #999}.taskbar_operations_2Ir6d{width:42px;margin-right:8px}.taskbar_date-time_3W13N{height:50%;font-size:12px;color:#fff;text-align:center;line-height:150%}.taskbar_dtp_3FZu4:active,.taskbar_operations_2Ir6d:active{background-color:hsla(0,0%,78%,.18)}.taskbar_dtp_3FZu4{width:76px}.taskbar_tb-bg_340TU{width:auto;height:100%;display:inline-block}.taskbar_item-bg_gQ5oR{width:23px;height:100%;display:inline-block}.taskbar_item-bg_gQ5oR:hover{background-color:hsla(0,0%,78%,.12)}.taskbar_item-bg_gQ5oR:active{background-color:hsla(0,0%,78%,.07)}.taskbar_icon-ct-bg_gH6-4{display:block;overflow:hidden;width:24px;height:24px;margin:auto;margin-top:8px}.taskbar_item-bg-hidden-switch_3puHx{margin:0;opacity:0;z-index:1}.taskbar_bg-switch-response_30opY,.taskbar_item-bg-hidden-switch_3puHx{position:absolute;width:100%;height:100%}.taskbar_item-bg-hidden-switch_3puHx:checked~.taskbar_items-bg-hidden_3BBz3{display:flex}.taskbar_item-bg-hidden-switch_3puHx:hover~.taskbar_bg-switch-response_30opY{background-color:hsla(0,0%,100%,.12)}.taskbar_item-bg-hidden-switch_3puHx:active~.taskbar_bg-switch-response_30opY{background-color:hsla(0,0%,100%,.07)}.taskbar_items-bg-hidden-ct_mgt9k{height:100%;width:23px;position:relative;display:inline-block}.taskbar_items-bg-hidden_3BBz3{display:none;flex-wrap:wrap;position:absolute;bottom:40px;background-color:rgba(52,61,73,.9);box-shadow:0 0 5px 0 rgba(0,0,0,.5);width:160px;transform:translateX(-43%)}.taskbar_item-bg-h_7kZFx{width:40px;height:40px;margin:0;position:relative}.taskbar_items-bg-ct_3Kyrx{display:inline-block;height:100%}.taskbar_items-bg-ct_3Kyrx>.taskbar_item_36Zmi{float:right}.taskbar_item-bg-lang_dpmDV{font-size:16px;color:#fff;display:block;text-align:center}.taskbar_items-bg-hidden_3BBz3 .taskbar_shrink_19PUx{display:none}@media (max-width:640px){.taskbar_shrink_19PUx.taskbar_item-bg_gQ5oR{display:none}.taskbar_items-bg-hidden_3BBz3 .taskbar_shrink_19PUx{display:inline-block}}", "", {"version":3,"sources":["D:/JS/workspace/Win10ReactV1/app/src/css/desktop/taskbar.css"],"names":[],"mappings":"AAAA,uBACE,aAAc,AACd,eAAgB,AAChB,eAAgB,AAChB,SAAU,AACV,YAAa,AACb,WAAY,AACZ,mCAAyC,CAC1C,AACD,8CACE,aAAc,AACd,MAAQ,CACT,AACD,+CACE,cAAgB,CACjB,AACD,sBACE,YAAc,CACf,AACD,6CACE,gBAAkB,CACnB,AACD,oBACE,iBAAkB,AAClB,eAAgB,AAChB,qBAAsB,AACtB,WAAY,AACZ,iBAAmB,CACpB,AACD,0BACE,oCAA4C,CAC7C,AACD,2BACE,oCAA4C,CAC7C,AACD,mCACE,oCAA4C,CAC7C,AACD,qDACE,eAAgB,AAChB,UAAY,CACb,AACD,sDACE,YAAa,AACb,UAAY,CACb,AACD,uDACE,UAAY,CACb,AACD,yBACE,eAAgB,AAChB,eAAgB,AAChB,YAAa,AACb,OAAQ,AACR,iBAAmB,CACpB,AACD,+BACE,WAAY,AACZ,kBAAmB,AACnB,SAAU,AACV,SAAU,AACV,UAAW,AACX,sCAA2C,AAC3C,gCAAmC,AACnC,UAAY,CACb,AACD,gCACE,WAAY,AACZ,kBAAmB,AACnB,SAAY,AACZ,SAAU,AACV,0BAA6B,AAC7B,qBAAsB,AACtB,UAAW,AACX,YAAa,AACb,yBAA0B,AAC1B,qBAAuB,AACvB,UAAY,CACb,AACD,sCACE,WAAY,AACZ,UAAY,CACb,AACD,+CACE,+BAAsC,AACtC,uJAAwL,CACzL,AACD,gDACE,+BAAsC,AACtC,uJAAwL,CACzL,AACD,sEACE,mBAAoB,AACpB,2JAAoL,CACrL,AACD,gDACE,mBAAoB,AACpB,+FAAwL,CACzL,AACD,oLACE,mBAAoB,AACpB,+FAAwL,CACzL,AACD,uBACE,cAAe,AACf,kBAAmB,AACnB,WAAY,AACZ,YAAa,AACb,gBAAiB,AACjB,WAAa,CACd,AACD,6CACE,wBAAyB,AACzB,SAAW,CACZ,AACD,uBACE,YAAa,AACb,aAAc,AACd,eAAgB,AAChB,YAAa,AACb,WAAY,AACZ,mCAAoC,AACpC,oCAAqC,AACrC,2BAA4B,AAC5B,UAAW,AACX,aAAc,AACd,WAAY,AACZ,2BAA8B,CAC/B,AAED,+EACE,oCAA4C,CAC7C,AACD,gFACE,oCAA4C,CAC7C,AACD,iFACE,qCAA4C,AAC5C,mCAAyC,CAC1C,AACD,qGACE,yBAA0B,AAC1B,aAAe,CAChB,AACD,4FACE,yBAA0B,AAC1B,aAAe,CAChB,AACD,2BACE,aAAc,AACd,SAAU,AACV,UAAW,AACX,kBAAmB,AACnB,OAAQ,AACR,YAAa,AACb,UAAY,CACb,AACD,gCACE,kBAAmB,AACnB,WAAY,AACZ,UAAW,AACX,aAAc,AACd,OAAQ,AACR,WAAY,AACZ,WAAa,CACd,AACD,wBACE,mBAAqB,CACtB,AACD,wBACE,aAAc,AACd,OAAQ,AACR,kBAAmB,AACnB,gBAAkB,CACnB,AACD,iEACE,oCAA4C,CAC7C,AACD,kEACE,oCAA4C,CAC7C,AACD,mEACE,oCAA4C,CAC7C,AACD,0EACE,8CAAsD,CACvD,AACD,yEACE,oCAA4C,CAC7C,AACD,wBACE,aAAe,CAChB,AACD,yBAIE,2DACE,aAAe,CAChB,AACD,wBACE,kBAAmB,AACnB,YAAa,AACb,eAAgB,AAChB,YAAa,AACb,YAAa,AACb,oCAAyC,AACzC,oCAA2C,AAC3C,YAAa,AACb,YAAc,CACf,AACD,iDACE,eAAgB,AAChB,WAAa,CACd,AACD,2DACE,aAAe,CAChB,AACD,iCACE,oBAAsB,CACvB,AACD,2CACE,YAAa,AACb,oBAAsB,CACvB,AACD,0FACE,YAAc,CACf,CACF,AAED,+DACE,WAAa,CACd,AACD,4BACE,UAAW,AACX,0BAA4B,CAC7B,AACD,0BACE,WAAY,AACZ,gBAAkB,CACnB,AACD,yBACE,WAAY,AACZ,eAAgB,AAChB,WAAY,AACZ,kBAAmB,AACnB,gBAAkB,CACnB,AACD,2DACE,mCAA4C,CAC7C,AACD,mBACE,UAAY,CACb,AACD,qBACE,WAAY,AACZ,YAAa,AACb,oBAAsB,CACvB,AACD,uBACE,WAAY,AACZ,YAAa,AACb,oBAAsB,CACvB,AACD,6BACE,mCAA4C,CAC7C,AACD,8BACE,mCAA4C,CAC7C,AACD,0BACE,cAAe,AACf,gBAAiB,AACjB,WAAY,AACZ,YAAa,AACb,YAAa,AACb,cAAgB,CACjB,AACD,qCAIE,SAAU,AACV,UAAW,AACX,SAAW,CACZ,AACD,uEAPE,kBAAmB,AACnB,WAAY,AACZ,WAAa,CASd,AACD,4EACE,YAAc,CACf,AACD,6EACE,oCAA4C,CAC7C,AACD,8EACE,oCAA4C,CAC7C,AACD,kCACE,YAAa,AACb,WAAY,AACZ,kBAAmB,AACnB,oBAAsB,CACvB,AACD,+BACE,aAAc,AACd,eAAgB,AAChB,kBAAmB,AACnB,YAAa,AACb,mCAAwC,AACxC,oCAA2C,AAC3C,YAAa,AACb,0BAA4B,CAC7B,AACD,yBACE,WAAY,AACZ,YAAa,AACb,SAAU,AACV,iBAAmB,CACpB,AACD,2BACE,qBAAsB,AACtB,WAAa,CACd,AACD,+CACE,WAAa,CACd,AACD,4BACE,eAAgB,AAChB,WAAY,AACZ,cAAe,AACf,iBAAmB,CACpB,AACD,qDACE,YAAc,CACf,AACD,yBACE,4CACE,YAAc,CACf,AACD,qDACE,oBAAsB,CACvB,CACF","file":"taskbar.css","sourcesContent":[".taskbar {\r\n  display: flex;\r\n  position: fixed;\r\n  z-index: 999990;\r\n  bottom: 0;\r\n  height: 40px;\r\n  width: 100%;\r\n  background-color: rgba(30, 37, 46, 0.85);\r\n}\r\n.tb-left, .tb-task {\r\n  display: flex;\r\n  flex: 1;\r\n}\r\n.tb-left, .tb-right{\r\n  height: inherit;\r\n}\r\n.tb-sys{\r\n  display: flex;\r\n}\r\n.tb-sys, .tb-task {\r\n  margin-right: 4px;\r\n}\r\n.item{\r\n  margin-right: 1px;\r\n  height: inherit;\r\n  display: inline-block;\r\n  width: 48px;\r\n  position: relative;\r\n}\r\n.item:hover{\r\n  background-color: rgba(255, 255, 255, 0.08);\r\n}\r\n.item:active{\r\n  background-color: rgba(255, 255, 255, 0.03);\r\n}\r\n.item-cortana:active{\r\n  background-color: rgba(255, 255, 255, 0.13);\r\n}\r\n.item-menu, .item-cortana{\r\n  margin-right: 0;\r\n  width: 48px;\r\n}\r\n.item-task.selected:after{\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.item-task.selected:before{\r\n  width: 100%;\r\n}\r\n.item-task{\r\n  max-width: 48px;\r\n  min-width: 35px;\r\n  height: 100%;\r\n  flex: 1;\r\n  position: relative;\r\n}\r\n.item-task:after {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: 0;\r\n  height: 0;\r\n  width: 80%;\r\n  background-color: rgba(140, 164, 190, 0.2);\r\n  transition: height,width 0.2s,0.2s;\r\n  z-index: -1;\r\n}\r\n.item-task:before {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: 0px;\r\n  left: 50%;\r\n  transform: translate(-50%,0);\r\n  display: inline-block;\r\n  width: 88%;\r\n  height: 7.5%;\r\n  background-color: #8a9db6;\r\n  transition: width 0.2s;\r\n  z-index: 10;\r\n}\r\n.item-task:hover:before {\r\n  content: '';\r\n  width: 100%;\r\n}\r\n.item-task.x:hover{\r\n  background: rgba(255, 255, 255, 0.08);\r\n  background: linear-gradient(to right, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.08) 92%, transparent 92%, transparent 94%, rgba(255,255,255,0.04) 94%, rgba(255,255,255,0.04) 100%);\r\n}\r\n.item-task.x:active{\r\n  background: rgba(255, 255, 255, 0.03);\r\n  background: linear-gradient(to right, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.04) 92%, transparent 92%, transparent 94%, rgba(255,255,255,0.02) 94%, rgba(255,255,255,0.02) 100%);\r\n}\r\n.item-task.x.selected:after{\r\n  background: #8a9db6;\r\n  background: linear-gradient(to right, rgba(140,164,190,0.2) 0%, rgba(140,164,190,0.2) 92%, transparent 92%, transparent 94%, rgba(106,122,140,0.2) 94%, rgba(106,122,140,0.2) 100%);\r\n}\r\n.item-task.x:before{\r\n  background: #8a9db6;\r\n  background: linear-gradient(to right, rgba(138,157,182,1) 0%, rgba(138,157,182,1) 81%, rgba(83,94,109,1) 81%, rgba(83,94,109,1) 83%, rgba(110,126,146,1) 83%, rgba(110,126,146,1) 100%);\r\n}\r\n.item-task.x.selected:before, .item-task.x:hover:before, .item-task.x:active:before{\r\n  background: #8a9db6;\r\n  background: linear-gradient(to right, rgba(138,157,182,1) 0%, rgba(138,157,182,1) 92%, rgba(83,94,109,1) 92%, rgba(83,94,109,1) 94%, rgba(110,126,146,1) 94%, rgba(110,126,146,1) 100%);\r\n}\r\n.icon-ct{\r\n  display: block;\r\n  position: relative;\r\n  width: 30px;\r\n  height: 100%;\r\n  overflow: hidden;\r\n  margin: auto;\r\n}\r\n.preview.display{\r\n  transform: translateY(0);\r\n  opacity: 1;\r\n}\r\n.preview{\r\n  width: 200px;\r\n  height: 150px;\r\n  position: fixed;\r\n  bottom: 40px;\r\n  left: 100px;\r\n  background-color: rgba(52,61,73,.9);\r\n  box-shadow: 0 0 5px 0 rgba(0,0,0,.5);\r\n  transform: translateY(15px);\r\n  opacity: 0;\r\n  display: none;\r\n  z-index: 10;\r\n  transition: all ease-out 0.2s;\r\n}\r\n\r\n:global(#start_menu_switch_X7VIV):hover~.taskbar .item-menu {\r\n  background-color: rgba(255, 255, 255, 0.08);\r\n}\r\n:global(#start_menu_switch_X7VIV):active~.taskbar .item-menu {\r\n  background-color: rgba(255, 255, 255, 0.03);\r\n}\r\n:global(#start_menu_switch_X7VIV):checked~.taskbar .item-menu {\r\n  background-color: rgba(255, 255, 255, 0.17);\r\n  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);\r\n}\r\n:global(#start_menu_switch_X7VIV):checked:active~.taskbar .icon-start-menu:before {\r\n  background-color: #515c6b;\r\n  color: #515c6b;\r\n}\r\n:global(#start_menu_switch_X7VIV):hover~.taskbar .icon-start-menu:before {\r\n  background-color: #6e7d91;\r\n  color: #6e7d91;\r\n}\r\n.task-switch{\r\n  display: none;\r\n  margin: 0;\r\n  opacity: 0;\r\n  position: absolute;\r\n  left: 0;\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n.switch-responser{\r\n  position: absolute;\r\n  z-index: -1;\r\n  left: 96px;\r\n  display: none;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n.switchAU{\r\n  left: 10px!important;\r\n}\r\n.tasks-ct{\r\n  display: flex;\r\n  flex: 1;\r\n  position: relative;\r\n  margin-right: 1px;\r\n}\r\n.task-switch:hover~.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.12);\r\n}\r\n.task-switch:active~.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.07);\r\n}\r\n.task-switch:checked~.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.12);\r\n}\r\n.task-switch:checked:active~.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.07)!important;\r\n}\r\n.task-switch:checked:hover~.switch-responser{\r\n  background-color: rgba(255, 255, 255, 0.18);\r\n}\r\n.tb-tasks{\r\n  display: block;\r\n}\r\n@media (max-width: 486px) {\r\n  .task-switch{\r\n    display: block;\r\n  }\r\n  .switch-responser{\r\n    display: block;\r\n  }\r\n  .tb-tasks {\r\n    position: absolute;\r\n    bottom: 40px;\r\n    flex-wrap: wrap;\r\n    width: 240px;\r\n    height: auto;\r\n    background-color: rgba(30, 37, 46, 0.85);\r\n    box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.5);;\r\n    z-index: -10;\r\n    display: none;\r\n  }\r\n  .tb-tasks>.item-task{\r\n    min-width: 40px;\r\n    height: 40px;\r\n  }\r\n  .task-switch:checked~.tb-tasks{\r\n    display: block;\r\n  }\r\n  #items-task-switch{\r\n    display: inline-block;\r\n  }\r\n  #act-hover-items-task-switch{\r\n    width: 200px;\r\n    display: inline-block;\r\n  }\r\n  #items-task-switch:checked~.tb-task.resp-pos486{\r\n    display: none;\r\n  }\r\n}\r\n\r\n.tb-right>.item, .tbg{\r\n  float: right;\r\n}\r\n.show-desktop{\r\n  width: 5px;\r\n  border-left: 1px solid #999;\r\n}\r\n.operations{\r\n  width: 42px;\r\n  margin-right: 8px;\r\n}\r\n.date-time{\r\n  height: 50%;\r\n  font-size: 12px;\r\n  color: #fff;\r\n  text-align: center;\r\n  line-height: 150%;\r\n}\r\n.dtp:active, .operations:active{\r\n  background-color: rgba(200, 200, 200, 0.18);\r\n}\r\n.dtp{\r\n  width: 76px;\r\n}\r\n.tb-bg{\r\n  width: auto;\r\n  height: 100%;\r\n  display: inline-block;\r\n}\r\n.item-bg{\r\n  width: 23px;\r\n  height: 100%;\r\n  display: inline-block;\r\n}\r\n.item-bg:hover{\r\n  background-color: rgba(200, 200, 200, 0.12);\r\n}\r\n.item-bg:active{\r\n  background-color: rgba(200, 200, 200, 0.07);\r\n}\r\n.icon-ct-bg{\r\n  display: block;\r\n  overflow: hidden;\r\n  width: 24px;\r\n  height: 24px;\r\n  margin: auto;\r\n  margin-top: 8px;\r\n}\r\n.item-bg-hidden-switch{\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  margin: 0;\r\n  opacity: 0;\r\n  z-index: 1;\r\n}\r\n.bg-switch-response{\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n}\r\n.item-bg-hidden-switch:checked~.items-bg-hidden {\r\n  display: flex;\r\n}\r\n.item-bg-hidden-switch:hover~.bg-switch-response{\r\n  background-color: rgba(255, 255, 255, 0.12);\r\n}\r\n.item-bg-hidden-switch:active~.bg-switch-response{\r\n  background-color: rgba(255, 255, 255, 0.07);\r\n}\r\n.items-bg-hidden-ct{\r\n  height: 100%;\r\n  width: 23px;\r\n  position: relative;\r\n  display: inline-block;\r\n}\r\n.items-bg-hidden{\r\n  display: none;\r\n  flex-wrap: wrap;\r\n  position: absolute;\r\n  bottom: 40px;\r\n  background-color: rgba(52, 61, 73, 0.9);\r\n  box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.5);\r\n  width: 160px;\r\n  transform: translateX(-43%);\r\n}\r\n.item-bg-h{\r\n  width: 40px;\r\n  height: 40px;\r\n  margin: 0;\r\n  position: relative;\r\n}\r\n.items-bg-ct{\r\n  display: inline-block;\r\n  height: 100%;\r\n}\r\n.items-bg-ct>.item{\r\n  float: right;\r\n}\r\n.item-bg-lang{\r\n  font-size: 16px;\r\n  color: #fff;\r\n  display: block;\r\n  text-align: center;\r\n}\r\n.items-bg-hidden .shrink {\r\n  display: none;\r\n}\r\n@media (max-width: 640px) {\r\n  .shrink.item-bg {\r\n    display: none;\r\n  }\r\n  .items-bg-hidden .shrink {\r\n    display: inline-block;\r\n  }\r\n}\r\n"],"sourceRoot":""}]);
 
 // exports
 exports.locals = {
@@ -7391,8 +7774,11 @@ exports.locals = {
 	"item-task": "taskbar_item-task_2Y0xn",
 	"itemTask": "taskbar_item-task_2Y0xn",
 	"selected": "taskbar_selected_3yiju",
+	"x": "taskbar_x_3JfN5",
 	"icon-ct": "taskbar_icon-ct_1NQ-R",
 	"iconCt": "taskbar_icon-ct_1NQ-R",
+	"preview": "taskbar_preview_3kmN0",
+	"display": "taskbar_display_2yC_-",
 	"icon-start-menu": "taskbar_icon-start-menu_2T9Bz",
 	"iconStartMenu": "taskbar_icon-start-menu_2T9Bz",
 	"task-switch": "taskbar_task-switch_3CGgb",

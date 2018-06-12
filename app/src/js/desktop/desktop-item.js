@@ -474,7 +474,8 @@ class Item extends Component {
       imgReady: 1
     })
   }
-  onDoubleClick(){
+  onDoubleClick(e){
+    e.preventDefault()
     System.addTask(this.id)
     System.desktop.deselectItems()
   }
