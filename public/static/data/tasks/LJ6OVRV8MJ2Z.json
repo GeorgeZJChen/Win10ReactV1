@@ -2,7 +2,7 @@
   "id": "LJ6OVRV8MJ2Z",
   "name": "Folder 4",
   "taskbarIcon": {
-    "className":"folder tb"
+    "className":"folder task"
   },
   "window": {
     "windowIcon": {

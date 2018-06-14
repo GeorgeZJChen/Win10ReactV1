@@ -252,7 +252,7 @@ class Items extends Component {
       name: '',
       action: ''
     }
-    const onEnterListener = (_target)=>{
+    const onOverListener = (_target)=>{
       if(_target==target || this.groupInfo.selected.has(_target) ) return
 
       if(_target.hoverTag){
@@ -265,7 +265,7 @@ class Items extends Component {
     }
     const onDropListener = (_target)=>{
       if(_target==target || this.groupInfo.selected.has(_target) ) return
-
+      if(_target && _target.onDrop) _target.onDrop(this.groupInfo.selected)
     }
     const onLeaveListener = (_target)=>{
       if(_target==target || this.groupInfo.selected.has(_target) ) return
@@ -329,7 +329,7 @@ class Items extends Component {
         })
         this.props.container.refs.element.appendChild(ct)
 
-        Events.on(Events.names.being_dragged_items_onenter, onEnterListener)
+        Events.on(Events.names.being_dragged_items_onenter, onOverListener)
         Events.on(Events.names.being_dragged_items_ondrop, onDropListener)
         Events.on(Events.names.being_dragged_items_onleave, onLeaveListener)
       }else{
@@ -370,7 +370,7 @@ class Items extends Component {
         setTimeout(()=>{
           delete target.dragged
         },50)
-        Events.removeListener(Events.names.being_dragged_items_onenter, onEnterListener)
+        Events.removeListener(Events.names.being_dragged_items_onenter, onOverListener)
         Events.removeListener(Events.names.being_dragged_items_ondrop, onDropListener)
         Events.removeListener(Events.names.being_dragged_items_onleave, onLeaveListener)
         //move items
@@ -419,6 +419,8 @@ class Item extends Component {
       imgReady: 0
     }
     this.id = props.data.id
+    this.name = props.data.name
+    this.query = props.data.query
     this.hidden = 1
     this.selected = 0
     this.isOutcast = 0
@@ -476,7 +478,7 @@ class Item extends Component {
   }
   onDoubleClick(e){
     e.preventDefault()
-    System.addTask(this.id)
+    System.addTask(this.id, this.query, this.name)
     System.desktop.deselectItems()
   }
   onMouseEnter(e){

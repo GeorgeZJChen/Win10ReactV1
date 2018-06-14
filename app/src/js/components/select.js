@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
+import Utils from './Utils.js'
 import css from '../../css/components/select.css'
 
 class Select extends Component{
@@ -20,11 +21,11 @@ class Select extends Component{
 
 
     setTimeout(()=>{
-      const toSelect = this.props.container.refs.items
-      toSelect.refs.element.addEventListener('mousedown', ()=>{
+      const toSelectItemsCt = this.props.container.getToSelectItemsCt()
+      toSelectItemsCt.addEventListener('mousedown', ()=>{
         this.__mousedown_on_items_to_select_or_this__ = 1
       })
-      toSelect.refs.element.addEventListener('touchstart', ()=>{
+      toSelectItemsCt.addEventListener('touchstart', ()=>{
         this.__mousedown_on_items_to_select_or_this__ = 1
       })
       document.addEventListener('mousedown', ()=>{
@@ -61,6 +62,8 @@ class Select extends Component{
     let cw = this.refs.element.offsetWidth
     let top
     let left
+    let container
+    let containerPos
     let moved = false
     const move = (e)=>{
       let mx = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
@@ -72,29 +75,31 @@ class Select extends Component{
         this.setState({
           activated: 1
         })
+        container = this.props.container.refs.element
+        containerPos = Utils.computePosition(container)
       }
-      top = y
-      left = x
+      top = y - containerPos[1] + container.scrollTop
+      left = x - containerPos[0] + container.scrollLeft
       let sx = 0
       let sy = 0
       if(mx-x>0) {
         width = mx-x
-        if(width>=cw-x) width=cw-x
+        // if(width>=cw-x) width=cw-x
         sx = x + width
       } else {
         width = x-mx
-        if(width >= x) width = x
-        left = x-width
+        // if(width >= x) width = x
+        left = mx - containerPos[0] + container.scrollLeft
         sx = x - width
       }
       if(my-y>0){
         height = my-y
-        if(height>=ch-y) height=ch-y
+        // if(height>=ch-y) height=ch-y
         sy = y + height
       } else {
         height = y-my
-        if(height >= y) height = y
-        top = y-height
+        // if(height >= y) height = y
+        top = my - containerPos[1] + container.scrollTop
         sy = y - height
       }
       area.style.top = top +'px'

@@ -3,15 +3,15 @@ class Utils{}
 
 const ut = new Utils()
 
-let style = document.getElementById('global_style')
+let style = document.getElementById('keyframes')
 if(!style){
   style = document.createElement('style')
-  style.id = 'global_style'
+  style.id = 'keyframes'
 }
-ut.global_style = style
+ut.keyframes = style
 document.head.appendChild(style);
 ut.addKeyFrames = function(name, frames){
-  global_style.innerHTML += "@keyframes "+name + "{" + frames + "}"
+  keyframes.innerHTML += "@keyframes "+name + "{" + frames + "}"
 }
 
 let getBrowser = function(){
@@ -39,6 +39,17 @@ ut.computePosition = function(ele){
     ele = ele.parentNode
   }while(ele!=document.body)
   return pos
+}
+
+ut.setCursor = function(cursor){
+  let style = document.getElementById('cursor22KFP8V0')
+  if(!style){
+    style = document.createElement('style')
+    style.id = 'cursor22KFP8V0'
+    document.head.appendChild(style)
+  }
+  if(!cursor) style.innerHTML =  ''
+  else style.innerHTML = '*{cursor:'+ cursor +'!important}'
 }
 
 ut.global = {}

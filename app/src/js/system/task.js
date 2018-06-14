@@ -2,19 +2,14 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import System from '../system/system.js'
 
+import A896YGSLCOF8 from '../handler/A896YGSLCOF8.js'
+
 const registeredTasks= new Set([
   "i6oxuWOp0", "i6oxuWOp1", "i6oxuWOp2", "i6oxuWOp3", "i6oxuWOp4",
   "WLAN_W8kyt9KR2", "kugou_W8kyt9KR", "teamviewer_i6oxuWOp4", "wechat_W8kyt9KR", "wechat_W8kyt9KR0",
-  "dundee_pEsnAYaw", "NQ3NR3XKV3FV", "chromeQPPY2SEKS479", "LJ6OVRV8MJ2Z", "atom_OIOWFV4XMLYB"
+  "dundee_pEsnAYaw", "NQ3NR3XKV3FV", "chromeQPPY2SEKS479", "LJ6OVRV8MJ2Z", "atom_OIOWFV4XMLYB",
+  "A896YGSLCOF8"
 ])
-const systemTasks = {
-  // "resource_manager": {
-  //   id: "resource_manager",
-  //   name: "Resource Manager",
-  //   isTaskbarTask: 1,
-  //   taskbarIcon: {className:"resource-manager"}
-  // }
-}
 class Task {
   constructor(data){
     if(!data.id || !data.name) throw new Error()
@@ -49,6 +44,7 @@ class Task {
       w.maximisable = dw.maximisable===0?0:1
       w.minimisable = dw.minimisable===0?0:1
       w.resizable = dw.resizable===0?0:1
+      w.animated = dw.animated===0?0:1
       w.width = dw.width || 600
       w.height = dw.height || 400
       w.center = dw.center || 0
@@ -108,6 +104,11 @@ class Task {
     }
   }
 }
+
+const systemTasks = new Set([
+  "A896YGSLCOF8"
+])
+Task.A896YGSLCOF8 = A896YGSLCOF8
 
 Task.systemTasks = systemTasks
 Task.registeredTasks = registeredTasks

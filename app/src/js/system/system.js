@@ -64,7 +64,10 @@ class System {
     let _task = this.getTask(id, query)
     if(_task){
       _task.evoke()
-    }else if(Task.registeredTasks.has(id)){
+    }else if (Task.systemTasks.has(id)) {
+      new Task[id](query, name)
+    }
+    else if(Task.registeredTasks.has(id)){
       const url = 'static/data/tasks/'+id+'.json'
       axios({
         method: 'get',
@@ -73,6 +76,8 @@ class System {
       }).then((res)=>{
         try {
           if(!res.data) throw new Error()
+          if(name) res.data.name = name
+          if(query) res.data.query = query
           const task = new Task(res.data)
           task.launch()
         } catch (e) {

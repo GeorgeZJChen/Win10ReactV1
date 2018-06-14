@@ -88,17 +88,17 @@ class Login extends Component{
       smsw.click()
       setTimeout(()=>{
         smsw.click()
+        setTimeout(()=>{
+          this.setState({
+            opacity: 0
+          })
+          setTimeout(()=>{
+            ReactDOM.unmountComponentAtNode(document.getElementById(this.parentId))
+          }, 500)
+        }, 1000)
       },300)
-    },500)
+    },200)
 
-    setTimeout(()=>{
-      this.setState({
-        opacity: 0
-      })
-      setTimeout(()=>{
-        ReactDOM.unmountComponentAtNode(document.getElementById(this.parentId))
-      }, 500)
-    }, 1000)
   }
   imgReady(){
     this.setState({

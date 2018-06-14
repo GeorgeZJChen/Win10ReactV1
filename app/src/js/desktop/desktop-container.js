@@ -17,6 +17,9 @@ class DesktopContainer extends Component{
   onMouseDown(){
     System.desktop.closeStartMenu()
   }
+  getToSelectItemsCt(){
+    return this.refs.items.refs.element
+  }
   render(){
     return (
       <div className={css.desktopCt} ref='element'

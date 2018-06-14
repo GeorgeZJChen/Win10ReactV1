@@ -2,6 +2,8 @@
   "items": [
     {
       "name": "Folder 1",
+      "id": "A896YGSLCOF8",
+      "query": "desktop/Folder 1",
       "className": "item-desktop",
       "icon": { "className": "folder" },
       "column": 1,
@@ -9,6 +11,8 @@
     },
     {
       "name": "Folder 2",
+      "id": "A896YGSLCOF8",
+      "query": "desktop/Folder 2",
       "className": "item-desktop",
       "icon": { "className": "folder" },
       "column": 1,
@@ -16,6 +20,7 @@
     },
     {
       "name": "Folder 3",
+      "id": "unset",
       "className": "item-desktop",
       "icon": { "className": "folder" },
       "column": 2,
@@ -24,7 +29,8 @@
     },
     {
       "name": "Folder 4: A folder with a not very long name.",
-      "id": "LJ6OVRV8MJ2Z",
+      "id": "A896YGSLCOF8",
+      "query": "desktop/Folder 4: A folder with a not very long name.",
       "className": "item-desktop",
       "icon": { "className": "folder" },
       "column": 1,
@@ -41,6 +47,8 @@
     },
     {
       "name": "Folder 5",
+      "id": "A896YGSLCOF8",
+      "query": "desktop/Folder 5",
       "className": "item-desktop",
       "icon": { "className": "folder" }
     },

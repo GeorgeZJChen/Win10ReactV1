@@ -24,7 +24,7 @@ const innerHTML = {
   "folder": <span className={icon['folder-inner']}></span>
 }
 let empty = [
-  "windows-logo", "angle", "resource-manager", "unknown", "operations", "kugou", "setting",
+  "windows-logo", "angle", "file-explorer", "unknown", "operations", "kugou", "setting",
   "shutdown", "mailbox", "skype"
 ]
 for (var i = 0; i < empty.length; i++) {

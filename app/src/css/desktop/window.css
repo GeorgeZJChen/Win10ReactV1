@@ -1,12 +1,12 @@
 .window{
   position: absolute;
-  cursor: default;
   box-shadow: 0px 1px 13px 0px rgba(0, 0, 0, 0.4);
   border: 1px solid;
   min-width: 170px;
   min-height: 130px;
   background-color: #515c6b;
   color: #515c6b;
+  white-space: unset;
   visibility: hidden;
   width: 600px;
   height: 400px;
@@ -24,6 +24,7 @@
   background-color: #fff;
   z-index: 5;
   overflow: auto;
+  position: relative;
 }
 .label{
   height: 26px;
@@ -185,11 +186,11 @@
   transform: translate(-50%,-50%) scale(.25);
 }
 .btn-close:hover{
-  background-color: rgb(218, 54, 54);
+  background-color: rgb(232, 17, 35);
   color: #fff;
 }
 .btn-close:active{
-  background-color: rgba(218, 54, 54, 0.7);
+  background-color: rgba(232, 17, 35, 0.7);
   color: #fff;
 }
 .btn-close:before{
@@ -215,7 +216,7 @@
   color: rgb(0,0,0);
 }
 .window.deselected .btn.btn-close:hover{
-  background-color: rgb(218, 54, 54);
+  background-color: rgb(232, 17, 35);
   color: #fff;
 }
 .resize{

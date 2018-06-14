@@ -87,7 +87,6 @@ class Taskbar extends Component{
     }
   }
   delete(task){
-    // console.warn(task);
     if(task.taskbarIcon){
       let taskMap = this.windowTaskMaps.get(task.id)
       if(taskMap && taskMap.size == 1){

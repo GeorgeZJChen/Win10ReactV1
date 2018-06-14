@@ -6,6 +6,8 @@ import Events from '../components/event.js'
 import Icon from '../components/icon.js'
 import Utils from '../components/Utils.js'
 
+import html2canvas from 'html2canvas'
+
 import css from '../../css/desktop/window.css'
 
 class Windows extends Component {
@@ -32,7 +34,7 @@ class Windows extends Component {
   }
   deselectFront(e){
     if(!this.__mousedown_on_window__){
-      if(this.state.selected) this.state.selected.deselect()
+      if(this.state.selected&&this.state.selected.refs.element) this.state.selected.deselect()
     }
     delete this.__mousedown_on_window__
   }
@@ -43,8 +45,8 @@ class Windows extends Component {
       if(fw instanceof Win) fw.select()
     }
   }
-  get(id){
-    return this.state.wins.get(id)
+  get(wid){
+    return this.state.wins.get(wid)
   }
   add(win, cb){
     if(!this.state.wins.get(win.wid)){
@@ -120,9 +122,9 @@ class Win extends Component{
     this.resizable = d.resizable===0?0:1
     this.minimisable = d.minimisable===0?0:1
     this.maximisable = d.maximisable===0?0:1
+    this.animated = d.animated===0?0:1
     this.width = d.width || 600
     this.height = d.height || 400
-    this.animated = d.animated || 1
     this.getPosition(d.center)
 
     this.close = this.close.bind(this)
@@ -134,7 +136,7 @@ class Win extends Component{
 
 
     this.onMouseDown = this.onMouseDown.bind(this)
-    this.onMouseEnter = this.onMouseEnter.bind(this)
+    this.onMouseOver = this.onMouseOver.bind(this)
     this.onMouseUp = this.onMouseUp.bind(this)
     this.onMouseLeave = this.onMouseLeave.bind(this)
     this.iconOnload = this.iconOnload.bind(this)
@@ -174,7 +176,7 @@ class Win extends Component{
     const icon = this.props.data.windowIcon
     return(
       <div className={css.window} ref='element' onMouseDown={this.onMouseDown} onTouchStart={this.onMouseDown}
-        onMouseEnter = {this.onMouseEnter}
+        onMouseOver = {this.onMouseOver}
         onMouseUp = {this.onMouseUp} onMouseLeave = {this.onMouseLeave}>
         <div className={css.label} ref='label'>
           {
@@ -186,7 +188,7 @@ class Win extends Component{
                   <React.Fragment>
                   <img src={icon.URL} className={css.iconImg}
                   onLoad={this.iconOnload} style={{display:this.state.iconReady?'':'none'}}/>
-                  this.state.iconReady? '' : <Icon className={"unknown bg"}/>
+                  {this.state.iconReady? '' : <Icon className={"unknown bg"}/>}
                   </React.Fragment>
                 )
                 :
@@ -224,6 +226,7 @@ class Win extends Component{
     )
   }
   open(){
+    Utils.setCursor('wait')
     if(this.animated){
       this._aniopen()
     }
@@ -256,7 +259,7 @@ class Win extends Component{
     }
   }
   select(){
-    if(this.selected) return
+    if(this.selected||!this.refs.element) return
     if(this.props.parent.state.selected) this.props.parent.state.selected.deselect()
     this.props.parent.state.selected = this
     this.selected = 1
@@ -270,7 +273,8 @@ class Win extends Component{
     this.refs.label.style.color = this.color
 
     this.zIndex = this.props.parent.state.maxIndex
-    this.refs.element.className = this.refs.element.className.replace(new RegExp(' '+css.deselected,'g'),'')
+    const ele = this.refs.element
+    ele.className = ele.className.replace(new RegExp(' '+css.deselected,'g'),'')
 
     if(this.minimisable&&this.minimised) this.minimise()
 
@@ -278,7 +282,7 @@ class Win extends Component{
     System.desktop.closeStartMenu()
   }
   deselect(){
-    if(!this.selected) return
+    if(!this.selected||!this.refs.element) return
     this.props.parent.state.selected = null
     this.selected = 0
     this.setStyle({
@@ -292,6 +296,17 @@ class Win extends Component{
 
     System.desktop.refs.taskbar.deselectTask(this.wid.split('/')[0])
   }
+  loadPreview(){
+    // setTimeout(()=>{
+    //   html2canvas(this.refs.element, {
+    //     logging: false,
+    //     backgroundColor: null,
+    //   }).then((canvas)=> {
+    //     this.preview = canvas
+    //     Utils.setCursor()
+    //   })
+    // },100)
+  }
   iconOnload(){
     this.setState({
       iconReady: 1
@@ -304,7 +319,7 @@ class Win extends Component{
   onMouseDownLabel(e){
     this.onDrag(e)
   }
-  onMouseEnter(e){
+  onMouseOver(e){
     Events.emit(Events.names.being_dragged_items_onenter, this)
   }
   onMouseLeave(e){
@@ -312,6 +327,9 @@ class Win extends Component{
   }
   onMouseUp(e){
     Events.emit(Events.names.being_dragged_items_ondrop, this)
+  }
+  onDrop(items){
+
   }
   onDrag(e){
     const x = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
@@ -323,6 +341,7 @@ class Win extends Component{
     let top
     let shadow
     let shadowShowing = 0
+    let shadowZindex
 
     let moved = false
     const move = (e)=>{
@@ -333,8 +352,8 @@ class Win extends Component{
         moved = true
         if(this.resizable)this.refs.resize.style.visibility = 'hidden'
         shadow = this.props.parent.refs.shadow
-        // shadow.style.display = 'block'
-        shadow.style.zIndex = this.props.parent.state.maxIndex
+        shadowZindex = this.props.parent.state.maxIndex
+        shadow.style.zIndex = shadowZindex
       }
       if(this.maximised){
         this._maximise()
@@ -398,8 +417,13 @@ class Win extends Component{
           shadow.style.left = Math.min(Math.max(mx,0),this.container.offsetWidth) +'px'
           shadow.style.width = 0
           shadow.style.height = 0
+          shadow.style.zIndex = shadowZindex
           setTimeout(()=>{
-            shadow.removeAttribute('style')
+            shadow.style.opacity = ''
+            shadow.style.top = ''
+            shadow.style.left = ''
+            shadow.style.width = ''
+            shadow.style.height = ''
           }, 50)
         }else if (removeShadow&&shadowShowing) {
           shadowShowing = 0
@@ -410,7 +434,7 @@ class Win extends Component{
           shadow.style.height = shadow.offsetHeight +'px'
           shadow.style.display = 'block'
           setTimeout(()=>{
-            shadow.removeAttribute('style')
+            shadow.style.opacity = ''
           }, 250)
         }
 
@@ -640,7 +664,8 @@ class Win extends Component{
     for(var key in style){
       if(style[key]==undefined||style[key]==null)
         style[key] = ''
-      this.refs.element.style[key] = style[key]
+      if(this.refs.element)
+        this.refs.element.style[key] = style[key]
     }
   }
   getPosition(center){
@@ -674,6 +699,8 @@ class Win extends Component{
       visibility: "visible",
       opacity: 1
     })
+    this.loadPreview()
+    Utils.setCursor()
   }
   _animax(){
     const ele = this.refs.element
@@ -724,6 +751,7 @@ class Win extends Component{
       maxBtn.className = maxBtn.className.replace(new RegExp(' '+css.restore, 'g'), '')
       if(this.resizable)this.refs.resize.style.visibility = 'visible'
     }
+    this.loadPreview()
   }
   _animin(){
     const ct = this.container
@@ -759,12 +787,12 @@ class Win extends Component{
               top: save_top +'px',
               left: save_left +'px'
             })
+            console.log([save_top,save_top]);
           },300)
         },20)
       },20)
     }else{
-      let save_top = ele.offsetTop
-      let save_left = ele.offsetLeft
+
       let aim_top = ct.offsetHeight-ele.offsetHeight*0.7-40
       let aim_left = this.maximised?0 : -50
       if(Math.abs((aim_left-ele.offsetLeft)/(aim_top-ele.offsetTop))>1.5){
@@ -774,33 +802,41 @@ class Win extends Component{
           aim_left = ele.offsetLeft - 1.5*Math.abs(aim_top-ele.offsetTop)
       }
       ele.className += ' '+css.minRestoreP
+
       this.setStyle({
-        transform: 'scale(0.8)',
-        top: aim_top +'px',
-        left: aim_left +'px',
         display: ''
       })
       setTimeout(()=>{
+        let save_top = ele.offsetTop
+        let save_left = ele.offsetLeft
         this.setStyle({
-          top: save_top +'px',
-          left: save_left +'px'
+          transform: 'scale(0.8)',
+          top: aim_top +'px',
+          left: aim_left +'px',
         })
-        ele.className += ' '+css.minRestoreF
         setTimeout(()=>{
           this.setStyle({
-            visibility: 'visible',
-            transform: ''
+            top: save_top +'px',
+            left: save_left +'px'
           })
+          ele.className += ' '+css.minRestoreF
           setTimeout(()=>{
-            this._minimise()
-            ele.className = ele.className.replace(new RegExp(' '+css.minRestoreP,'g'),'')
-            ele.className = ele.className.replace(new RegExp(' '+css.minRestoreF,'g'),'')
-          },300)
-        },100)
-      },20)
+            this.setStyle({
+              visibility: 'visible',
+              transform: ''
+            })
+            setTimeout(()=>{
+              this._minimise()
+              ele.className = ele.className.replace(new RegExp(' '+css.minRestoreP,'g'),'')
+              ele.className = ele.className.replace(new RegExp(' '+css.minRestoreF,'g'),'')
+            },300)
+          },100)
+        },20)
+      })
     }
   }
   _minimise(){
+
     if(!this.minimised){
       this.minimised = 1
       this.setStyle({
@@ -809,6 +845,7 @@ class Win extends Component{
         display: 'none'
       })
       this.deselect()
+      System.desktop.windows.selectFront()
     }else{
       this.minimised = 0
       this.setStyle({

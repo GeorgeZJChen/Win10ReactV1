@@ -5,6 +5,7 @@ import Icon from '../components/icon.js'
 import Utils from '../components/Utils.js'
 import css from '../../css/desktop/taskbar.css'
 
+
 class WindowItems extends Component{
   constructor(props){
     super(props)
@@ -88,32 +89,40 @@ class WindowPreview extends Component{
     this.display = 0
     this.reference = null
   }
-  setWindows(){
-
+  setPreviews(){
+    const previewPages = []
+    for (let i = 0; i < this.reference.tasks.length; i++) {
+      let task = this.reference.tasks[i]
+      let win = System.desktop.windows.get(task.window.wid)
+      if(win){
+        let previewPage = <PreviewPage win={win} key={win.wid+Math.random()} parent={this}/>
+        previewPages.push(previewPage)
+      }
+    }
+    ReactDOM.render(<React.Fragment>{previewPages}</React.Fragment>, this.refs.element)
   }
-  toggle(){
-    if(this.display)
-      this.hide()
-    else
-      this.show()
-  }
-  show(item){
+  show(reference){
+    this.reference = reference
     const ele = this.refs.element
+
+    this.setPreviews()
+
     if(!this.display)
       ele.style.transition = 'none'
     ele.style.display = 'block'
-    ele.style.left = Utils.computePosition(this.reference.refs.element)[0]-(ele.offsetWidth-this.reference.refs.element.offsetWidth)/2 +'px'
     setTimeout(()=>{
-      ele.style.transition = ''
+      ele.style.left = Math.max(Utils.computePosition(this.reference.refs.element)[0]-(ele.offsetWidth-this.reference.refs.element.offsetWidth)/2,0) +'px'
       setTimeout(()=>{
-        ele.className += ' '+css.display
+        ele.style.transition = ''
+        setTimeout(()=>{
+          ele.className += ' '+css.display
+        },10)
       },10)
     },10)
     this.display = 1
   }
-  hide(item){
-    if(this.__hovering__) return
-    this.reference = item
+  hide(forceHide){
+    if(this.__hovering__&&!forceHide) return
     if(this.display == 1){
       const ele = this.refs.element
       ele.className = ele.className.replace(new RegExp(' '+css.display, 'g'),'')
@@ -123,7 +132,7 @@ class WindowPreview extends Component{
       },350)
     }
   }
-  onMouseEnter(){
+  onMouseOver(){
     this.__hovering__ = 1
   }
   onMouseLeave(){
@@ -137,9 +146,82 @@ class WindowPreview extends Component{
   render(){
     return (
       <div className={css.preview} ref='element'
-        onMouseEnter={()=>this.onMouseEnter()} onMouseLeave={()=>this.onMouseLeave()}
-      >
-        <div></div>
+        onMouseOver={()=>this.onMouseOver()} onMouseLeave={()=>this.onMouseLeave()}>
+      </div>
+    )
+  }
+}
+class PreviewPage extends Component{
+  componentDidMount(){
+    const maxHeight = 120
+    const maxWidth = 180
+    const cloneWin = this.props.win.refs.element.cloneNode(true)
+
+    let style = getComputedStyle(cloneWin)
+    let width = style.width.replace('px','') *1
+    let height = style.height.replace('px','') *1
+    let scaleWidth = (maxWidth)/width
+    let scaleHeight = maxHeight/height
+    let scale = (Math.min(scaleWidth,scaleHeight)).toFixed(2)
+    cloneWin.id = ''
+    cloneWin.style.transform = 'translate(-50%,-50%) scale('+scale+')'
+    cloneWin.className += ' '+css.cloneWin
+
+    const content = this.refs.content
+    this.refs.element.style.width = (width*scale+16).toFixed(2) +'px'
+    content.style.height = (height*scale+8).toFixed(2) +'px'
+    content.appendChild(cloneWin)
+  }
+  onClick(e){
+    if(e.target == this.refs.closeBtn) return
+    this.props.win.select()
+    this.props.parent.hide(1)
+  }
+  close(){
+    const ele = this.refs.element
+    let oWidth = ele.offsetWidth
+    let parent = this.props.parent
+    let parentEle = this.props.parent.refs.element
+    let computedLeft = Utils.computePosition(parent.reference.refs.element)[0]-(parentEle.offsetWidth-oWidth-parent.reference.refs.element.offsetWidth)/2
+    let siblings = this.refs.element.parentNode.children
+    let count = 0
+    for(let i=0;i<siblings.length;i++){
+      if(siblings[i].offsetWidth>1)
+        count++
+    }
+    if(count>1){
+      ele.style.transition = 'all ease-out 0.2s'
+      for (let i = 0; i < ele.children.length; i++) {
+        ele.children[i].style.opacity = 0
+      }
+    }
+    ele.style.minWidth = 0
+    ele.style.width = 0
+    ele.style.opacity = 0
+    parentEle.style.left = Math.max(computedLeft,0) +'px'
+    this.props.win.close()
+  }
+  render(){
+    const icon = this.props.win.props.data.windowIcon
+    return(
+      <div className={css.previewPage} onClick={(e)=>this.onClick(e)} ref='element'>
+        <div className={css.previewHeader} ref='header'>
+            {
+              icon?(
+                <div className={css.previewIcon}>
+                {
+                  icon.URL?
+                  <img src={icon.URL} className={css.previewIconImg}/>
+                  :
+                  <Icon className={icon.className}/>
+                }
+                </div>
+              ):''
+            }
+            <div className={css.previewTitle}>{this.props.win.name}</div>
+            <div className={css.previewBtn} ref='closeBtn' onClick={()=>this.close()}></div>
+        </div>
+        <div className={css.previewContent} ref='content'></div>
       </div>
     )
   }
@@ -192,8 +274,7 @@ class WindowItem extends Component{
 
       const preview = this.props.parent.refs.preview
       if(preview.reference==this)
-        preview.hide(this)
-
+        preview.hide()
     }
   }
   componentWillUnmount(){
@@ -227,7 +308,7 @@ class WindowItem extends Component{
     }else{
       if(this.selected){
         this.deselect()
-        this.props.parent.refs.preview.hide(this)
+        this.props.parent.refs.preview.hide()
       }else {
         this.select()
         this.props.parent.refs.preview.show(this)
@@ -257,7 +338,7 @@ class WindowItem extends Component{
     const preview = this.props.parent.refs.preview
     setTimeout(()=>{
       if(!this.__hovering__){
-        if(preview.reference==this){
+        if(preview.reference==this&&!preview.__hovering__){
           preview.hide()
           preview.reference = null
         }
