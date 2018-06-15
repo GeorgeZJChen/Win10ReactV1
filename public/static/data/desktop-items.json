@@ -64,6 +64,11 @@
       "className": "item-desktop",
       "icon": { "URL": "static/img/icon/chrome.svg.png" },
       "link": 1
+    },
+    {
+      "name": "myfile.tar.gz",
+      "className": "item-desktop",
+      "icon": { "className": "unknown desktop" }
     }
   ]
 }

@@ -1,0 +1,55 @@
+.full-screen-btn{
+  position: fixed;
+  right: 30px;
+  top: 30px;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(0,0,0,0.15);
+  color: rgba(255,255,255,0);
+  z-index: 99999997;
+  border-radius: 100%;
+}
+.full-screen-btn:hover, .full-screen-btn.hovering{
+  background-color: rgba(0,0,0,0.4);
+  color: rgba(255,255,255,0.5);
+  border-radius: 20%;
+}
+.full-screen-btn:hover>.left-top, .full-screen-btn:hover>.right-bottom,
+.full-screen-btn.hovering>.left-top, .full-screen-btn.hovering>.right-bottom{
+  border-radius: 15% 0;
+}
+.full-screen-btn:hover>.left-bottom, .full-screen-btn:hover>.right-top,
+.full-screen-btn.hovering>.left-bottom, .full-screen-btn.hovering>.right-top{
+  border-radius: 0 15%;
+}
+.angle{
+  transition: none;
+  position: absolute;
+  border: solid;
+  width: 9px;
+  height: 9px;
+}
+.angle.left-top{
+  top: 5px;
+  left: 5px;
+  border-width: 3px 0 0 3px;
+  border-radius: 100% 0;
+}
+.angle.left-bottom{
+  top: 25px;
+  left: 5px;
+  border-width: 0 0 3px 3px;
+  border-radius: 0 100%;
+}
+.angle.right-top{
+  top: 5px;
+  left: 24px;
+  border-width: 3px 3px 0px 0px;
+  border-radius: 0 100%;
+}
+.angle.right-bottom{
+  top: 24px;
+  left: 24px;
+  border-width: 0 3px 3px 0;
+  border-radius: 100% 0;
+}

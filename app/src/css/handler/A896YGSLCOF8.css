@@ -3,12 +3,12 @@
   width: 100%;
   height: 100%;
   overflow: auto;
+  padding: 6px 0;
+  box-sizing: border-box;
 }
 .items-ct{
-  pointer-events: none;
 }
 .file-item{
-  pointer-events: auto;
   display: inline-block;
   vertical-align: top;
   position: relative;
@@ -43,12 +43,16 @@
   height: 100%;
   outline: none;
 }
+.item-check:hover:not(:checked)~.file-bg{
+  background-color: rgba(153, 209, 255, 0.3);
+}
 .item-check:checked~.file-bg{
   background-color: rgba(153, 209, 255, 0.5);
   outline: 1px solid rgba(153, 209, 255);
 }
-.item-check:hover~.file-bg{
-  background-color: rgba(153, 209, 255, 0.3);
+.file-item.selected>.item-check~.file-bg{
+  background-color: rgba(153, 209, 255, 0.5);
+  outline: 1px solid rgba(153, 209, 255);
 }
 .file-name{
   max-height: 32px;

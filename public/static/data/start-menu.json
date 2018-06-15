@@ -342,9 +342,9 @@
           "icon": {"background": "", "className": "unknown", "URL": "https://upload.wikimedia.org/wikipedia/commons/4/40/Youtube_icon.svg"}
         },
         {
-          "name": "GIPHY",
+          "name": "MATLAB R2018a",
           "size": 4,
-          "icon": {"background": "#000", "backgroundURL": "https://media.giphy.com/media/K5kfQExKk731K/giphy.gif"}
+          "icon": {"background": "", "small":1, "URL": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Matlab_Logo.png/267px-Matlab_Logo.png"}
         }
       ]
     },
@@ -365,6 +365,7 @@
         },
         {
           "name": "Google Chrome",
+          "id": "chromeQPPY2SEKS479",
           "size": 4,
           "icon": {"background": "#212121", "small":1, "URL": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/200px-Google_Chrome_icon_%28September_2014%29.svg.png"}
         },

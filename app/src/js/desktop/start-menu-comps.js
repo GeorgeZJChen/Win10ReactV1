@@ -362,7 +362,7 @@ class Box extends Component{
     this.onClick = this.onClick.bind(this)
   }
   onClick(){
-    System.addTask(this.props.data.id, this.props.data.name)
+    System.addTask(this.props.data.id, this.props.data.query ,this.props.data.name)
     System.desktop.closeStartMenu()
   }
   createAnimation(){

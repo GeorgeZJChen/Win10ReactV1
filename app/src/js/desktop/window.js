@@ -328,8 +328,11 @@ class Win extends Component{
   onMouseUp(e){
     Events.emit(Events.names.being_dragged_items_ondrop, this)
   }
-  onDrop(items){
-
+  _onDrop(items){
+    if(this.onDrop){
+      this.onDrop(items)
+      this.select()
+    }
   }
   onDrag(e){
     const x = e.pageX || (e.changedTouches?e.changedTouches[0].pageX:0)
@@ -379,7 +382,7 @@ class Win extends Component{
         left = mx-x +beginLeft
         if(my > 40){
           this.clinging = 0
-          if(left+this.width<mx-10)
+          if(left+this.width<mx-7)
             left = mx - this.width / 2
           this.setStyle({
             left: left +'px',
@@ -407,11 +410,12 @@ class Win extends Component{
         let showShadow = 0
         if(top>0&&mx>15&&mx<this.container.offsetWidth-15)
           removeShadow = 1
-        if(top<-10||mx<=1||mx>=this.container.offsetWidth-1)
+        if(top<-7||mx<=1||mx>=this.container.offsetWidth-1)
           showShadow = 1
 
         if(showShadow&&!shadowShowing){
           shadowShowing = 1
+          shadow.style.transition = 'none'
           shadow.style.opacity = 1
           shadow.style.top = Math.max(my,0) +'px'
           shadow.style.left = Math.min(Math.max(mx,0),this.container.offsetWidth) +'px'
@@ -419,6 +423,7 @@ class Win extends Component{
           shadow.style.height = 0
           shadow.style.zIndex = shadowZindex
           setTimeout(()=>{
+            shadow.style.transition = ''
             shadow.style.opacity = ''
             shadow.style.top = ''
             shadow.style.left = ''
@@ -438,7 +443,7 @@ class Win extends Component{
           }, 250)
         }
 
-        if(top<-10){
+        if(top<-7){
           if(shadow.className.indexOf(css.top)==-1)
           shadow.className += ' '+css.top
         }else if(top>0){
@@ -514,7 +519,7 @@ class Win extends Component{
           this.setStyle({
             top: 0
           })
-        }else if(top>this.container.offsetHeight-10){
+        }else if(top>this.container.offsetHeight-7){
           top = this.container.offsetHeight-25
           this.setStyle({
             top: top +'px'
@@ -590,7 +595,7 @@ class Win extends Component{
       }
       if (cls.indexOf("top") != -1) {
         if(vy> height -minHeight) vy = height -minHeight
-        if(top+vy<-10){
+        if(top+vy<-7){
           if(cls.indexOf('dot')==-1){
             if(!shadowShowing){
               shadowShowing = 1
@@ -634,13 +639,19 @@ class Win extends Component{
       document.removeEventListener("touchend", up, false)
       document.removeEventListener("touchcancel", up, false)
       if(moved){
-        if(this.refs.element.offsetTop<-10){
+        if(this.refs.element.offsetTop<-7){
           this.setStyle({
             top: 0,
             height: this.container.offsetHeight +'px'
           })
           this.clinging = 1
-        }else if(!this.clinging){
+        }else if (this.refs.element.offsetTop<0) {
+          this.setStyle({
+            top: 0
+          })
+          this.clinging = 1
+        }
+        else if(!this.clinging){
           this.width = this.refs.element.offsetWidth
           this.height = this.refs.element.offsetHeight
           this.left = this.refs.element.offsetLeft

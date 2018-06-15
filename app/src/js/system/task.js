@@ -79,13 +79,15 @@ class Task {
     if(this.window) System.desktop.windows.add(this.window, this.callback)
   }
   evoke(){
-    const win = System.desktop.windows.get(this.window.wid)
-    if(win){
-      win.select()
-    } else {
-      this.hidden = 0
-      System.desktop.windows.add(this.window, this.callback)
-      System.desktop.refs.taskbar.add(this)
+    if(this.window){
+      const win = System.desktop.windows.get(this.window.wid)
+      if(win){
+        win.select()
+      } else {
+        this.hidden = 0
+        System.desktop.windows.add(this.window, this.callback)
+        System.desktop.refs.taskbar.add(this)
+      }
     }
   }
   end(){
@@ -100,7 +102,7 @@ class Task {
       this.end()
     else{
       this.hidden = 1
-      System.desktop.refs.taskbar.update(this)
+      System.desktop.refs.taskbar.delete(this)
     }
   }
 }

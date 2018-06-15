@@ -1,9 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Login from './js/login/login.js';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Login from './js/login/login.js'
+import Accessories from './js/system/accessories.js'
+
+ReactDOM.render(<Accessories.FullScreenButton/>, document.getElementById('FVZDNLUTYX15'))
 
 setTimeout(function functionName() {
-  ReactDOM.render(<Login parentId='XLSEFG7DE7ON'/>, document.getElementById('XLSEFG7DE7ON'));
+  ReactDOM.render(<Login parentId='XLSEFG7DE7ON'/>, document.getElementById('XLSEFG7DE7ON'))
 }, 500)
 
 // window.React = React

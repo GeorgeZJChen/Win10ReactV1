@@ -95,7 +95,7 @@ class System {
     let init_tasks = ['i6oxuWOp0', 'i6oxuWOp1', 'i6oxuWOp2', 'i6oxuWOp3',
       'teamviewer_i6oxuWOp4', "WLAN_W8kyt9KR2", "kugou_W8kyt9KR"]
     for (var i = 0; i < init_tasks.length; i++) {
-      this.addTask(init_tasks[i], "default")
+      this.addTask(init_tasks[i], "__default__")
     }
   }
   addSystemTask(task){

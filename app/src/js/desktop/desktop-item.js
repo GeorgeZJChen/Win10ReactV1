@@ -207,8 +207,7 @@ class Items extends Component {
     this.deselect()
 
     let left_n = Math.floor(Math.max(Math.min(x, sx)-0.75*p.itemWidth, -1)/p.interval[0]) +1
-    let right_n = Math.floor((Math.max(x, sx) +0.75*p.itemWidth)/p.interval[0])-1
-
+    let right_n = Math.min(Math.floor(Math.min(Math.max(x, sx) +0.75*p.itemWidth)/p.interval[0]), p.column) -1
 
     let column = []
     for (let k = left_n; k <= right_n; k++) {
@@ -265,7 +264,7 @@ class Items extends Component {
     }
     const onDropListener = (_target)=>{
       if(_target==target || this.groupInfo.selected.has(_target) ) return
-      if(_target && _target.onDrop) _target.onDrop(this.groupInfo.selected)
+      if(_target && _target.onDrop) _target._onDrop(this.groupInfo.selected)
     }
     const onLeaveListener = (_target)=>{
       if(_target==target || this.groupInfo.selected.has(_target) ) return

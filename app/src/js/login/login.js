@@ -68,6 +68,7 @@ class Login extends Component{
     })
   }
   login() {
+    this.loading = 1
     this.refs.greetings.innerHTML = 'Welcome!'
     this.refs.greetings.style.fontSize = '24px'
     this.refs.btnLogin.style.position = "relative"
@@ -125,7 +126,7 @@ class Login extends Component{
             opacity:this.state.imgReady&&this.state.pageReady?0:1,
             backgroundColor: this.props.lock?'#000':''
           }}></div>
-        <div className={css.loginCover+' '+css.fullScreen} onDoubleClick={()=>this.setState({removeDateCover:0})}
+        <div className={css.loginCover+' '+css.fullScreen} onDoubleClick={()=>{if(!this.loading)this.setState({removeDateCover:0})}}
               style={{opacity:this.state.removeDateCover?1:0}}>
           <div className={css.loginCoverContainer}>
             <div className={css.portrait}>{this.getPortrait()}</div>
@@ -140,15 +141,17 @@ class Login extends Component{
             <span className={icon.lock}><span className={icon.lockRing}></span></span>
           </div>
         </div>
-        <div className={css.dateCover+' '+css.fullScreen} onClick={()=>this.toLogin()}
-          style={{top: (this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))?'-50%':0,
-                opacity: ((this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))||!(this.state.imgReady&&this.state.pageReady))?0:1,
-                zIndex:this.state.removeDateCover?0:2}}>
-          <div className={css.date}>
-            <div className={css.dateTime}><DateSpan format='hh:mm'/></div>
-            <div className={css.dateDate}><DateSpan format='W, ~, d'/></div>
+        {
+          <div className={css.dateCover+' '+css.fullScreen} onClick={()=>this.toLogin()}
+            style={{top: (this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))?'-50%':0,
+            opacity: ((this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))||!(this.state.imgReady&&this.state.pageReady))?0:1,
+            zIndex:this.state.removeDateCover?0:2}}>
+            <div className={css.date}>
+              <div className={css.dateTime}><DateSpan format='hh:mm'/></div>
+              <div className={css.dateDate}><DateSpan format='W, ~, d'/></div>
+            </div>
           </div>
-        </div>
+        }
         <div className={css.fullScreen}
           style={{visibility:(this.state.imgReady&&this.state.pageReady?'hidden':'visible')}}>
           <Loader/>

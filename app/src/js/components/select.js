@@ -60,8 +60,8 @@ class Select extends Component{
     let height = 0
     let ch = this.refs.element.offsetHeight
     let cw = this.refs.element.offsetWidth
-    let top
-    let left
+    let start_top
+    let start_left
     let container
     let containerPos
     let moved = false
@@ -77,36 +77,18 @@ class Select extends Component{
         })
         container = this.props.container.refs.element
         containerPos = Utils.computePosition(container)
+        start_top = y - containerPos[1] + container.scrollTop
+        start_left = x - containerPos[0] + container.scrollLeft
       }
-      top = y - containerPos[1] + container.scrollTop
-      left = x - containerPos[0] + container.scrollLeft
-      let sx = 0
-      let sy = 0
-      if(mx-x>0) {
-        width = mx-x
-        // if(width>=cw-x) width=cw-x
-        sx = x + width
-      } else {
-        width = x-mx
-        // if(width >= x) width = x
-        left = mx - containerPos[0] + container.scrollLeft
-        sx = x - width
-      }
-      if(my-y>0){
-        height = my-y
-        // if(height>=ch-y) height=ch-y
-        sy = y + height
-      } else {
-        height = y-my
-        // if(height >= y) height = y
-        top = my - containerPos[1] + container.scrollTop
-        sy = y - height
-      }
-      area.style.top = top +'px'
-      area.style.left = left +'px'
-      area.style.width = width +'px'
-      area.style.height = height +'px'
-      this.props.select(x, y, sx, sy)
+      let end_top = my - containerPos[1] + container.scrollTop
+      let end_left = mx - containerPos[0] + container.scrollLeft
+
+      area.style.top = Math.min(start_top, end_top) +'px'
+      area.style.left = Math.min(start_left, end_left) +'px'
+      area.style.width = Math.abs(start_left - end_left) +'px'
+      area.style.height = Math.abs(start_top - end_top) +'px'
+
+      this.props.select(start_left, start_top, end_left, end_top)
     }
     const up = (e)=>{
       document.removeEventListener('mousemove', move, false)
@@ -138,6 +120,14 @@ class Select extends Component{
         onMouseDown={(e)=>this.onMouseDown(e)} onTouchStart={(e)=>this.onMouseDown(e)}
         style={{zIndex: this.state.activated?this.props.zIndex:''}}>
         <div className={css.selectArea} ref="area" style={{display: this.state.activated?'block':'none'}}></div>
+        {
+          this.state.activated?
+          <style>
+            {'*{pointer-events:none}.'+
+            this.props.container.refs.element.className+'{pointer-events:initial}'}
+          </style>
+          :''
+        }
       </div>
     )
   }

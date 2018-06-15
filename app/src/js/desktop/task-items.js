@@ -408,7 +408,7 @@ class BackgroundItem extends Component{
     System.desktop.closeStartMenu()
   }
   onDoubleClick(e){
-    System.evokeTask(this.props.data.id)
+    System.addTask(this.props.data.id, this.props.data.query, this.props.data.name)
   }
   render(){
     let t = css.item +' '+css.itemBg+' '

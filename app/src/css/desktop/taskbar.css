@@ -126,7 +126,7 @@
   z-index: 10;
   transition: all ease-out 0.2s;
   overflow: hidden;
-  white-space: nowrap;
+  white-space: unset;
   background-color: rgba(52,61,73,.9);
 }
 .preview-page{
@@ -334,6 +334,7 @@
 .show-desktop{
   width: 5px;
   border-left: 1px solid #999;
+  margin-right: -1px;
 }
 .operations{
   width: 42px;
