@@ -1,7 +1,8 @@
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 const config = {
-  mode: 'development',
-  devtool: 'source-map',
+  mode: 'production',
+  // devtool: 'source-map',
   entry: {
     main: __dirname +'/app/src/main.js',
   },
@@ -38,7 +39,7 @@ const config = {
                         options: {
                             modules: true,
                             localIdentName: '[name]_[local]_[hash:base64:5]',
-                            sourceMap: true,
+                            // sourceMap: true,
                             camelCase: true,
                             minimize: true
                         }
@@ -46,10 +47,22 @@ const config = {
                 ]
             }
         ]
-    },
-    // plugins: [
-    //   new UglifyJsPlugin()
-    // ]
+  },
+  plugins: [
+    new UglifyJsPlugin({
+      // sourceMap: true
+    })
+  ],
+  optimization: {
+    minimizer: [
+      // new UglifyJsPlugin({
+      //   // cache: true,
+      //   parallel: true,
+      //   // sourceMap: true // set to true if you want JS source maps
+      // }),
+      new OptimizeCSSAssetsPlugin({})
+    ]
+  }
 };
 
 module.exports = config;

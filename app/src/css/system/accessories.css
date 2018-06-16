@@ -6,7 +6,7 @@
   height: 40px;
   background-color: rgba(0,0,0,0.15);
   color: rgba(255,255,255,0);
-  z-index: 99999997;
+  z-index: 999999997;
   border-radius: 100%;
 }
 .full-screen-btn:hover, .full-screen-btn.hovering{

@@ -16,7 +16,7 @@
       "often": 1
     },
     {
-      "name": "24Chrome",
+      "name": "24Fmp",
       "icon": {"className": "unknown stm"},
       "type": 0,
       "latest": 0,
@@ -30,7 +30,65 @@
       "often": 0
     },
     {
-      "name": ">.2Chrome",
+      "name": "<3.2 Folder",
+      "icon": {"className": "folder stm"},
+      "id": "A896YGSLCOF8",
+      "query": "startmenu/folder 1",
+      "type": 0,
+      "latest": 0,
+      "often": 0
+    },
+    {
+      "name": "A File",
+      "icon": {"className": "unknown stm"},
+      "type": 0,
+      "latest": 0,
+      "often": 0
+    },
+    {
+      "name": "A File2",
+      "icon": {"className": "unknown stm"},
+      "type": 0,
+      "latest": 0,
+      "often": 0
+    },
+    {
+      "name": "Cortana",
+      "icon": {"className": "cortana stm"},
+      "type": 0,
+      "latest": 0,
+      "often": 0
+    },
+    {
+      "name": "C File",
+      "icon": {"className": "unknown stm"},
+      "type": 0,
+      "latest": 0,
+      "often": 0
+    },
+    {
+      "name": "C File (1)",
+      "icon": {"className": "unknown stm"},
+      "type": 0,
+      "latest": 0,
+      "often": 0
+    },
+    {
+      "name": "C File (2)",
+      "icon": {"className": "unknown stm"},
+      "type": 0,
+      "latest": 0,
+      "often": 0
+    },
+    {
+      "name": "University",
+      "icon": {"background": "#4365e2", "URL": "https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"},
+      "type": 0,
+      "latest": 0,
+      "often": 0
+    },
+    {
+      "name": ">.2Marws",
       "icon": {"className": "unknown stm"},
       "type": 0,
       "latest": 0,
@@ -86,63 +144,7 @@
       "often": 0
     },
     {
-      "name": ">.2Chrome",
-      "icon": {"className": "unknown stm"},
-      "type": 0,
-      "latest": 0,
-      "often": 0
-    },
-    {
-      "name": "A File",
-      "icon": {"className": "unknown stm"},
-      "type": 0,
-      "latest": 0,
-      "often": 0
-    },
-    {
-      "name": "A File2",
-      "icon": {"className": "unknown stm"},
-      "type": 0,
-      "latest": 0,
-      "often": 0
-    },
-    {
-      "name": "Cortana",
-      "icon": {"className": "cortana stm"},
-      "type": 0,
-      "latest": 0,
-      "often": 0
-    },
-    {
-      "name": "C File",
-      "icon": {"className": "unknown stm"},
-      "type": 0,
-      "latest": 0,
-      "often": 0
-    },
-    {
-      "name": "C File (1)",
-      "icon": {"className": "unknown stm"},
-      "type": 0,
-      "latest": 0,
-      "often": 0
-    },
-    {
-      "name": "C File (2)",
-      "icon": {"className": "unknown stm"},
-      "type": 0,
-      "latest": 0,
-      "often": 0
-    },
-    {
-      "name": "University",
-      "icon": {"background": "#4365e2", "URL": "https://cdn.dundee.ac.uk/media/dundeewebsite/themes/brandnewhope/img/logo-mark-new.svg"},
-      "type": 0,
-      "latest": 0,
-      "often": 0
-    },
-    {
-      "name": ">.2Chrome",
+      "name": "^.^.2React",
       "icon": {"className": "unknown stm"},
       "type": 0,
       "latest": 0,

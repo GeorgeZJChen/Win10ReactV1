@@ -13,6 +13,7 @@
   vertical-align: top;
   position: relative;
   margin: 1px 5px 0px 5px;
+  box-sizing: border-box;
 }
 .file-icon-ct{
   margin: auto;
@@ -49,10 +50,16 @@
 .item-check:checked~.file-bg{
   background-color: rgba(153, 209, 255, 0.5);
   outline: 1px solid rgba(153, 209, 255);
+  outline-offset: -1px;
 }
 .file-item.selected>.item-check~.file-bg{
   background-color: rgba(153, 209, 255, 0.5);
+  outline: none;
+}
+.file-item.selected>.item-check:hover~.file-bg{
+  background-color: rgba(153, 209, 255, 0.5);
   outline: 1px solid rgba(153, 209, 255);
+  outline-offset: -1px;
 }
 .file-name{
   max-height: 32px;
@@ -70,4 +77,70 @@
   overflow: hidden;
   height: 100%;
   width: 100%;
+}
+.dragging-tag{
+  position: absolute;
+  height: 20px;
+  border: 1px solid #767676;
+  background-color: #fff;
+  max-width: 300px;
+  overflow: hidden;
+  z-index: 99999998;
+  pointer-events: none;
+}
+.dragging-tag-text{
+  padding: 0px 2px;
+  font-size: 12px;
+  color: rgba(0, 51, 204, 1);
+  margin:0;
+  height:100%;
+  line-height:20px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.dragging-tag-action{
+  height: 100%;
+  padding: 0px 1px;
+  margin: 0;
+  color: #03c;
+  box-sizing: border-box;
+}
+.dragging-tag-name{
+  height: 100%;
+  padding: 0px 1px;
+  margin: 0;
+  color: #00009d;
+  box-sizing: border-box;
+}
+.count-copies{
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  position: absolute;
+  font-size: 13px;
+  z-index: 100;
+  background-color: rgb(0,116,204);
+  color: #fff;
+  padding: 0 3px;
+}
+.copies-ct{
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  z-index: 99999997;
+  background-color: rgba(153, 209, 255, 0.3);
+  transform: translate(-50px,-90px);
+  box-shadow: 2px 2px 3px 0 rgba(0,0,0,0.5);
+}
+.copies{
+  opacity: 0.75;
+}
+.copy-icon{
+  width: 94px;
+  height: 94px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }

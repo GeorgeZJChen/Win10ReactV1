@@ -14,8 +14,7 @@ class Desktop extends Component{
   constructor(props){
     super(props)
     this.state = {
-      imgURL: 'static/img/desktop_default.jpg',
-      tasks: new Map()
+      imgURL: 'static/img/desktop_default.jpg'
     }
     this.wallpaperReady = 0
     this.startmenuReady = 0

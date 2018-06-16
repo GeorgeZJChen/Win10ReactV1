@@ -30,6 +30,7 @@ let getBrowser = function(){
       return M.join(' ');
     }
 ut.browser = getBrowser()
+ut.isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|ios|SymbianOS)/i)?1:0
 
 ut.computePosition = function(ele){
   const pos = [0,0]

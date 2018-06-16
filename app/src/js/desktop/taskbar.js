@@ -50,7 +50,8 @@ class Taskbar extends Component{
     this.refs.backgroundTasksDisplayDup.update()
   }
   getTaskbarItem(id){
-    return this.windowTaskMaps.get(id).taskbarItem
+    let map = this.windowTaskMaps.get(id)
+    if(map) return map.taskbarItem
   }
   deselect(){
     if(this.selected) {

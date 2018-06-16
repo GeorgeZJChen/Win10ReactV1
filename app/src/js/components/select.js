@@ -20,30 +20,28 @@ class Select extends Component{
     }, {passive: false})
 
 
-    setTimeout(()=>{
-      const toSelectItemsCt = this.props.container.getToSelectItemsCt()
-      toSelectItemsCt.addEventListener('mousedown', ()=>{
-        this.__mousedown_on_items_to_select_or_this__ = 1
-      })
-      toSelectItemsCt.addEventListener('touchstart', ()=>{
-        this.__mousedown_on_items_to_select_or_this__ = 1
-      })
-      document.addEventListener('mousedown', ()=>{
-        if(!this.__mousedown_on_items_to_select_or_this__)
-          this.props.deselect()
-        delete this.__mousedown_on_items_to_select_or_this__
-      })
-      document.addEventListener('touchstart', ()=>{
-        if(!this.__mousedown_on_items_to_select_or_this__)
-          this.props.deselect()
-        delete this.__mousedown_on_items_to_select_or_this__
-      })
-      document.addEventListener('mouseup',()=>{
-        setTimeout(()=>{
-          delete this.__select_moved__
-        },20)
-      })
-    },50)
+    // setTimeout(()=>{
+    //   // const toSelectItemsCt = this.props.container.getToSelectItemsCt()
+    //   // toSelectItemsCt.addEventListener('mousedown', ()=>{
+    //   //   this.__mousedown_on_items_to_select_or_this__ = 1
+    //   // })
+    //   // toSelectItemsCt.addEventListener('touchstart', ()=>{
+    //   //   this.__mousedown_on_items_to_select_or_this__ = 1
+    //   // })
+    //   // document.addEventListener('mousedown', ()=>{
+    //   //   if(!this.__mousedown_on_items_to_select_or_this__)
+    //   //     this.props.deselect()
+    //   //   delete this.__mousedown_on_items_to_select_or_this__
+    //   // })
+    //   // document.addEventListener('touchstart', ()=>{
+    //   //   if(!this.__mousedown_on_items_to_select_or_this__)
+    //   //     this.props.deselect()
+    //   //   delete this.__mousedown_on_items_to_select_or_this__
+    //   // })
+    //   // document.addEventListener('mouseup',()=>{
+    //   //
+    //   // })
+    // },50)
   }
   onClick(){
     if(!this.__select_moved__)
@@ -104,6 +102,9 @@ class Select extends Component{
         this.setState({
           activated: 0
         })
+        setTimeout(()=>{
+          delete this.__select_moved__
+        },20)
         moved = false
       }
     }

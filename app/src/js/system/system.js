@@ -2,6 +2,8 @@ import axios from 'axios'
 import Task from './task.js'
 import Notification from './notification.js'
 
+import Utils from '../components/Utils.js'
+
 import Desktop from '../desktop/desktop.js'
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
@@ -29,12 +31,21 @@ class System {
       this.loadDesktopItems((data)=>{
         this.desktop.initiateItems(data)
       }, (err)=>{
-        new Notification().alert('Error occured when loading desktop items.\n'+err, 'System Errors')
+        // console.error(err);
+        new Notification().alert('Error occured when loading desktop items: '+err, 'System Errors')
         ready()
       })
       // this.addSystemTasks()
       this.addInitialTasks()
       this.desktop.initiateTaskbar()
+
+      setTimeout(()=>{
+        const browser = Utils.browser.toUpperCase()
+        if(browser.match(/(EDGE|IE)/i))
+          new Notification().alert('You are using '+Utils.browser+'. The site does not best support your browser. Please use Chrome or Firefox instead.', 'Low Performance')
+        if(browser.match(/(SAFARI)/i))
+          new Notification().alert('You are using '+Utils.browser+'. The site may not best support your browser. Please use Chrome or Firefox instead.', 'Warning')
+      },2500)
 
     }} onReady={()=>{ready()}}/>, document.getElementById('Z5E0SZIPPCO9'))
 
@@ -54,6 +65,7 @@ class System {
       this.desktop.refs.taskbar.delete(taskMap.get(query))
       this.tasks.delete(id)
     }
+    taskMap.delete(query)
 
   }
   shutDownTask(id, query){

@@ -88,8 +88,8 @@ class ItemsColumnTwo extends Component{
   }
   onMouseEnter(){
     this.refs.scrollbar.setUpScroll(this.refs.toScroll)
-
   }
+
   render(){
     return (
       <div className={css.column2} onScroll={(e)=>this.onScroll()} onMouseEnter={this.onMouseEnter.bind(this)} onTouchStart={(e)=>this.onMouseEnter()}>
@@ -567,6 +567,13 @@ class Item extends Component{
     this.imgStyleNotReady = {
       display: 'none'
     }
+    this.onClick = this.onClick.bind(this)
+  }
+  onClick(){
+    if(this.props.app && this.props.app.id){
+      System.addTask(this.props.app.id, this.props.app.query ,this.props.app.name)
+      System.desktop.closeStartMenu()
+    }
   }
   imgOnload(){
     this.setState({
@@ -596,7 +603,7 @@ class Item extends Component{
               return
             })()
           }
-          <div className={css.item+' '+css.itemC2} data-title={app.name}>
+          <div className={css.item+' '+css.itemC2} data-title={app.name} onClick={this.onClick}>
             <span className={css.iconCtC2} style={{backgroundColor:app.icon.background?app.icon.background:''}}>
             {
               app.icon.URL?

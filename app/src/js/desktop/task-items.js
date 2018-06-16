@@ -157,7 +157,7 @@ class PreviewPage extends Component{
     const maxWidth = 180
     const cloneWin = this.props.win.refs.element.cloneNode(true)
 
-    let style = getComputedStyle(cloneWin)
+    let style = getComputedStyle(this.props.win.refs.element)
     let width = style.width.replace('px','') *1
     let height = style.height.replace('px','') *1
     let scaleWidth = (maxWidth)/width

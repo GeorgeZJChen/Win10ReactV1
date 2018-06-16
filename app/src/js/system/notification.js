@@ -45,9 +45,7 @@ class Alert extends Component{
     setTimeout(()=>{
       this.focus()
     }, 200)
-    let messageHeight = this.refs.message.offsetHeight
-    if(messageHeight<66) this.refs.message.style.height = 66+'px'
-    this.props.win.height = Math.max(messageHeight,66)+35+29
+    this.props.win.height = 120
     this.props.win.load()
   }
   ok(){

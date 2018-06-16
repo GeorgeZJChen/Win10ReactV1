@@ -22,23 +22,23 @@ class Items extends Component {
   init(data){
     if(this.state.initiated) return
     this.groupInfo = {
-      name: '',
+      name: 'desktop',
       parent: this,
       focused: null,
       checked: null,
-      interval: [0, 0],
+      interval: [76, 110],
       column: -1,
       row: -1,
-      itemWidth: 0,
+      itemWidth: 72,
       lattice: [], //lattice[column][row] = item
       outcasts: [],
       selected: new Set()
     }
-    if(this.props.container.constructor.name == 'DesktopContainer'){
-      this.groupInfo.itemWidth = 72
-      this.groupInfo.interval = [76, 110]
-      this.groupInfo.name = "desktop"
-    }
+    // if(this.props.container.constructor.name == 'DesktopContainer'){
+    //   this.groupInfo.itemWidth = 72
+    //   this.groupInfo.interval = [76, 110]
+    //   this.groupInfo.name = "desktop"
+    // }
     this.lattice_init()
     window.addEventListener('resize', ()=>{
       const resize = ()=>{
@@ -54,8 +54,7 @@ class Items extends Component {
   }
   render(){
     return (
-
-      <div className={css.itemsCt} ref='element'>
+      <div className={css.itemsCt} ref='element' >
         {
           this.state.initiated?
             this.state.items.map((item, index)=>{
@@ -191,6 +190,7 @@ class Items extends Component {
   }
   deselect(){
     let p = this.groupInfo
+    if(!p) return
     p.selected.forEach((item)=>{
       item.deselect()
     })
@@ -326,7 +326,7 @@ class Items extends Component {
           }
           ct.appendChild(copy)
         })
-        this.props.container.refs.element.appendChild(ct)
+        document.body.appendChild(ct)
 
         Events.on(Events.names.being_dragged_items_onenter, onOverListener)
         Events.on(Events.names.being_dragged_items_ondrop, onDropListener)
@@ -458,7 +458,7 @@ class Item extends Component {
             this.props.data.icon.URL?
             (
               [<img src={this.props.data.icon.URL} className={css.iconImg} key={0} onLoad={this.imgOnLoad} style={{display:this.state.imgReady?'':'none'}}/>,
-              this.state.imgReady? '' : <Icon className={"unknown"} key={1}/>]
+              this.state.imgReady? '' : <Icon className={"unknown desktop"} key={1}/>]
             )
             :
             <Icon className={this.props.data.icon.className}/>

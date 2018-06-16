@@ -78,13 +78,14 @@ class FullScreenButton extends Component{
       }
     }
     setTimeout(()=>{
-      System.desktop.windows.state.wins.forEach((win)=>{
-        if(win.maximised)
-          win.setStyle({
-            width: win.container.offsetWidth +'px',
-            height: win.container.offsetHeight +'px',
-          })
-      })
+      if(System.desktop)
+        System.desktop.windows.state.wins.forEach((win)=>{
+          if(win.maximised)
+            win.setStyle({
+              width: win.container.offsetWidth +'px',
+              height: win.container.offsetHeight +'px',
+            })
+        })
     },200)
   }
 

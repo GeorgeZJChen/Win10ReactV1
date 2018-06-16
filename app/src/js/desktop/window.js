@@ -6,7 +6,7 @@ import Events from '../components/event.js'
 import Icon from '../components/icon.js'
 import Utils from '../components/Utils.js'
 
-import html2canvas from 'html2canvas'
+// import html2canvas from 'html2canvas'
 
 import css from '../../css/desktop/window.css'
 
@@ -661,6 +661,7 @@ class Win extends Component{
         setTimeout(()=>{
           shadow.removeAttribute('style')
         },200)
+        if(this.afterResize) this.afterResize(this)
       }
     }
     document.addEventListener('touchmove', tm, {passive: false})
@@ -798,7 +799,6 @@ class Win extends Component{
               top: save_top +'px',
               left: save_left +'px'
             })
-            console.log([save_top,save_top]);
           },300)
         },20)
       },20)
@@ -880,6 +880,7 @@ class Win extends Component{
     },20)
   }
   _close(){
+    if(this.onClose) this.onClose(this)
     this.props.parent.remove(this)
   }
 }
