@@ -1,8 +1,8 @@
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 const config = {
-  mode: 'production',
-  // devtool: 'source-map',
+  mode: 'development',
+  devtool: 'source-map',
   entry: {
     main: __dirname +'/app/src/main.js',
   },
