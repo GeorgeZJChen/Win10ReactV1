@@ -69,6 +69,12 @@
       "name": "myfile.tar.gz",
       "className": "item-desktop",
       "icon": { "className": "unknown desktop" }
+    },
+    {
+      "name": "README.txt",
+      "id": "DDNILX28W3",
+      "className": "item-desktop",
+      "icon": { "URL": "static/img/icon/TXT.png" }
     }
   ]
 }

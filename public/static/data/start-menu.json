@@ -347,6 +347,11 @@
           "name": "MATLAB R2018a",
           "size": 4,
           "icon": {"background": "", "small":1, "URL": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Matlab_Logo.png/267px-Matlab_Logo.png"}
+        },
+        {
+          "name": "Baidu",
+          "size": 4,
+          "icon": {"background": "#fff", "text":"#333", "URL": "https://cdn.worldvectorlogo.com/logos/baidu-icon.svg"}
         }
       ]
     },

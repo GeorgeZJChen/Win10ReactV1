@@ -404,7 +404,7 @@ class Win extends Component{
           left: left +'px',
           top: top+'px'
         })
-        if(!this.resizable) return
+        if(!this.resizable||!this.maximisable) return
         //shadow
         let removeShadow = 0
         let showShadow = 0
@@ -444,19 +444,19 @@ class Win extends Component{
         }
 
         if(top<-7){
-          if(shadow.className.indexOf(css.top)==-1)
+          if(shadow.className.indexOf(css.top)===-1)
           shadow.className += ' '+css.top
         }else if(top>0){
           shadow.className = shadow.className.replace(new RegExp(' '+css.top,'g'),'')
         }
         if(mx<=1){
-          if(shadow.className.indexOf(css.left)==-1)
+          if(shadow.className.indexOf(css.left)===-1)
           shadow.className += ' '+css.left
         }else if(mx>15){
           shadow.className = shadow.className.replace(new RegExp(' '+css.left,'g'),'')
         }
         if(mx>=this.container.offsetWidth-1){
-          if(shadow.className.indexOf(css.right)==-1)
+          if(shadow.className.indexOf(css.right)===-1)
           shadow.className += ' '+css.right
         }else if(mx<this.container.offsetWidth-15){
           shadow.className = shadow.className.replace(new RegExp(' '+css.right,'g'),'')
@@ -478,8 +478,8 @@ class Win extends Component{
 
         let cn = shadow.className
         const ct = this.container
-        if(cn.indexOf(css.top)!=-1){
-          if(cn.indexOf(css.left)!=-1){
+        if(cn.indexOf(css.top)!==-1){
+          if(cn.indexOf(css.left)!==-1){
             this.clinging = 1
             this.setStyle({
               top: 0,
@@ -487,7 +487,7 @@ class Win extends Component{
               width: ct.offsetWidth/2 +'px',
               height: ct.offsetHeight/2 +'px'
             })
-          }else if(cn.indexOf(css.right)!=-1){
+          }else if(cn.indexOf(css.right)!==-1){
             this.clinging = 1
             this.setStyle({
               top: 0,
@@ -498,7 +498,7 @@ class Win extends Component{
           }else{
             this.maximise()
           }
-        }else if(cn.indexOf(css.left)!=-1){
+        }else if(cn.indexOf(css.left)!==-1){
           this.clinging = 1
           this.setStyle({
             top: 0,
@@ -506,7 +506,7 @@ class Win extends Component{
             width: ct.offsetWidth/2 +'px',
             height: ct.offsetHeight +'px'
           })
-        }else if (cn.indexOf(css.right)!=-1){
+        }else if (cn.indexOf(css.right)!==-1){
           this.clinging = 1
           this.setStyle({
             top: 0,
@@ -525,12 +525,12 @@ class Win extends Component{
             top: top +'px'
           })
         }
-        if(left>this.container.offsetWidth-40 && cn.indexOf(css.right)==-1){
+        if(left>this.container.offsetWidth-40 && cn.indexOf(css.right)===-1){
           left = this.container.offsetWidth-40
           this.setStyle({
             left: left +'px'
           })
-        }else if (left<40-this.refs.element.offsetWidth && cn.indexOf(css.left)==-1) {
+        }else if (left<40-this.refs.element.offsetWidth && cn.indexOf(css.left)===-1) {
           this.setStyle({
             left: 40-this.refs.element.offsetWidth +'px'
           })
@@ -578,25 +578,25 @@ class Win extends Component{
       let vx = mx - x
       let vy = my - y
       if(this.clinging){
-        if(cls.indexOf("top") != -1){
+        if(cls.indexOf("top") !== -1){
           this.clinging = 0
         }
       }
-      if (cls.indexOf("left") != -1) {
+      if (cls.indexOf("left") !== -1) {
         if(vx> width -minWidth) vx = width - minWidth
         this.setStyle({
           width: (width - vx) + "px",
           left: (left + vx) + "px"
         })
-      } else if (cls.indexOf("right") != -1) {
+      } else if (cls.indexOf("right") !== -1) {
         this.setStyle({
           width: (width + vx) + "px",
         })
       }
-      if (cls.indexOf("top") != -1) {
+      if (cls.indexOf("top") !== -1) {
         if(vy> height -minHeight) vy = height -minHeight
         if(top+vy<-7){
-          if(cls.indexOf('dot')==-1){
+          if(cls.indexOf('dot')===-1){
             if(!shadowShowing){
               shadowShowing = 1
               shadow.style.display = 'block'
@@ -624,7 +624,7 @@ class Win extends Component{
           height: (height - vy) + "px",
           top: (top + vy) + "px"
         })
-      } else if (cls.indexOf("bottom") != -1) {
+      } else if (cls.indexOf("bottom") !== -1) {
         this.setStyle({
           height: (height + vy) + "px",
         })
@@ -683,12 +683,12 @@ class Win extends Component{
   getPosition(center){
     const container = this.container
     if(center){
-      this.left = Math.floor((container.offsetWidth - this.width)/2)
-      this.top = Math.floor((container.offsetHeight - this.height)/2)
+      this.left = Math.max(0, Math.floor((container.offsetWidth - this.width)/2))
+      this.top = Math.max(0, Math.floor((container.offsetHeight - this.height)/2))
     }
     else{
-      this.left = Math.floor((container.offsetWidth - this.width)*(Math.random()*0.5+0.25))
-      this.top = Math.floor((container.offsetHeight - this.height)*(Math.random()*0.5+0.25))
+      this.left = Math.max(0, Math.floor((container.offsetWidth - this.width)*(Math.random()*0.5+0.25)))
+      this.top = Math.max(0, Math.floor((container.offsetHeight - this.height)*(Math.random()*0.5+0.25)))
     }
   }
   _aniopen(){

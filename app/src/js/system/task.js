@@ -3,12 +3,13 @@ import ReactDOM from 'react-dom'
 import System from '../system/system.js'
 
 import A896YGSLCOF8 from '../handler/A896YGSLCOF8.js'
+import DDNILX28W3 from '../handler/DDNILX28W3.js'
 
 const registeredTasks= new Set([
   "i6oxuWOp0", "i6oxuWOp1", "i6oxuWOp2", "i6oxuWOp3", "i6oxuWOp4",
   "WLAN_W8kyt9KR2", "kugou_W8kyt9KR", "teamviewer_i6oxuWOp4", "wechat_W8kyt9KR", "wechat_W8kyt9KR0",
   "dundee_pEsnAYaw", "NQ3NR3XKV3FV", "chromeQPPY2SEKS479", "LJ6OVRV8MJ2Z", "atom_OIOWFV4XMLYB",
-  "A896YGSLCOF8"
+  "A896YGSLCOF8", "DDNILX28W3"
 ])
 class Task {
   constructor(data){
@@ -108,9 +109,11 @@ class Task {
 }
 
 const systemTasks = new Set([
-  "A896YGSLCOF8"
+  "A896YGSLCOF8",
+  "DDNILX28W3"
 ])
 Task.A896YGSLCOF8 = A896YGSLCOF8
+Task.DDNILX28W3 = DDNILX28W3
 
 Task.systemTasks = systemTasks
 Task.registeredTasks = registeredTasks

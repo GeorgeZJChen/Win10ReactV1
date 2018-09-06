@@ -146,6 +146,7 @@ class Login extends Component{
             style={{top: (this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))?'-50%':0,
             opacity: ((this.state.removeDateCover&&(this.state.imgReady&&this.state.pageReady))||!(this.state.imgReady&&this.state.pageReady))?0:1,
             zIndex:this.state.removeDateCover?0:2}}>
+            <div className={css.prompt}>Click to continue</div>
             <div className={css.date}>
               <div className={css.dateTime}><DateSpan format='hh:mm'/></div>
               <div className={css.dateDate}><DateSpan format='W, ~, d'/></div>
